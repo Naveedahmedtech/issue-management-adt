@@ -1,6 +1,6 @@
 export { default as NetworkStatus } from './NetworkStatus';
 export { default as NotFound } from './NotFound';
-export { default as Dashboard } from "./dashboard/Dashboard";
+export { default as PROFJECT_Dashboard } from "./projects/dashboard";
 export { default as MYTaskPage } from "./MyTaskPage/AllTaskPage";
 export { default as Profile } from "./profile/Profile";
 export { default as UserManagement } from "./userManagement/UserManagement";

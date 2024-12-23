@@ -6,14 +6,14 @@ import { Header } from '../pages/layout';
 import { ForgotPassword, SignIn, Register, ResetPassword, VerifyResetCode } from '../pages/auth';
 import {
     MYTaskPage,
-    Dashboard,
     NotFound,
     Profile,
     UserManagement,
     ManagerTasks,
     AllTasksPage,
     TeamTask,
-    TestingBoard
+    TestingBoard,
+    PROFJECT_Dashboard
 } from '../pages';
 import { APP_ROUTES } from '../constant/APP_ROUTES';
 
@@ -22,8 +22,8 @@ export const router = createBrowserRouter(
         <>
             <Route element={<PrivateRouteWrapper />}>
                 <Route path={APP_ROUTES.APP.HOME} element={<Header />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path={APP_ROUTES.APP.HOME_ALIAS} element={<Dashboard />} />
+                    <Route index element={<PROFJECT_Dashboard />} />
+                    <Route path={APP_ROUTES.APP.PROJECTS.DASHBOARD} element={<PROFJECT_Dashboard />} />
                     <Route path={APP_ROUTES.APP.MY_TASKS} element={<MYTaskPage />} />
                     <Route path={APP_ROUTES.APP.PROFILE} element={<Profile />} />
                     <Route path={APP_ROUTES.APP.USER_MANAGEMENT} element={<UserManagement />} />

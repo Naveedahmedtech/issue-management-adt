@@ -24,7 +24,8 @@ const Header = () => {
             {/* Sidebar Toggle Button with Label and Icon */}
             <button
                 onClick={toggleSidebar}
-                className={`flex items-center space-x-2 p-2 text-text fixed top-4 z-50 bg-backgroundShade1 rounded-full shadow-md transition-all duration-500 ${isSidebarOpen ? "left-40" : "left-4"
+                className={`flex items-center space-x-2 p-2 text-text fixed top-4 z-50 bg-backgroundShade1 rounded-full shadow-md transition-all duration-500
+                 ${isSidebarOpen ? "left-[200px]" : "left-4"
                     }`}
             >
                 {isSidebarOpen ? <FaChevronLeft size={20} /> : <FaChevronRight size={20} />}
@@ -41,7 +42,7 @@ const Header = () => {
 
             {/* Main Content Area */}
             <div className={`flex-1 flex flex-col overflow-auto mt-10 ${isSidebarOpen ? "ml-6" : "ml-0"} transition-all duration-500`}>
-                <div className="py-4 px-2 pt-24 md:pt-12 custom-scrollbar">
+                <div className="custom-scrollbar">
                     <Outlet />
                 </div>
             </div>

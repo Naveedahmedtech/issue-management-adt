@@ -20,6 +20,7 @@ export const API_ROUTES = {
     ASSIGN_MANAGER: `${USER_BASE}/oversight`,
     GET_ASSIGN_TASK: `${USER_BASE}/manager`,
     GET_DASHBOARD_COUNT: `${USER_BASE}/dashboard/count`,
+    BY_TOKEN: 'users/by-token',
   },
   TASKS: {
     ROOT: `${TASKS_BASE}/`,
@@ -31,3 +32,12 @@ export const API_ROUTES = {
     FETCH_TOKEN: `${CSRF_BASE}/csrf-token`,
   },
 };
+
+
+export const API_METHOD = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
+  PATCH: 'PATCH',
+}

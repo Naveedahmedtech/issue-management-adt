@@ -1,5 +1,15 @@
+const DASHBOARDS = {
+  PROJECT: "/project",
+  ORDER: "/order",
+}
 export const APP_ROUTES = {
   APP: {
+    PROJECTS: {
+      DASHBOARD: `${DASHBOARDS.PROJECT}/dashboard`
+    },
+    ORDERS: {
+      DASHBOARD: `${DASHBOARDS.ORDER}/dashboard`
+    },
     HOME: "/",
     HOME_ALIAS: "/dashboard",
     ALL_TASKS: "/all-tasks",
@@ -29,3 +39,4 @@ export const APP_ROUTES = {
   },
   NOT_FOUND: "*",
 };
+
