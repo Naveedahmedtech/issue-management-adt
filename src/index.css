@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Niconne&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+    --color-primary: #7a22fe;
+    --color-text-hover: #ffffff;
+    --color-hover: #5808d1;
+    /* Primary brand color */
+    --color-background: #ffffff;
+    /* Background for light theme */
+    --color-background-shade-1: #f8f9fa;
+    /* Slightly darker for card backgrounds or sections */
+    --color-background-shade-2: #e9ecef;
+    /* Lighter shadow or divider */
+    --color-text: #212529;
+    /* Main text color, dark gray for readability */
+    --color-text-muted: #6c757d;
+    /* Muted text for secondary information */
+    --color-border: #000000;
+    /* Light gray for borders */
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    /* Light shadow for depth */
+    --color-animated-post-skeleton: rgba(255, 255, 255, 0.543);
+}
+
+.dark {
+    --color-primary: #4B00BE;
+    --color-text-hover: #ffffff;
+    --color-hover: #4200a4;
+    /* Primary brand color (same as light theme, but it will glow more) */
+    --color-background: #121212;
+    /* Deep dark background for the entire layout */
+    --color-background-shade-1: #1c1c1c;
+    /* Slightly lighter for card backgrounds */
+    --color-background-shade-2: #252525;
+    /* For dividers, sections, or shadows */
+    --color-text: #e9ecef;
+    /* Main text color, very light for contrast */
+    --color-text-muted: #adb5bd;
+    /* Muted text for secondary information */
+    --color-border: #858585;
+    /* Border color, darker for subtle lines */
+    --color-shadow: rgba(0, 0, 0, 0.4);
+    /* Darker shadow for depth */
+    --color-animated-post-skeleton: rgba(255, 255, 255, 0.158);
+}
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    overflow-x: hidden;
+    color: var(--color-text)
+}
+
+::-moz-selection {
+    color: #FFFF;
+    background: var(--color-primary);
+}
+
+::selection {
+    color: #FFFF;
+    background: var(--color-primary);
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--primary-color);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    /* background: var(--color-primary); */
+    background: #DDC8FF;
+}
+.title-font {
+    font-family: "Niconne", cursive;
+}
+
+/* inputs */
+input,
+textarea {
+    transition: border-color 0.3s ease;
+    border: 2px solid #ddd;
+    /* Light gray border */
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    /* Highlight color on focus */
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.custom-scrollbar {
+    scrollbar-width: none;
+    /* For Firefox */
+    -ms-overflow-style: none;
+    /* For Internet Explorer and Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+
+.swiper-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+}
+
+
+@keyframes background-pan {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+
+  .bg-skeleton {
+      background: var(--color-background-shade-2);
+      position: relative;
+      overflow: hidden;
+  }
+
+  .shimmer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 150%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(224, 224, 224, 0) 0%, var(--color-animated-post-skeleton) 50%, rgba(224, 224, 224, 0) 100%);
+      animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+      0% {
+          transform: translateX(-150%);
+      }
+
+      100% {
+          transform: translateX(150%);
+      }
+  }
