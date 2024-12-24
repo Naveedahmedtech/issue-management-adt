@@ -1,60 +1,67 @@
 import {
   FaHome,
   FaTasks,
-  FaUsers,
-  FaUserCog,
-  FaClipboardList,
+  FaUser,
+  FaClipboard,
+  FaShoppingCart,
+  FaPlus
 } from "react-icons/fa";
 import { ROLES } from "../../../../constant/ROLES";
 import { APP_ROUTES } from "../../../../constant/APP_ROUTES";
 
 export const links = [
   {
-    url: APP_ROUTES.APP.HOME_ALIAS,
+    url: APP_ROUTES.APP.HOME,
     Icon: FaHome,
     text: "Dashboard",
-    roles: [ROLES.REGULAR_USER, ROLES.MANAGER, ROLES.ADMIN],
+    roles: [ROLES.WORKER, ROLES.SUPER_ADMIN, ROLES.ADMIN],
     className:
-      "text-text hover:text-text hover:bg-background p-2  rounded-lg transition-all",
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },
   {
-    url: APP_ROUTES.APP.MY_TASKS,
+    url: APP_ROUTES.APP.PROJECTS.LIST,
     Icon: FaTasks,
-    text: "My Tasks",
-    roles: [ROLES.REGULAR_USER, ROLES.MANAGER, ROLES.ADMIN],
+    text: "Projects",
+    roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
     className:
-      "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all mb-5",
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+    isDropdown: true,
+    subLinks: [
+      { url: "#", text: "Project List", Icon: "" },
+      {
+        url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", "1"),
+        text: "Project 1",
+        Icon: FaClipboard,
+      },
+      {
+        url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", "2"),
+        text: "Project 2",
+        Icon: FaClipboard,
+      },
+    ],
   },
   {
-    url: "/team-task",
-    Icon: FaClipboardList,
-    text: "Team Tasks",
-    roles: [ROLES.MANAGER],
-    className:
-      "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all mb-5",
-  },
-  {
-    url: "/all-tasks",
-    Icon: FaTasks,
-    text: "All Tasks",
+    url: APP_ROUTES.APP.PROJECTS.CREATE,
+    Icon: FaPlus,
+    text: "Create Project",
     roles: [ROLES.ADMIN],
     className:
-      "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all mb-5",
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },
   {
-    url: "/user-management",
-    Icon: FaUsers,
+    url: APP_ROUTES.DASHBOARDS.ORDER,
+    Icon: FaShoppingCart,
+    text: "Order Dashboard",
+    roles: [ROLES.ADMIN],
+    className:
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+  },
+  {
+    url: APP_ROUTES.SUPERADMIN.USER_MANAGEMENT,
+    Icon: FaUser,
     text: "User Management",
-    roles: [ROLES.ADMIN],
+    roles: [ROLES.SUPER_ADMIN],
     className:
-      "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all mb-5",
-  },
-  {
-    url: "/profile",
-    Icon: FaUserCog,
-    text: "Profile",
-    roles: [ROLES.ADMIN],
-    className:
-      "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all mb-5",
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },
 ];

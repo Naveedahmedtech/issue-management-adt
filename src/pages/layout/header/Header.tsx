@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LeftSidebar from "./components/LeftSidebar";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import ThemeToggle from "../../../components/ThemeToggle.tsx";
 
 const Header = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768); // Open on larger screens by default
@@ -46,6 +47,7 @@ const Header = () => {
                     <Outlet />
                 </div>
             </div>
+            <ThemeToggle />
         </div>
     );
 };

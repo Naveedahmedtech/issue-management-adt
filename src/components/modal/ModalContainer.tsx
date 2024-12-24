@@ -42,7 +42,7 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
                     <h2 className="text-text text-xl font-semibold">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="text-text hover:text-red-500 transition-all duration-300 ease-in-out focus:outline-none"
+                        className="text-text hover:text-error transition-all duration-300 ease-in-out focus:outline-none"
                     >
                         <AiOutlineCloseCircle className="w-8 h-8" />
                     </button>
