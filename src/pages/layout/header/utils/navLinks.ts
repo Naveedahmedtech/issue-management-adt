@@ -11,9 +11,9 @@ import { APP_ROUTES } from "../../../../constant/APP_ROUTES";
 
 export const links = [
   {
-    url: APP_ROUTES.APP.HOME,
+    url: APP_ROUTES.DASHBOARDS.PROJECT,
     Icon: FaHome,
-    text: "Dashboard",
+    text: "Project Dashboard",
     roles: [ROLES.WORKER, ROLES.SUPER_ADMIN, ROLES.ADMIN],
     className:
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
@@ -57,9 +57,39 @@ export const links = [
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },
   {
-    url: APP_ROUTES.SUPERADMIN.USER_MANAGEMENT,
+    url: APP_ROUTES.APP.ORDERS.LIST,
+    Icon: FaTasks,
+    text: "Orders",
+    roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
+    className:
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+    isDropdown: true,
+    subLinks: [
+      { url: "#", text: "Order List", Icon: "" },
+      {
+        url: APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", "1"),
+        text: "Order 1",
+        Icon: FaClipboard,
+      },
+      {
+        url: APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", "2"),
+        text: "Order 2",
+        Icon: FaClipboard,
+      },
+    ],
+  },
+  {
+    url: APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT,
     Icon: FaUser,
     text: "User Management",
+    roles: [ROLES.SUPER_ADMIN],
+    className:
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+  },
+  {
+    url: APP_ROUTES.SUPERADMIN.USERS.CREATE,
+    Icon: FaPlus,
+    text: "Create User",
     roles: [ROLES.SUPER_ADMIN],
     className:
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",

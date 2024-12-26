@@ -26,7 +26,7 @@ const Header = () => {
             <button
                 onClick={toggleSidebar}
                 className={`flex items-center space-x-2 p-2 text-text fixed top-4 z-50 bg-backgroundShade1 rounded-full shadow-md transition-all duration-500
-                 ${isSidebarOpen ? "left-[200px]" : "left-4"
+                 ${isSidebarOpen ? "left-[230px]" : "left-4"
                     }`}
             >
                 {isSidebarOpen ? <FaChevronLeft size={20} /> : <FaChevronRight size={20} />}
@@ -35,7 +35,7 @@ const Header = () => {
             {/* Sidebar Container with Smooth Animation */}
             {isSidebarOpen && (
                 <div
-                    className="w-60 transition-transform duration-500 ease-in-out absolute md:relative z-10"
+                    className="w-[270px] transition-transform duration-500 ease-in-out absolute md:relative z-10"
                 >
                     <LeftSidebar toggleSidebar={toggleSidebar} />
                 </div>

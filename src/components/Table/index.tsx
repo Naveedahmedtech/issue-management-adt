@@ -15,6 +15,7 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
                         <th
                             key={column.id}
                             className="text-left px-4 py-2 border-b border-border text-text font-semibold"
+                            style={{ minWidth: "120px" }} // Set minimum width for table columns
                         >
                             {column.label}
                         </th>
@@ -31,6 +32,7 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
                             <td
                                 key={column.id}
                                 className="px-4 py-2 border-b border-border text-text"
+                                style={{ minWidth: "150px" }} // Ensure minimum width consistency for table cells
                             >
                                 {column.render(row)}
                             </td>

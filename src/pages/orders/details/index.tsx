@@ -2,7 +2,7 @@ import  { useState, useEffect, useRef } from "react";
 import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
-import ProjectInfo from "../components/ProjectInfo";
+import OrderInfo from "../components/OrderInfo.tsx";
 import TaskTable from "../../../components/Board/TaskTable"; // New table component
 import { Link, useParams } from "react-router-dom";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
@@ -50,12 +50,12 @@ const ProjectDetails = () => {
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
 
     const params = useParams();
-    const { projectId } = params;
+    const { orderId: projectId } = params;
 
     const tabs = [
         { id: "board", label: "Issues" },
         { id: "documents", label: "Documents" },
-        { id: "info", label: "Project Info" },
+        { id: "info", label: "Order Info" },
     ];
 
     const handleOutsideClick = (event: MouseEvent) => {
@@ -110,7 +110,7 @@ const ProjectDetails = () => {
             case "documents":
                 return <Documents columns={documentColumns} data={documentData} setIsUploadModalOpen={setIsUploadModalOpen} />;
             case "info":
-                return <ProjectInfo projectId={projectId} />;
+                return <OrderInfo orderId={projectId} />;
             default:
                 return null;
         }
@@ -145,7 +145,7 @@ const ProjectDetails = () => {
                                         to={`${APP_ROUTES.APP.PROJECTS.EDIT}/${projectId}`}
                                         className="block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
                                     >
-                                        Edit Project
+                                        Edit Order
                                     </Link>
                                 </li>
                                 <li>
@@ -153,7 +153,7 @@ const ProjectDetails = () => {
                                         onClick={() => setIsDeleteModalOpen(true)}
                                         className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
                                     >
-                                        Delete Project
+                                        Delete Order
                                     </button>
                                 </li>
                                 <li>
@@ -161,7 +161,7 @@ const ProjectDetails = () => {
                                         onClick={() => setIsArchiveModalOpen(true)}
                                         className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
                                     >
-                                        Archive Project
+                                        Archive Order
                                     </button>
                                 </li>
                                 <li>
@@ -182,10 +182,10 @@ const ProjectDetails = () => {
             <ModalContainer
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
-                title="Delete Project Confirmation"
+                title="Delete Order Confirmation"
             >
                 <p className="text-text">
-                    Are you sure you want to delete this project? This action cannot be undone.
+                    Are you sure you want to delete this Order? This action cannot be undone.
                 </p>
                 <div className="flex justify-end mt-6 space-x-4">
                     <button
@@ -209,7 +209,7 @@ const ProjectDetails = () => {
                 title="Archive Project Confirmation"
             >
                 <p className="text-text">
-                    Are you sure you want to archive this project?
+                    Are you sure you want to archive this Order?
                 </p>
                 <div className="flex justify-end mt-6 space-x-4">
                     <button

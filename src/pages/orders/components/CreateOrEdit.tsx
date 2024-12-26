@@ -1,35 +1,32 @@
 import React, { useState, useEffect } from "react";
 import InputField from "../../../components/form/InputField.tsx";
-import DateField from "../../../components/form/DateField.tsx";
 import SelectField from "../../../components/form/SelectField.tsx";
 import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
 import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
 
-interface ProjectFormData {
+interface OrderFormData {
     name: string;
     description: string;
-    startDate: Date | null;
-    endDate: Date | null;
+    location: string;
     status: { label: string; value: string } | null;
     files: File[];
 }
 
-interface CreateOrEditProjectProps {
-    initialData?: ProjectFormData;
+interface CreateOrEditProps {
+    initialData?: OrderFormData;
     mode: "create" | "edit";
-    onSubmit: (formData: ProjectFormData) => void;
+    onSubmit: (formData: OrderFormData) => void;
 }
 
-const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit }) => {
-    const [formData, setFormData] = useState<ProjectFormData>({
+const CreateOrEdit: React.FC<CreateOrEditProps> = ({ initialData, mode, onSubmit }) => {
+    const [formData, setFormData] = useState<OrderFormData>({
         name: "",
         description: "",
-        startDate: null,
-        endDate: null,
+        location: "",
         status: { label: "Pending", value: "Pending" },
         files: [],
-        ...initialData, // Use initial data if provided
+        ...initialData,
     });
 
     const [errors, setErrors] = useState<ValidationError[]>([]);
@@ -45,10 +42,6 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     ) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-    };
-
-    const handleDateChange = (date: Date | null, field: keyof ProjectFormData) => {
-        setFormData({ ...formData, [field]: date });
     };
 
     const handleFileUpload = (uploadedFiles: File[]) => {
@@ -86,12 +79,12 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             onSubmit={handleSubmit}
         >
             <h2 className="text-3xl font-bold text-center text-text mb-6">
-                {mode === "create" ? "Create New Project" : "Edit Project"}
+                {mode === "create" ? "Create New Order" : "Edit Order"}
             </h2>
 
             <div>
                 <InputField
-                    label="Project Name"
+                    label="Order Name"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -113,35 +106,25 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 {getError("description") && <p className="text-red-500 text-sm mt-1">{getError("description")}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <DateField
-                        label="Start Date"
-                        selected={formData.startDate}
-                        onChange={(date) => handleDateChange(date, "startDate")}
-                        className="w-full"
-                    />
-                    {getError("startDate") && <p className="text-red-500 text-sm mt-1">{getError("startDate")}</p>}
-                </div>
-
-                <div>
-                    <DateField
-                        label="End Date"
-                        selected={formData.endDate}
-                        onChange={(date) => handleDateChange(date, "endDate")}
-                        className="w-full"
-                    />
-                    {getError("endDate") && <p className="text-red-500 text-sm mt-1">{getError("endDate")}</p>}
-                </div>
+            <div>
+                <InputField
+                    label="Location"
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="w-full"
+                />
+                {getError("location") && <p className="text-red-500 text-sm mt-1">{getError("location")}</p>}
             </div>
 
             <div>
                 <SelectField
                     label="Status"
                     options={[
-                        { label: "Pending", value: "Pending" },
-                        { label: "In Progress", value: "In Progress" },
-                        { label: "Completed", value: "Completed" },
+                        {label: "Pending", value: "Pending"},
+                        {label: "In Progress", value: "In Progress"},
+                        {label: "Completed", value: "Completed"},
                     ]}
                     value={formData.status}
                     onChange={handleSelectChange}
@@ -162,7 +145,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
             <div className="flex justify-center">
                 <Button
-                    text={mode === "create" ? "Create Project" : "Update Project"}
+                    text={mode === "create" ? "Create Order" : "Update Order"}
                     type="submit"
                     isSubmitting={false}
                 />
@@ -171,4 +154,4 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     );
 };
 
-export default CreateOrEditProject;
+export default CreateOrEdit;

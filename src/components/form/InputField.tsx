@@ -9,11 +9,13 @@ const InputField: React.FC<{
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     required?: boolean;
     className?: string;
-}> = ({ label, type, name, value, onChange, required = false, className }) => (
+    [x: string]: any; // For additional props
+}> = ({ label, type, name, value, onChange, required = false, className, ...props }) => (
     <div className={clsx("mb-4", className)}>
-        <label className="block text-text mb-2">{label}</label>
+        <label htmlFor={name} className="block text-text mb-2">{label}</label>
         {type === "textarea" ? (
             <textarea
+                id={name}
                 name={name}
                 value={value}
                 onChange={onChange}
@@ -21,9 +23,11 @@ const InputField: React.FC<{
                     "w-full p-2 border bg-background border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 )}
                 required={required}
+                {...props}
             />
         ) : (
             <input
+                id={name}
                 type={type}
                 name={name}
                 value={value}
@@ -32,6 +36,7 @@ const InputField: React.FC<{
                     "w-full p-2 border border-border bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 )}
                 required={required}
+                {...props}
             />
         )}
     </div>

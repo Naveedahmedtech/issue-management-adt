@@ -8,11 +8,11 @@ interface TabsProps {
 
 const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange }) => {
     return (
-        <div className="flex justify-center sm:justify-start space-x-4 mb-6 overflow-hidden">
+        <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-6">
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
-                    className={`relative px-6 py-3 font-medium transition-all rounded-t-lg ${
+                    className={`relative px-6 py-3 font-medium transition-all rounded-t-lg text-sm sm:text-base ${
                         activeTab === tab.id
                             ? "bg-backgroundShade1 text-primary"
                             : "bg-transparent text-textHover hover:text-primary"

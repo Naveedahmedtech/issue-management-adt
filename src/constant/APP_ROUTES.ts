@@ -1,6 +1,7 @@
 const BASE_ROUTES = {
   PROJECTS: "/projects",
   ORDERS: "/orders",
+  USERS: "/users",
 };
 const DASHBOARDS = {
   PROJECT: `${BASE_ROUTES.PROJECTS}-dashboard`,
@@ -20,6 +21,12 @@ export const APP_ROUTES = {
       CREATE: `${BASE_ROUTES.PROJECTS}/create`,
       EDIT: `${BASE_ROUTES.PROJECTS}/edit`,
     },
+    ORDERS: {
+      LIST: `${BASE_ROUTES.ORDERS}`, // Page to list all projects
+      DETAILS: `${BASE_ROUTES.ORDERS}/:orderId`, // Specific project details
+      CREATE: `${BASE_ROUTES.ORDERS}/create`,
+      EDIT: `${BASE_ROUTES.ORDERS}/edit`,
+    },
     PROFILE: "/profile", // Common for all roles
   },
   AUTH: {
@@ -31,7 +38,10 @@ export const APP_ROUTES = {
     ADD_ORDER: `${BASE_ROUTES.ORDERS}/add`, // Admin-specific action
   },
   SUPERADMIN: {
-    USER_MANAGEMENT: "/user-management", // Superadmin-specific action
+    USERS: {
+      MANAGEMENT: `${BASE_ROUTES.USERS}/management`,
+      CREATE: `${BASE_ROUTES.USERS}/create`,
+    },
   },
   WORKER: {
     MY_TASKS: "/my-tasks", // Worker-specific tasks

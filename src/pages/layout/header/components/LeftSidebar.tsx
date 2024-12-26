@@ -4,10 +4,12 @@ import { APP_NAME } from "../../../../constant/BASE_URL";
 import Text from "../../../../components/Text";
 import { links } from "../utils/navLinks";
 import { FaChevronDown, FaChevronRight, FaSignOutAlt } from "react-icons/fa";
-import { useLogoutMutation } from "../../../../redux/features/authApi";
+// import { useLogoutMutation } from "../../../../redux/features/authApi";
 import { APP_ROUTES } from "../../../../constant/APP_ROUTES";
 import ModalContainer from "../../../../components/modal/ModalContainer.tsx";
 import Button from "../../../../components/buttons/Button.tsx";
+import {updateUserData} from "../../../../redux/features/authSlice.ts";
+import {useDispatch} from "react-redux";
 
 interface LeftSidebarProps {
     toggleSidebar: () => void;
@@ -16,13 +18,16 @@ interface LeftSidebarProps {
 const LeftSidebar: React.FC<LeftSidebarProps> = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [logout, { isLoading }] = useLogoutMutation();
+    // const [logout, { isLoading }] = useLogoutMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const dispatch = useDispatch();
 
     const handleLogout = async () => {
         try {
-            await logout({}).unwrap();
+            // await logout({}).unwrap();
+            dispatch(updateUserData({ isLoggedIn: false }));
+
             navigate(APP_ROUTES.AUTH.SIGN_IN);
         } catch (error) {
             console.error("Failed to logout:", error);
@@ -101,10 +106,11 @@ const LeftSidebar: React.FC<LeftSidebarProps> = () => {
             {/* Logout Button */}
             <button
                 onClick={() => setIsModalOpen(true)}
-                className={`flex items-center space-x-2 mt-auto p-2 rounded-lg transition-all duration-300 text-text hover:bg-backgroundShade2 ${
-                    isLoading ? "opacity-50" : ""
-                }`}
-                disabled={isLoading}
+                className={`flex items-center space-x-2 mt-auto p-2 rounded-lg transition-all duration-300 text-text hover:bg-backgroundShade2`}
+                // className={`flex items-center space-x-2 mt-auto p-2 rounded-lg transition-all duration-300 text-text hover:bg-backgroundShade2 ${
+                //     isLoading ? "opacity-50" : ""
+                // }`}
+                // disabled={isLoading}
             >
                 <FaSignOutAlt className="text-2xl" />
                 <span className="hidden lg:block">Logout</span>
@@ -120,8 +126,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = () => {
                     Are you sure you want to log out? You will need to sign in again to access your account.
                 </p>
                 <div className="flex justify-end mt-4 space-x-4">
-                    <Button text={"Cancel"} onClick={() => setIsModalOpen(false)} preview={'secondary'} />
-                    <Button text={"Logout"} onClick={handleLogout} isSubmitting={isLoading} preview={'danger'} />
+                    <Button text={"Cancel"} onClick={() => setIsModalOpen(false)} preview={'secondary'} fullWidth={false} />
+                    <Button text={"Logout"} onClick={handleLogout}
+                            // isSubmitting={isLoading}
+                            preview={'danger'} fullWidth={false}  />
                 </div>
             </ModalContainer>
         </div>

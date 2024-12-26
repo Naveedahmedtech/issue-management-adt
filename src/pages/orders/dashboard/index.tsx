@@ -9,27 +9,27 @@ const Index: React.FC = () => {
         <div>
             <main className="p-4">
                 <h2 className="text-2xl font-bold mb-4 text-text">
-                    Welcome to Project Dashboard
+                    Welcome to Order Dashboard
                 </h2>
                 <section className="mb-6">
                     <h3 className="text-xl font-semibold text-text mb-4">Stats</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <StatCard
-                                title="Total Projects" value={10}
+                                title="Total Orders" value={10}
                                 color={"var(--color-text)"}
                             />
                             <StatCard
-                                title="Total Issues"
+                                title="Total Completed"
                                 value={5}
-                                color={"var(--color-text)"}
-                            />
-                            <StatCard
-                                title="Total Completed Issues" value={3}
                                 color="green"
                             />
                             <StatCard
-                                title="Total Issues Todo"
+                                title="Total In Progress"
                                 value={2}
+                                color={"var(--color-todo)"}
+                            />
+                            <StatCard
+                                title="Total Pending" value={3}
                                 color={"orange"}
                             />
                         </div>

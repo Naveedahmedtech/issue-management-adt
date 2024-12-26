@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Formik, Form, FormikHelpers } from 'formik';
 import InputField from '../../components/InputField';
 import { loginSchema } from '../../utils/formSchema';
@@ -12,7 +12,7 @@ import { useLoginMutation } from '../../redux/features/authApi';
 import { updateUserData } from '../../redux/features/authSlice';
 import { useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
-import { TitleText } from '../../utils/Common';
+import { TitleText } from '../../utils/Common.tsx';
 import Button from '../../components/buttons/Button';
 
 const SignIn = () => {
@@ -23,11 +23,12 @@ const SignIn = () => {
 
   const handleSubmit = useCallback(async (values: { email: string, password: string }, { setSubmitting }: FormikHelpers<{ email: string, password: string }>) => {
     try {
-      const loginData = {
-        ...values,
-      };
+      console.log("Values", values)
+      // const loginData = {
+      //   ...values,
+      // };
 
-      await loginUser(loginData).unwrap();
+      // await loginUser(loginData).unwrap();
       dispatch(updateUserData({ isLoggedIn: true }));
       navigate("/");
     } catch (error: any) {
@@ -41,21 +42,6 @@ const SignIn = () => {
       setSubmitting(false);
     }
   }, [loginUser, navigate, dispatch]);
-
-
-  useEffect(() => {
-    const fetchAwen = async () => {
-      try {
-        
-        const response = await fetch(`https://testing-dep-two.vercel.app/api/v1/auth`);
-        const data = await response.json();
-        console.log(data)
-      } catch (error) {
-       console.log("ERROR") 
-      }
-    }
-    fetchAwen();
-  }, [])
 
 
   return (

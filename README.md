@@ -30,3 +30,25 @@ npm install
 npm start
 
 application running on localhost:5173
+
+
+
+[//]: # (Understand the Requirements)
+
+[//]: # ()
+[//]: # (fonts change soft) ✅
+
+[//]: # (colors change ) ✅
+
+[//]: # (more action -- dropdown edit and delete or archieve)
+
+[//]: # (edit and delete isssues + File)
+
+[//]: # (add file) + (add actions for file)
+
+[//]: # (add files in issues... )
+
+[//]: # (login remvoe image)
+
+[//]: # (cards layout on sm screen &#40;Issues&#41;)
+

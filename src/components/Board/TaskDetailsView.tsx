@@ -1,0 +1,63 @@
+import React from "react";
+import Button from "../buttons/Button.tsx";
+import { renderFileIcon, formatDate } from "../../utils/TaskUtils.tsx";
+
+const TaskDetailsView: React.FC<{
+    task: any;
+    onEdit: () => void;
+    onClose: () => void;
+}> = ({ task, onEdit }) => {
+    return (
+        <div className="space-y-4">
+            <div>
+                <h4 className="text-lg font-bold text-primary mb-2">Title</h4>
+                <p className="text-text">{task.title}</p>
+            </div>
+            <div>
+                <h4 className="text-lg font-bold text-primary mb-2">Description</h4>
+                <p className="text-text">{task.description}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <h4 className="text-lg font-bold text-primary mb-2">Status</h4>
+                    <p className="text-text">{task.status}</p>
+                </div>
+                <div>
+                    <h4 className="text-lg font-bold text-primary mb-2">Dates</h4>
+                    <p>
+                        <strong>Start:</strong> {formatDate(task.startDate)}
+                    </p>
+                    <p>
+                        <strong>End:</strong> {formatDate(task.endDate)}
+                    </p>
+                </div>
+            </div>
+            <div>
+                <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
+                <ul className="space-y-2">
+                    {task.files?.map((file: any, index: number) => (
+                        <li key={index} className="flex items-center space-x-2">
+                            {renderFileIcon(file.type)}
+                            <a
+                                href={file.url}
+                                rel="noopener noreferrer"
+                                className="text-text hover:underline"
+                            >
+                                {file.name}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div className="flex justify-end space-x-4 mt-6">
+                <Button
+                    text="Edit Task"
+                    onClick={onEdit}
+                    fullWidth={false}
+                />
+            </div>
+        </div>
+    );
+};
+
+export default TaskDetailsView;

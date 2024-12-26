@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import CommonHeader from '../components/auth/CommonHeader';
 import image from "../../assets/images/auth/image.png";
 import { AdditionalBody } from './utils/common';
-import { TitleText } from '../../utils/Common';
+import { TitleText } from '../../utils/Common.tsx';
 import Button from '../../components/buttons/Button';
 
 
