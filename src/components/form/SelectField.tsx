@@ -47,13 +47,13 @@ const SelectField: React.FC<{
                     ...provided,
                     backgroundColor: 'var(--color-background-shade-1)', // Background color for dropdown menu
                 }),
-                option: (provided) => ({
+                option: (provided:any) => ({
                     ...provided,
                     backgroundColor: 'var(--color-background-shade-1)',
                     color: 'var(--color-text)',
                     cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: 'var(--color-background)', // Hover background color
+                        backgroundColor: 'var(--color-primary)', // Hover background color
                         color: 'var(--color-text)', // Hover text color
                     },
                 }),

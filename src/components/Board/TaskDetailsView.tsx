@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../buttons/Button.tsx";
+import ModalContainer from "../modal/ModalContainer.tsx";
 import { renderFileIcon, formatDate } from "../../utils/TaskUtils.tsx";
 
 const TaskDetailsView: React.FC<{
     task: any;
     onEdit: () => void;
+    onDelete: () => void;
     onClose: () => void;
-}> = ({ task, onEdit }) => {
+}> = ({ task, onEdit, onDelete }) => {
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const handleDelete = () => {
+        setIsDeleteModalOpen(false);
+        onDelete();
+    };
+
     return (
         <div className="space-y-4">
             <div>
@@ -51,11 +60,38 @@ const TaskDetailsView: React.FC<{
             </div>
             <div className="flex justify-end space-x-4 mt-6">
                 <Button
-                    text="Edit Task"
+                    text="Edit"
                     onClick={onEdit}
                     fullWidth={false}
+                    className="bg-primary text-white"
+                />
+                <Button
+                    text="Delete"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    fullWidth={false}
+                    preview={'danger'}
                 />
             </div>
+
+            {isDeleteModalOpen && (
+                <ModalContainer
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    title="Delete Issue Confirmation"
+                >
+                    <p className="text-text">
+                        Are you sure you want to delete this task? This action cannot be undone.
+                    </p>
+                    <div className="flex justify-end mt-6 space-x-4">
+                        <Button
+                            text="Delete"
+                            onClick={handleDelete}
+                            fullWidth={false}
+                            preview={'danger'}
+                        />
+                    </div>
+                </ModalContainer>
+            )}
         </div>
     );
 };

@@ -130,7 +130,7 @@ export const getUserManagementColumns = (
     label: "Actions",
     render: (row: User) => (
         <div className="flex space-x-2">
-          <button className="text-todo" onClick={() => handleEditUser(row)}>
+          <button className="text-primary" onClick={() => handleEditUser(row)}>
             Edit
           </button>
           <button className="text-error" onClick={() => handleDeleteUser(row.id)}>

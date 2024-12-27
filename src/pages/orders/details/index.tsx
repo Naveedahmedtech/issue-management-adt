@@ -11,6 +11,7 @@ import { projectDocumentColumns } from "../../../utils/Common.tsx";
 import { projectDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import Button from "../../../components/buttons/Button.tsx";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -188,18 +189,11 @@ const ProjectDetails = () => {
                     Are you sure you want to delete this Order? This action cannot be undone.
                 </p>
                 <div className="flex justify-end mt-6 space-x-4">
-                    <button
-                        onClick={() => setIsDeleteModalOpen(false)}
-                        className="px-4 py-2 bg-backgroundShade2 rounded-md hover:bg-backgroundShade1"
-                    >
-                        Cancel
-                    </button>
-                    <button
+                    <Button
+                        text={'Delete'}
                         onClick={handleDelete}
-                        className="px-4 py-2 bg-error rounded-md"
-                    >
-                        Delete
-                    </button>
+                        preview={'danger'}
+                    />
                 </div>
             </ModalContainer>
 
@@ -212,18 +206,11 @@ const ProjectDetails = () => {
                     Are you sure you want to archive this Order?
                 </p>
                 <div className="flex justify-end mt-6 space-x-4">
-                    <button
-                        onClick={() => setIsArchiveModalOpen(false)}
-                        className="px-4 py-2 bg-backgroundShade2 rounded-md hover:bg-backgroundShade1"
-                    >
-                        Cancel
-                    </button>
-                    <button
+                    <Button
+                        text={'Archive'}
                         onClick={handleArchive}
-                        className="px-4 py-2 bg-primary rounded-md"
-                    >
-                        Archive
-                    </button>
+                        fullWidth={false}
+                    />
                 </div>
             </ModalContainer>
 
@@ -239,18 +226,11 @@ const ProjectDetails = () => {
                     className="mb-4"
                 />
                 <div className="flex justify-end mt-6 space-x-4">
-                    <button
-                        onClick={() => setIsUploadModalOpen(false)}
-                        className="px-4 py-2 bg-backgroundShade2 rounded-md hover:bg-backgroundShade1"
-                    >
-                        Cancel
-                    </button>
-                    <button
+                    <Button
+                        text={'Upload'}
                         onClick={handleUploadSubmit}
-                        className="px-4 py-2 bg-primary rounded-md text-white"
-                    >
-                        Upload
-                    </button>
+                    />
+
                 </div>
             </ModalContainer>
         </main>

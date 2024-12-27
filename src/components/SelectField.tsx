@@ -57,8 +57,8 @@ const SelectField: React.FC<ISelectFieldProps> = ({ label, options, name, value,
                     }),
                     option: (base, state) => ({
                         ...base,
-                        color: state.isSelected ? 'var(--color-text-hover)' : 'var(--color-text)',
-                        backgroundColor: state.isFocused ? 'var(--color-hover)' : 'var(--color-background)',
+                        color: state.isSelected ? 'var(--color-text-primary)' : 'var(--color-text)',
+                        backgroundColor: state.isFocused ? 'var(--color-primary)' : 'var(--color-background)',
                     }),
                 }}
             />
