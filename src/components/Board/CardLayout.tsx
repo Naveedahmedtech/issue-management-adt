@@ -1,7 +1,6 @@
 import Button from "../buttons/Button.tsx";
 import TaskModal from "../modal/TaskModal.tsx";
 import TaskCard from "./TaskCard.tsx";
-import {useState} from "react";
 
 const CardLayout = ({
                         handleFilterChange,
@@ -11,10 +10,12 @@ const CardLayout = ({
                         selectedTask,
                         setIsModalOpen,
                         groupedTasks,
+                        setIsEditMode,
+                        isEditMode,
+                        component
                     }: any) => {
     // Determine sections to show based on the active filter
     const sectionsToShow = activeFilter === "All" ? Object.keys(groupedTasks) : [activeFilter];
-    const [isEditMode, setIsEditMode] = useState(false);
 
     return (
         <div className="">
@@ -51,7 +52,11 @@ const CardLayout = ({
                     isEditMode={isEditMode}
                     setIsEditMode={setIsEditMode}
                     onSave={() => {}}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={() => {
+                        setIsEditMode(false);
+                        setIsModalOpen(false);
+                    }}
+                    component={component}
                 />
             )}
         </div>

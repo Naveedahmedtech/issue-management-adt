@@ -88,7 +88,7 @@ const TaskEditForm: React.FC<{
                         accept="application/pdf, application/vnd.ms-excel"
                         className="w-full"
                     />
-                    <div className="flex justify-end space-x-4 sticky bottom-0 bg-backgroundShade1 py-4">
+                    <div className="flex justify-end space-x-4 sticky bottom-0  py-4">
                         <Button
                             text="Save Changes"
                             type="submit"

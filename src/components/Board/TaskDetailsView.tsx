@@ -8,7 +8,8 @@ const TaskDetailsView: React.FC<{
     onEdit: () => void;
     onDelete: () => void;
     onClose: () => void;
-}> = ({ task, onEdit, onDelete }) => {
+    component: string;
+}> = ({ task, onEdit, onDelete, component }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const handleDelete = () => {
@@ -77,10 +78,10 @@ const TaskDetailsView: React.FC<{
                 <ModalContainer
                     isOpen={isDeleteModalOpen}
                     onClose={() => setIsDeleteModalOpen(false)}
-                    title="Delete Issue Confirmation"
+                    title={`Delete ${component === "order" ? "Order" : "Issue"} Confirmation`}
                 >
                     <p className="text-text">
-                        Are you sure you want to delete this task? This action cannot be undone.
+                        Are you sure you want to delete this {component === "order" ? "Order" : "Issue"} ? This action cannot be undone.
                     </p>
                     <div className="flex justify-end mt-6 space-x-4">
                         <Button

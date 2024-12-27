@@ -9,7 +9,8 @@ const TaskModal: React.FC<{
     setIsEditMode: (value: boolean) => void;
     onSave: (updatedTask: any) => void;
     onClose: () => void;
-}> = ({ task, isEditMode, setIsEditMode, onClose }) => {
+    component: string;
+}> = ({ task, isEditMode, setIsEditMode, onClose, component }) => {
     const [editableTask] = useState(task);
     //
     const handleSave = () => {
@@ -21,7 +22,7 @@ const TaskModal: React.FC<{
         <ModalContainer
             isOpen={!!task}
             onClose={onClose}
-            title={isEditMode ? "Edit Issue" : "Task Details"}
+            title={isEditMode ? `Edit ${component === "order" ? "Order" : "Issue"}` : `${component === "order" ? "Order" : "Issue"} Details`}
         >
             {isEditMode ? (
                 <TaskEditForm
@@ -35,7 +36,8 @@ const TaskModal: React.FC<{
                     task={task}
                     onEdit={() => setIsEditMode(true)}
                     onClose={onClose}
-                    onDelete={() => console.log("Delete Task")}
+                    onDelete={onClose}
+                    component={component}
                 />
             )}
         </ModalContainer>
