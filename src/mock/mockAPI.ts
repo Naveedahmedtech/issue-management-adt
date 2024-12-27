@@ -92,7 +92,7 @@ export const mockFetchUsers = (): Promise<User[]> => {
                     id: "1",
                     email: "admin@example.com",
                     password: "password123",
-                    role: "Admin",
+                    role: "ADMIN",
                     permissions: ["CREATE_PROJECT", "EDIT_PROJECT", "DELETE_PROJECT", "READ_PROJECT"],
                 },
                 {
