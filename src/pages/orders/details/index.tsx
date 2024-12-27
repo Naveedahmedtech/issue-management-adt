@@ -3,15 +3,16 @@ import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import OrderInfo from "../components/OrderInfo.tsx";
-import TaskTable from "../../../components/Board/TaskTable"; // New table component
 import { Link, useParams } from "react-router-dom";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
-import { projectDocumentColumns } from "../../../utils/Common.tsx";
-import { projectDocumentData } from "../../../mock/tasks.ts";
+import { orderDocumentColumns } from "../../../utils/Common.tsx";
+import { orderDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
+import CardLayout from "../../../components/Board/CardLayout.tsx";
+import {fetchMockProject} from "../../../mock/mockAPI.ts";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -34,8 +35,38 @@ const ProjectDetails = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-    const [documentData] = useState(projectDocumentData);
+    const [documentData] = useState(orderDocumentData);
+    const [isEditMode, setIsEditMode] = useState(false);
 
+    const [tasks, setTasks] = useState<any>([]);
+    const [filteredTasks, setFilteredTasks] = useState<any>([]);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            const data = await fetchMockProject();
+            const allTasks = data.columns.flatMap((column) => column.tasks);
+            setTasks(allTasks);
+            setFilteredTasks(allTasks); // Initialize with all tasks
+        };
+        fetchTasks();
+    }, []);
+
+    const handleFilterChange = (status: string) => {
+        setActiveFilter(status);
+        if (status === "All") {
+            setFilteredTasks(tasks);
+        } else {
+            setFilteredTasks(tasks.filter((task:any) => task.status === status));
+        }
+    };
+
+    const handleViewTask = (task: any) => {
+        setSelectedTask(task);
+        setIsModalOpen(true);
+    };
     const handleAnnotateFile = (file: any) => {
         console.log("Annotating file:", file);
         // Add logic for file annotation
@@ -46,7 +77,7 @@ const ProjectDetails = () => {
         // Add logic for file signing
     };
 
-    const documentColumns = projectDocumentColumns(handleAnnotateFile, handleSignFile);
+    const documentColumns = orderDocumentColumns(handleAnnotateFile, handleSignFile);
     const [windowWidth] = useWindowSize();
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
 
@@ -103,11 +134,26 @@ const ProjectDetails = () => {
             document.removeEventListener("mousedown", handleOutsideClick);
         };
     }, [dropdownOpen]);
-
+    const groupedTasks = {
+        "To Do": filteredTasks.filter((task:any) => task.status === "To Do"),
+        "In Progress": filteredTasks.filter((task:any) => task.status === "In Progress"),
+        "Done": filteredTasks.filter((task:any) => task.status === "Completed"),
+    };
     const renderActiveTab = () => {
         switch (activeTab) {
             case "board":
-                return isSmallScreen ? <TaskTable projectId={projectId} /> : <Board />;
+                return isSmallScreen ? <CardLayout
+                    handleFilterChange={handleFilterChange}
+                    activeFilter={activeFilter}
+                    handleViewTask={handleViewTask}
+                    isModalOpen={isModalOpen}
+                    selectedTask={selectedTask}
+                    setIsModalOpen={setIsModalOpen}
+                    groupedTasks={groupedTasks}
+                    isEditMode={isEditMode}
+                    setIsEditMode={setIsEditMode}
+                    component={'order'}
+                />  : <Board />;
             case "documents":
                 return <Documents columns={documentColumns} data={documentData} setIsUploadModalOpen={setIsUploadModalOpen} />;
             case "info":
@@ -129,7 +175,7 @@ const ProjectDetails = () => {
 
     return (
         <main className="p-6">
-            <div className="flex flex-wrap justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-4">
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
                 <div ref={dropdownRef} className="relative">
                     <button
