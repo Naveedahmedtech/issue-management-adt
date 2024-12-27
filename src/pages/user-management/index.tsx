@@ -16,8 +16,10 @@ const UserManagement: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for delete modal
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null); // User to be deleted
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -42,9 +44,18 @@ const UserManagement: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDeleteUser = (userId: string) => {
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-        setFilteredUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+    const handleDeleteClick = (user: any) => {
+        setUserToDelete(user);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDeleteUser = () => {
+        if (userToDelete) {
+            setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
+            setFilteredUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
+        }
+        setIsDeleteModalOpen(false);
+        setUserToDelete(null);
     };
 
     const handleModalSubmit = (user: User) => {
@@ -59,7 +70,7 @@ const UserManagement: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    const columns = getUserManagementColumns(handleEditUser, handleDeleteUser);
+    const columns = getUserManagementColumns(handleEditUser, handleDeleteClick);
 
     return (
         <div className="p-6">
@@ -80,6 +91,7 @@ const UserManagement: React.FC = () => {
             </div>
             <Table columns={columns} data={filteredUsers} />
 
+            {/* Edit Modal */}
             {isModalOpen && (
                 <ModalContainer
                     isOpen={isModalOpen}
@@ -132,19 +144,34 @@ const UserManagement: React.FC = () => {
                             />
                             <div className="flex justify-end space-x-4 mt-4">
                                 <Button
-                                    text="Cancel"
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    fullWidth={false}
-                                />
-                                <Button
                                     text="Update"
                                     type="submit"
-                                    fullWidth={false}
+                                    fullWidth
                                 />
                             </div>
                         </Form>
                     </Formik>
+                </ModalContainer>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <ModalContainer
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    title="Delete Confirmation"
+                >
+                    <p className="text-text">
+                        Are you sure you want to delete this user? This action cannot be undone.
+                    </p>
+                    <div className="flex justify-end space-x-4 mt-4">
+                        <Button
+                            text="Delete"
+                            onClick={confirmDeleteUser}
+                            preview="danger"
+                            fullWidth={false}
+                        />
+                    </div>
                 </ModalContainer>
             )}
         </div>
