@@ -8,7 +8,7 @@ const TaskDetailsView: React.FC<{
     onEdit: () => void;
     onDelete: () => void;
     onClose: () => void;
-    component: string;
+    component?: string;
 }> = ({ task, onEdit, onDelete, component }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 

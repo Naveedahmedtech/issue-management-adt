@@ -44,7 +44,7 @@ const UserManagement: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = (user: User) => {
+    const handleDeleteClick = (user: any) => {
         setUserToDelete(user);
         setIsDeleteModalOpen(true);
     };

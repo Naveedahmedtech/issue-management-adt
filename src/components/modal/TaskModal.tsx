@@ -9,7 +9,7 @@ const TaskModal: React.FC<{
     setIsEditMode: (value: boolean) => void;
     onSave: (updatedTask: any) => void;
     onClose: () => void;
-    component: string;
+    component?: string;
 }> = ({ task, isEditMode, setIsEditMode, onClose, component }) => {
     const [editableTask] = useState(task);
     //
