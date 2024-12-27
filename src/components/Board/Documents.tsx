@@ -9,7 +9,6 @@ const Documents = ({columns, data}: {columns: any, data: any, setIsUploadModalOp
     return (
         <div className="bg-background min-h-screen">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-                <h1 className="text-xl font-bold text-text mb-4 sm:mb-0">Project Documents</h1>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center w-full sm:w-auto">
                     {/*<button className="px-4 py-2 bg-primary rounded-md w-full sm:w-auto" onClick={() => setIsUploadModalOpen(true)}>Add File</button>*/}
                     <div className="relative w-full sm:w-auto">

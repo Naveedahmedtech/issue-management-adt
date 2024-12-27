@@ -99,8 +99,8 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                     }),
                     option: (base, { isFocused }) => ({
                         ...base,
-                        backgroundColor: isFocused ? 'var(--color-hover)' : 'var(--color-background)',
-                        color: isFocused ? 'var(--color-text-hover)' : 'var(--color-text)',
+                        backgroundColor: isFocused ? 'var(--color-primary)' : 'var(--color-background)',
+                        color: isFocused ? 'var(--color-text)' : 'var(--color-text)',
                     }),
                     singleValue: (base) => ({
                         ...base,

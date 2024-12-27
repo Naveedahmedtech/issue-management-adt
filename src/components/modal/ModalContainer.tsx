@@ -10,12 +10,12 @@ interface ModalContainerProps {
 }
 
 const ModalContainer: React.FC<ModalContainerProps> = ({
-    isOpen,
-    onClose,
-    children,
-    title,
-    width = 'max-w-lg',
-}) => {
+                                                           isOpen,
+                                                           onClose,
+                                                           children,
+                                                           title,
+                                                           width = 'max-w-lg',
+                                                       }) => {
     const modalRef = useRef<HTMLDivElement>(null);
 
     // Close modal when clicking outside of the modal content
@@ -36,8 +36,14 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div ref={modalRef} className={`bg-background p-6 rounded-lg shadow-lg relative w-full ${width}`}>
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+            {/* Background with blur */}
+            <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+            <div
+                ref={modalRef}
+                className={`relative bg-background p-6 rounded-lg shadow-xl w-full ${width} transition-all transform duration-300 scale-95`}
+            >
+                {/* Modal Header */}
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-text text-xl font-semibold">{title}</h2>
                     <button
@@ -48,7 +54,8 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
                     </button>
                 </div>
 
-                <div className="overflow-auto max-h-[80vh] text-text px-4 py-2 space-y-4">
+                {/* Modal Content */}
+                <div className="overflow-auto max-h-[70vh] text-text px-4 py-2 space-y-4">
                     {children}
                 </div>
             </div>

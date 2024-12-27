@@ -79,6 +79,14 @@ export const links = [
     ],
   },
   {
+    url: APP_ROUTES.APP.ORDERS.CREATE,
+    Icon: FaPlus,
+    text: "Create Order",
+    roles: [ROLES.ADMIN],
+    className:
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+  },
+  {
     url: APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT,
     Icon: FaUser,
     text: "User Management",

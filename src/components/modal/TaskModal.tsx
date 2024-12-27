@@ -35,6 +35,7 @@ const TaskModal: React.FC<{
                     task={task}
                     onEdit={() => setIsEditMode(true)}
                     onClose={onClose}
+                    onDelete={() => console.log("Delete Task")}
                 />
             )}
         </ModalContainer>

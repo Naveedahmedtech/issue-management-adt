@@ -3,7 +3,6 @@ import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
-import TaskTable from "../../../components/Board/TaskTable"; // New table component
 import { Link, useParams } from "react-router-dom";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
@@ -11,6 +10,9 @@ import { projectDocumentColumns } from "../../../utils/Common.tsx";
 import { projectDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import Button from "../../../components/buttons/Button.tsx";
+import {fetchMockProject} from "../../../mock/mockAPI.ts";
+import CardLayout from "../../../components/Board/CardLayout.tsx";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -34,6 +36,37 @@ const ProjectDetails = () => {
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
     const [documentData] = useState(projectDocumentData);
+
+
+    const [tasks, setTasks] = useState<any>([]);
+    const [filteredTasks, setFilteredTasks] = useState<any>([]);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            const data = await fetchMockProject();
+            const allTasks = data.columns.flatMap((column) => column.tasks);
+            setTasks(allTasks);
+            setFilteredTasks(allTasks); // Initialize with all tasks
+        };
+        fetchTasks();
+    }, []);
+
+    const handleFilterChange = (status: string) => {
+        setActiveFilter(status);
+        if (status === "All") {
+            setFilteredTasks(tasks);
+        } else {
+            setFilteredTasks(tasks.filter((task:any) => task.status === status));
+        }
+    };
+
+    const handleViewTask = (task: any) => {
+        setSelectedTask(task);
+        setIsModalOpen(true);
+    };
 
     const handleAnnotateFile = (file: any) => {
         console.log("Annotating file:", file);
@@ -103,10 +136,25 @@ const ProjectDetails = () => {
         };
     }, [dropdownOpen]);
 
+    const groupedTasks = {
+        "To Do": filteredTasks.filter((task:any) => task.status === "To Do"),
+        "In Progress": filteredTasks.filter((task:any) => task.status === "In Progress"),
+        "Done": filteredTasks.filter((task:any) => task.status === "Completed"),
+    };
+
     const renderActiveTab = () => {
         switch (activeTab) {
             case "board":
-                return isSmallScreen ? <TaskTable projectId={projectId} /> : <Board />;
+                // return isSmallScreen ? <TaskTable projectId={projectId} /> : <Board />;
+                 return isSmallScreen ?       <CardLayout
+                     handleFilterChange={handleFilterChange}
+                     activeFilter={activeFilter}
+                     handleViewTask={handleViewTask}
+                     isModalOpen={isModalOpen}
+                     selectedTask={selectedTask}
+                     setIsModalOpen={setIsModalOpen}
+                     groupedTasks={groupedTasks}
+                 /> : <Board />;
             case "documents":
                 return <Documents columns={documentColumns} data={documentData} setIsUploadModalOpen={setIsUploadModalOpen} />;
             case "info":
@@ -188,18 +236,12 @@ const ProjectDetails = () => {
                     Are you sure you want to delete this project? This action cannot be undone.
                 </p>
                 <div className="flex justify-end mt-6 space-x-4">
-                    <button
-                        onClick={() => setIsDeleteModalOpen(false)}
-                        className="px-4 py-2 bg-backgroundShade2 rounded-md hover:bg-backgroundShade1"
-                    >
-                        Cancel
-                    </button>
-                    <button
+                    <Button
+                        text={'Delete'}
                         onClick={handleDelete}
-                        className="px-4 py-2 bg-error rounded-md"
-                    >
-                        Delete
-                    </button>
+                        preview={'danger'}
+                        fullWidth={false}
+                    />
                 </div>
             </ModalContainer>
 
@@ -212,18 +254,11 @@ const ProjectDetails = () => {
                     Are you sure you want to archive this project?
                 </p>
                 <div className="flex justify-end mt-6 space-x-4">
-                    <button
-                        onClick={() => setIsArchiveModalOpen(false)}
-                        className="px-4 py-2 bg-backgroundShade2 rounded-md hover:bg-backgroundShade1"
-                    >
-                        Cancel
-                    </button>
-                    <button
+                    <Button
+                        text={'Archive'}
                         onClick={handleArchive}
-                        className="px-4 py-2 bg-primary rounded-md"
-                    >
-                        Archive
-                    </button>
+                        fullWidth={false}
+                    />
                 </div>
             </ModalContainer>
 
@@ -239,18 +274,11 @@ const ProjectDetails = () => {
                     className="mb-4"
                 />
                 <div className="flex justify-end mt-6 space-x-4">
-                    <button
-                        onClick={() => setIsUploadModalOpen(false)}
-                        className="px-4 py-2 bg-backgroundShade2 rounded-md hover:bg-backgroundShade1"
-                    >
-                        Cancel
-                    </button>
-                    <button
+                    <Button
+                        text={'Upload'}
                         onClick={handleUploadSubmit}
-                        className="px-4 py-2 bg-primary rounded-md text-white"
-                    >
-                        Upload
-                    </button>
+                    />
+
                 </div>
             </ModalContainer>
         </main>

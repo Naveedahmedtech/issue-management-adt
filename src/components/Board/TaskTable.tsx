@@ -1,18 +1,31 @@
 import React, { useEffect, useState } from "react";
 import Table from "../Table";
 import SelectField from "../SelectField";
-import ModalContainer from "../modal/ModalContainer";
 import { format } from "date-fns";
 import { fetchMockProject } from "../../mock/mockAPI";
 import { AiOutlineEye } from "react-icons/ai";
 import {ITask} from "../../types/types.ts";
+import TaskModal from "../modal/TaskModal.tsx";
 
 
 
 const TaskTable: React.FC<{ projectId: string | undefined }> = () => {
     const [tasks, setTasks] = useState<ITask[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [isEditMode, setIsEditMode] = useState(false);
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+
+
+    const handleCloseModal = () => {
+        setSelectedTask(null);
+        setIsEditMode(false);
+    };
+
+    const handleSave = (updatedTask: ITask) => {
+        console.log("Updated Task:", updatedTask);
+        setSelectedTask(updatedTask);
+    };
 
     useEffect(() => {
         const loadProject = async () => {
@@ -108,19 +121,13 @@ const TaskTable: React.FC<{ projectId: string | undefined }> = () => {
         <>
             <Table columns={columns} data={tasks} />
             {isModalOpen && selectedTask && (
-                <ModalContainer
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    title="Task Details"
-                >
-                    <div>
-                        <p><strong>Title:</strong> {selectedTask.title}</p>
-                        <p><strong>Description:</strong> {selectedTask.description}</p>
-                        <p><strong>Status:</strong> {selectedTask.status}</p>
-                        <p><strong>Start Date:</strong> {format(new Date(selectedTask.startDate), "MMM dd, yyyy")}</p>
-                        <p><strong>End Date:</strong> {format(new Date(selectedTask.endDate), "MMM dd, yyyy")}</p>
-                    </div>
-                </ModalContainer>
+                <TaskModal
+                    task={selectedTask}
+                    isEditMode={isEditMode}
+                    setIsEditMode={setIsEditMode}
+                    onSave={handleSave}
+                    onClose={handleCloseModal}
+                />
             )}
         </>
     );
