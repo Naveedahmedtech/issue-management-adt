@@ -1,52 +1,24 @@
-import { format } from "date-fns";
+import {DocumentDataRow} from "../types/types.ts";
 
-export const priorityOptions = [
-  { value: "LOW", label: "Low" },
-  { value: "MEDIUM", label: "Medium" },
-  { value: "HIGH", label: "High" },
+export const projectDocumentData: DocumentDataRow[] = [
+  { id: 1, fileName: "adobefile.pdf", date: "16/12/2024", type: "PDF" },
+  { id: 2, fileName: "report.docx", date: "16/12/2024", type: "Word" },
+  { id: 3, fileName: "data.xlsx", date: "16/12/2024", type: "Excel" },
+  { id: 4, fileName: "notes.txt", date: "16/12/2024", type: "Text" },
+  { id: 5, fileName: "adobefile.pdf", date: "16/12/2024", type: "PDF" },
+  { id: 6, fileName: "report.docx", date: "16/12/2024", type: "Word" },
+  { id: 7, fileName: "data.xlsx", date: "16/12/2024", type: "Excel" },
+  { id: 8, fileName: "notes.txt", date: "16/12/2024", type: "Text" },
 ];
 
-export const statusOptions = [
-  { value: "IN_PROGRESS", label: "In Progress" },
-  { value: "PENDING", label: "Pending" },
-  { value: "COMPLETED", label: "Completed" },
-];
 
-
-export const recentTasks = [
-  {
-    id: 1,
-    title: "Task 1",
-    description:
-      "Complete the report for the quarterly financials, ensuring all data is accurate and verified before submission to the management team for review.",
-    status: "In Progress",
-    priority: "High",
-    dueDate: format(new Date("2024-12-15"), "yyyy-MM-dd"), // Example due date
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    description:
-      "Prepare presentation slides for the annual performance review.",
-    status: "Pending",
-    priority: "Medium",
-    dueDate: format(new Date("2024-11-20"), "yyyy-MM-dd"),
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    description:
-      "Follow up with the marketing team on the new campaign launch and gather feedback.",
-    status: "Completed",
-    priority: "Low",
-    dueDate: format(new Date("2024-11-10"), "yyyy-MM-dd"),
-  },
-  {
-    id: 4,
-    title: "Task 4",
-    description: "Draft the technical documentation for the new API release.",
-    status: "In Progress",
-    priority: "Critical",
-    dueDate: format(new Date("2024-11-25"), "yyyy-MM-dd"),
-  },
+export const orderDocumentData: DocumentDataRow[] = [
+  { id: 1, fileName: "adobefile.pdf", date: "16/12/2024", type: "PDF", location: "Folder A", status: "Approved" },
+  { id: 2, fileName: "report.docx", date: "16/12/2024", type: "Word", location: "Folder B", status: "Pending" },
+  { id: 3, fileName: "data.xlsx", date: "16/12/2024", type: "Excel", location: "Folder C", status: "Rejected" },
+  { id: 4, fileName: "notes.txt", date: "16/12/2024", type: "Text", location: "Folder D", status: "Approved" },
+  { id: 5, fileName: "adobefile.pdf", date: "16/12/2024", type: "PDF", location: "Folder A", status: "Pending" },
+  { id: 6, fileName: "report.docx", date: "16/12/2024", type: "Word", location: "Folder B", status: "Approved" },
+  { id: 7, fileName: "data.xlsx", date: "16/12/2024", type: "Excel", location: "Folder C", status: "Pending" },
+  { id: 8, fileName: "notes.txt", date: "16/12/2024", type: "Text", location: "Folder D", status: "Rejected" },
 ];

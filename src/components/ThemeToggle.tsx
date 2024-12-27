@@ -1,27 +1,21 @@
+import React from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
-const ThemeToggle = () => {
+const ThemeToggle: React.FC = () => {
     const { theme, toggleTheme } = useTheme();
 
     return (
-        <div className="flex items-center justify-center space-x-2">
-            <span className={`font-semibold ${theme === 'dark' ? 'text-text' : 'text-gray-700'}`}>
-                {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
-            </span>
-            <button
-                onClick={toggleTheme}
-                className={`relative w-16 h-6 rounded-full border transition-all duration-500 ease-in-out focus:outline-none ${theme === 'dark' ? 'bg-background border-primary' : 'bg-background border-border'
-                    }`}
-                aria-label="Toggle theme"
-            >
-                {/* Sliding button */}
-                <div
-                    className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full transition-transform duration-500 ease-in-out transform ${theme === 'dark'
-                            ? 'translate-x-10  bg-hover shadow-md'
-                            : 'translate-x-2 bg-background shadow-sm'
-                        }`}
-                ></div>
-            </button>
+        <div
+            onClick={toggleTheme}
+            className="fixed bottom-6 right-6 z-50 bg-surface border border-border text-text-primary p-3 rounded-full shadow-lg hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all cursor-pointer"
+            aria-label="Toggle Theme"
+        >
+            {theme === 'dark' ? (
+                <FaSun className="w-5 h-5" />
+            ) : (
+                <FaMoon className="w-5 h-5" />
+            )}
         </div>
     );
 };

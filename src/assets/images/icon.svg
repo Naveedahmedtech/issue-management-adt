@@ -15,7 +15,7 @@
         text-anchor="middle"
         dominant-baseline="middle"
     >
-        N
+        IM
     </text>
     <path
         d="M32 2C15.43 2 2 15.43 2 32s13.43 30 30 30 30-13.43 30-30S48.57 2 32 2zm0 58C17.82 60 4 46.18 4 32S17.82 4 32 4s28 13.82 28 28-13.82 28-28 28z"

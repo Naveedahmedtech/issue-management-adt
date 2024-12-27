@@ -50,26 +50,6 @@ export interface ITitleText {
   text: string;
 }
 
-export interface Post {
-  id: string;
-  author: {
-    username: string;
-    image: string | null;
-  };
-  image: {
-    url: string;
-    caption: string | undefined;
-    public_id: string;
-  };
-  content: string;
-  hashtags: string[];
-  likesCount: number;
-  commentCount: number;
-  isLikedByCurrentUser: boolean;
-  isSavedByCurrentUser: boolean;
-  createdAt: Date;
-}
-
 export interface FormikSelectProps {
   name: string;
   options: { value: string; label: string }[];
@@ -84,59 +64,40 @@ export interface SingleSelectProps {
   label: string;
 }
 export type Status = "In Progress" | "Pending" | "Completed";
-export type Priority = "High" | "Medium" | "Low";
 
-export interface Task {
-  id: string | number;
-  title: string;
-  description: string;
-  status: any;
-  priority: any;
-  [key: string]: any;
-  dueData: string | null;
-}
-export interface Option {
-  value: string;
-  label: string;
+
+
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  role: string;
+  permissions: string[];
 }
 
 
-export interface TasksTableProps {
-  tasks: Task[];
-  onUpdate?: () => void;
-}
-
-export interface TaskModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  task: Task;
-  isEditing: boolean;
-  handleUpdate: any;
-  refetch?: () => void;
-}
-
-export interface TaskDropdownProps {
-  task: Task;
-  type: "status" | "priority";
-  handleUpdate: (updatedTask: Task) => void;
-}
-export interface TaskModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  task: Task;
-  isEditing: boolean;
-  handleUpdate: any;
-}
-
-export interface TaskFormValues {
+export interface ITask {
+  id: string;
   title: string;
   description: string;
   status: string;
-  priority: string;
-  dueDate: Date | null | string;
+  startDate: string; // Assuming dates are passed as ISO strings
+  endDate: string;
+  files: any[];
 }
 
-export interface TaskFormProps {
-  task: TaskFormValues;
-  onSubmit: (values: TaskFormValues) => void;
+export interface TaskProps {
+  task: ITask;
+  index: number;
+  onClick: (task: ITask) => void; // Callback to open modal with task details
+}
+export type FileType = "PDF" | "Word" | "Excel" | "Text";
+
+export interface DocumentDataRow {
+  id: number;
+  fileName: string;
+  date: string;
+  type: FileType;
+  status?: string;
+  location?: string;
 }

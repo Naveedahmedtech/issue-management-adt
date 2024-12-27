@@ -21,7 +21,7 @@ const IconLink: React.FC<IconLinkProps> = ({ url, Icon, text, className, isActiv
             onClick={handleClick} 
             className={`flex items-center space-x-2 px-2 rounded-lg transition-all duration-300 text-text ${className} ${isActive ? 'bg-backgroundShade2 text-text' : 'text-text hover:bg-backgroundShade2'}`}
         >
-            {Icon && <Icon className="text-2xl" />}
+            {Icon && <Icon className="text-sm" />}
             <span>{text}</span>
         </Link>
     );

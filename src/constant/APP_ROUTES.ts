@@ -1,31 +1,54 @@
+const BASE_ROUTES = {
+  PROJECTS: "/projects",
+  ORDERS: "/orders",
+  USERS: "/users",
+};
+const DASHBOARDS = {
+  PROJECT: `${BASE_ROUTES.PROJECTS}-dashboard`,
+  ORDER: `${BASE_ROUTES.ORDERS}-dashboard`,
+};
+
 export const APP_ROUTES = {
   APP: {
     HOME: "/",
     HOME_ALIAS: "/dashboard",
-    ALL_TASKS: "/all-tasks",
-    MY_TASKS: "/my-tasks",
-    PROFILE: "/profile",
-    USER_MANAGEMENT: "/user-management",
-    MANGER_TASKS: "/manager/:managerId/tasks",
-    TEAM_TASK: "/team-task"
+    PROJECTS: {
+      LIST: `${BASE_ROUTES.PROJECTS}`, // Page to list all projects
+      DETAILS: `${BASE_ROUTES.PROJECTS}/:projectId`, // Specific project details
+      ISSUES: `${BASE_ROUTES.PROJECTS}/:projectId/issues`, // Issues for a project
+      DOCUMENTS: `${BASE_ROUTES.PROJECTS}/:projectId/documents`, // Documents for a project
+      INFO: `${BASE_ROUTES.PROJECTS}/:projectId/info`, // Project Info page
+      CREATE: `${BASE_ROUTES.PROJECTS}/create`,
+      EDIT: `${BASE_ROUTES.PROJECTS}/edit`,
+    },
+    ORDERS: {
+      LIST: `${BASE_ROUTES.ORDERS}`, // Page to list all projects
+      DETAILS: `${BASE_ROUTES.ORDERS}/:orderId`, // Specific project details
+      CREATE: `${BASE_ROUTES.ORDERS}/create`,
+      EDIT: `${BASE_ROUTES.ORDERS}/edit`,
+    },
+    PROFILE: "/profile", // Common for all roles
   },
   AUTH: {
-    REGISTER: "/auth/register",
-    SIGN_IN: "/auth/sign-in",
-    FORGOT_PASSWORD: "/auth/forgot-password",
-    VERIFY_RESET_CODE: "/auth/verify-reset-password-code",
-    RESET_PASSWORD: "/auth/reset-password",
+    SIGN_IN: "/auth/sign-in", // Login route
+    FORGOT_PASSWORD: "/auth/forgot-password", // Password recovery
   },
   ADMIN: {
-    ADD_USER: "/add-user",
-    MANAGE_ROLES: "/manage-roles",
+    ADD_PROJECT: `${BASE_ROUTES.PROJECTS}/add`, // Admin-specific action
+    ADD_ORDER: `${BASE_ROUTES.ORDERS}/add`, // Admin-specific action
   },
-  MANAGER: {
-    ASSIGNED_TASKS: "/assigned-tasks",
-    MY_TASKS: "/my-tasks",
+  SUPERADMIN: {
+    USERS: {
+      MANAGEMENT: `${BASE_ROUTES.USERS}/management`,
+      CREATE: `${BASE_ROUTES.USERS}/create`,
+    },
   },
-  TESTING: {
-    BOARD: "testing/board",
+  WORKER: {
+    MY_TASKS: "/my-tasks", // Worker-specific tasks
   },
-  NOT_FOUND: "*",
+  DASHBOARDS: {
+    PROJECT: DASHBOARDS.PROJECT, // Project-specific dashboard
+    ORDER: DASHBOARDS.ORDER, // Order-specific dashboard
+  },
+  NOT_FOUND: "*", // Fallback for undefined routes
 };

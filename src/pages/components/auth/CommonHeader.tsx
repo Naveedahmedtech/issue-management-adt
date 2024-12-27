@@ -2,19 +2,23 @@ import React from "react";
 import Text from "../../../components/Text";
 import { ICommonHeaderProps } from "../../../types/types";
 
-const CommonHeader: React.FC<ICommonHeaderProps> = ({ children, image, primaryHeading, secondaryHeading, paragraph, type, additionBody }) => {
+const CommonHeader: React.FC<ICommonHeaderProps> = ({
+                                                        children,
+                                                        primaryHeading,
+                                                        secondaryHeading,
+                                                        paragraph,
+                                                        type,
+                                                        additionBody,
+                                                    }) => {
     return (
-        <div className='flex flex-col lg:flex-row w-full h-screen max-w-full overflow-hidden bg-background p-5'>
-            <div className='hidden lg:flex lg:w-1/2 w-full h-full items-center justify-center'>
-                <img src={image} alt="Descriptive Alt Text" className='w-full h-full object-cover lg:rounded-r-none rounded-b-[28px]' loading="lazy" style={{ height: "100vh" }} />
-            </div>
-            <div className="lg:w-1/2 w-full flex flex-col justify-center items-center  lg:overflow-y-auto py-8">
-                <div className="mb-6 w-full max-w-lg mt-5">
-                    <Text className="text-text text-4xl font-bold">{primaryHeading}</Text>
-                    <Text className="text-text text-lg font-semibold">{secondaryHeading}</Text>
-                    <Text className="text-text text-sm">{paragraph}</Text>
+        <div className="flex justify-center items-center w-full bg-background h-screen b p-6">
+            <div className="bg-backgroundShade1 p-10 rounded-lg shadow-lg max-w-xl w-full">
+                <div className="mb-6">
+                    <Text className="text-primary text-4xl font-bold">{primaryHeading}</Text>
+                    <Text className="text-text text-lg font-semibold mt-2">{secondaryHeading}</Text>
+                    <Text className="text-textLight text-sm mt-2">{paragraph}</Text>
                 </div>
-                <div className="w-full max-w-lg">
+                <div className="w-full">
                     {children}
                     {(type === "sign-in" || type === "sign-up") && additionBody}
                 </div>

@@ -13,6 +13,10 @@ export default {
         hover: "var(--color-hover)",
         textHover: "var(--color-text-hover)",
         border: "var(--color-border)",
+        pending: "var(--color-pending)",
+        success: "var(--color-success)",
+        todo: "var(--color-todo)",
+        error: "var(--color-error)",
       },
     },
     keyframes: {

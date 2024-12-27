@@ -29,7 +29,7 @@ const InputField: React.FC<IInputFieldProps> = ({ label, leftIcon, readonly = fa
                     </div>
                 )}
                 <input
-                    className={`block w-full ${leftIcon ? "pl-10" :"pl-2"} pr-3 sm:text-sm border-secondary text-text rounded-lg
+                    className={`block w-full ${leftIcon ? "pl-10" :"pl-2"} pr-3 sm:text-sm outline-none border-secondary text-text rounded-lg
         ${!readonly ? "focus:border-primary" : "focus:outline-none border-none"} ${meta.touched && meta.error ? 'border-red-500' : ''}`}
                     {...inputProps}
                     style={{

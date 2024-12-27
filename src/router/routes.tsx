@@ -1,47 +1,42 @@
-// src/routes.js
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import PrivateRouteWrapper from './components/PrivateRouteWrapper';
 import PublicRouteWrapper from './components/PublicRouteWrapper';
 import { Header } from '../pages/layout';
-import { ForgotPassword, SignIn, Register, ResetPassword, VerifyResetCode } from '../pages/auth';
+import { ForgotPassword, SignIn } from '../pages/auth';
 import {
-    MYTaskPage,
-    Dashboard,
-    NotFound,
-    Profile,
-    UserManagement,
-    ManagerTasks,
-    AllTasksPage,
-    TeamTask,
-    TestingBoard
+    CreateOrder,
+    CreateProject, CreateUser, EditOrder,
+    EditProject,
+    NotFound, OrderDashboard, OrderDetails,
+    ProjectDashboard,
+    ProjectDetails, UserManagement
 } from '../pages';
 import { APP_ROUTES } from '../constant/APP_ROUTES';
+import ErrorBoundary from "../ErrorBoundry.tsx";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
             <Route element={<PrivateRouteWrapper />}>
-                <Route path={APP_ROUTES.APP.HOME} element={<Header />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path={APP_ROUTES.APP.HOME_ALIAS} element={<Dashboard />} />
-                    <Route path={APP_ROUTES.APP.MY_TASKS} element={<MYTaskPage />} />
-                    <Route path={APP_ROUTES.APP.PROFILE} element={<Profile />} />
-                    <Route path={APP_ROUTES.APP.USER_MANAGEMENT} element={<UserManagement />} />
-                    <Route path={APP_ROUTES.APP.MANGER_TASKS} element={<ManagerTasks />} />
-                    <Route path={APP_ROUTES.APP.ALL_TASKS} element={<AllTasksPage />} />
-                    <Route path={APP_ROUTES.APP.TEAM_TASK} element={<TeamTask />} />
+                <Route path={APP_ROUTES.APP.HOME} element={<Header />} >
+                    <Route index element={<ProjectDashboard />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.DASHBOARDS.PROJECT} element={<ProjectDashboard />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.PROJECTS.DETAILS} element={<ProjectDetails />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.PROJECTS.CREATE} element={<CreateProject />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.PROJECTS.EDIT}/:projectId`} element={<EditProject />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT}`} element={<UserManagement />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.SUPERADMIN.USERS.CREATE}`} element={<CreateUser />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.DASHBOARDS.ORDER}`} element={<OrderDashboard />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.ORDERS.DETAILS} element={<OrderDetails />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.ORDERS.CREATE} element={<CreateOrder />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.ORDERS.EDIT} element={<EditOrder />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>
             <Route element={<PublicRouteWrapper />}>
-                <Route path={APP_ROUTES.AUTH.REGISTER} element={<Register />} />
-                <Route path={APP_ROUTES.AUTH.SIGN_IN} element={<SignIn />} />
-                <Route path={APP_ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPassword />} />
-                <Route path={APP_ROUTES.AUTH.VERIFY_RESET_CODE} element={<VerifyResetCode />} />
-                <Route path={APP_ROUTES.AUTH.RESET_PASSWORD} element={<ResetPassword />} />
-
-                <Route path={APP_ROUTES.TESTING.BOARD} element={<TestingBoard />} />
+                <Route path={APP_ROUTES.AUTH.SIGN_IN} element={<SignIn />} errorElement={<ErrorBoundary />} />
+                <Route path={APP_ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPassword />} errorElement={<ErrorBoundary />} />
             </Route>
-            <Route path={APP_ROUTES.NOT_FOUND} element={<NotFound />} />
+            <Route path={APP_ROUTES.NOT_FOUND} element={<NotFound />} errorElement={<ErrorBoundary />} />
         </>
     )
 );

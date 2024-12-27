@@ -11,7 +11,7 @@ import { useSendCodeOnEmailMutation } from '../../redux/features/authApi';
 import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import AuthButton from '../../components/buttons/Button';
-import { TitleText } from '../../utils/Common';
+import { TitleText } from '../../utils/Common.tsx';
 
 
 const AdditionalBody = () => (

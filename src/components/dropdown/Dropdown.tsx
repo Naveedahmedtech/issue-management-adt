@@ -1,41 +1,92 @@
-import Select, { SingleValue } from 'react-select';
-import { useField, useFormikContext, FormikContextType } from 'formik';
-import { FormikSelectProps, SingleSelectProps } from '../../types/types';
+import Select, { SingleValue, MultiValue } from 'react-select';
+import { useField, useFormikContext } from 'formik';
 
+interface FormikSelectProps {
+    name: string;
+    options: { label: string; value: string }[];
+    placeholder?: string;
+    className?: string;
+    value?: { label: string; value: string } | { label: string; value: string }[] | null;
+    onChange?: (
+        option: SingleValue<{ label: string; value: string }> | MultiValue<{ label: string; value: string }>
+    ) => void;
+    isMulti?: boolean;
+}
 
-const FormikSelect = ({ name, options, placeholder, className, value, onChange }: FormikSelectProps) => {
-    const formikContext = useFormikContext<FormikContextType<any>>();
+const FormikSelect: React.FC<FormikSelectProps> = ({
+                                                       name,
+                                                       options,
+                                                       placeholder,
+                                                       className,
+                                                       value,
+                                                       onChange,
+                                                       isMulti = false,
+                                                   }) => {
+    const { setFieldValue } = useFormikContext();
     const [field, meta] = useField(name);
 
-    const handleChange = (selectedOption: SingleValue<SingleSelectProps>) => {
-        if (formikContext?.setFieldValue) {
-            // If we have Formik context, use setFieldValue
-            formikContext.setFieldValue(name, selectedOption ? selectedOption.value : '');
+    const handleChange = (
+        selectedOption: SingleValue<{ label: string; value: string }> | MultiValue<{ label: string; value: string }>
+    ) => {
+        if (setFieldValue) {
+            setFieldValue(
+                name,
+                isMulti
+                    ? (selectedOption as MultiValue<{ label: string; value: string }>).map((option) => option.value)
+                    : (selectedOption as SingleValue<{ label: string; value: string }>)?.value || ''
+            );
         }
         if (onChange) {
-            // If an onChange prop is provided, use it as well
-            onChange(selectedOption || null);
+            onChange(selectedOption);
         }
     };
+
+    const selectedValue = isMulti
+        ? options.filter((option) => Array.isArray(field.value) && field.value.includes(option.value))
+        : options.find((option) => option.value === field.value);
 
     return (
         <div className={className}>
             <Select
+                isMulti={isMulti}
                 options={options}
-                value={formikContext ? options.find(option => option.value === field.value) : value}
+                value={selectedValue || value || null}
                 onChange={handleChange}
                 placeholder={placeholder}
                 styles={{
                     control: (base, state) => ({
                         ...base,
                         backgroundColor: 'var(--color-background)',
-                        borderColor: meta.touched && meta.error ? 'red' : 'var(--color-border)',
+                        borderColor: meta.touched && meta.error ? 'red' : 'var(--color-text)',
                         color: 'var(--color-text)',
                         '&:hover': {
                             borderColor: meta.touched && meta.error ? 'red' : 'var(--color-hover)',
                         },
                         boxShadow: state.isFocused ? '0 0 0 1px var(--color-primary)' : 'none',
                         zIndex: state.isFocused ? 20 : base.zIndex,
+                        minWidth: '150px',
+                        borderRadius: '8px',
+                        padding: '5px',
+                        borderWidth: '2px',
+                    }),
+                    multiValue: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'var(--color-background-shade-1)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                    }),
+                    multiValueLabel: (provided) => ({
+                        ...provided,
+                        color: 'var(--text)', // Text color for the selected items
+                    }),
+                    multiValueRemove: (provided) => ({
+                        ...provided,
+                        color: 'var(--color-text)',
+                        ':hover': {
+                            backgroundColor: 'var(--color-primary)', // Hover background color
+                            color: 'var(--color-text)',
+                        },
+                        cursor: 'pointer',
                     }),
                     menu: (base) => ({
                         ...base,

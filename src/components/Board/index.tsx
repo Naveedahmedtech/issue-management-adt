@@ -20,8 +20,8 @@ const Board: React.FC = () => {
         const { source, destination } = result;
         if (!destination) return;
 
-        const sourceColumnIndex = project.columns.findIndex((col:any) => col.id === source.droppableId);
-        const destinationColumnIndex = project.columns.findIndex((col:any) => col.id === destination.droppableId);
+        const sourceColumnIndex = project.columns.findIndex((col: any) => col.id === source.droppableId);
+        const destinationColumnIndex = project.columns.findIndex((col: any) => col.id === destination.droppableId);
 
         const sourceColumn = project.columns[sourceColumnIndex];
         const destinationColumn = project.columns[destinationColumnIndex];
@@ -45,20 +45,13 @@ const Board: React.FC = () => {
         }
     };
 
-    if (!project) return <div>Loading...</div>;
+    if (!project) return <div className="text-text">Loading...</div>;
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <div className="mb-6 bg-white shadow-md rounded-md p-6">
-                <h1 className="text-2xl font-bold text-gray-800">{project.title}</h1>
-                <p className="text-gray-600 mt-2">{project.description}</p>
-                <span className="inline-block mt-4 px-3 py-1 rounded-full bg-yellow-200 text-yellow-800 text-sm font-medium">
-          {project.status}
-        </span>
-            </div>
+        <div className="p-6 bg-background min-h-screen">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4">
-                    {project.columns.map((column:any) => (
+                    {project.columns.map((column: any) => (
                         <Column key={column.id} column={column} />
                     ))}
                 </div>

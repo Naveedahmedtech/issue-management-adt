@@ -3,7 +3,7 @@ import VerificationInput from 'react-verification-input';
 import { verifyCodeSchema } from '../utils/formSchema';
 import CommonHeader from '../pages/components/auth/CommonHeader';
 import AuthButton from './buttons/Button';
-import { TitleText } from '../utils/Common';
+import { TitleText } from '../utils/Common.tsx';
 
 
 interface CodeVerificationProps {

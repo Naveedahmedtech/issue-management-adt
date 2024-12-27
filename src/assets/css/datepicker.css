@@ -1,0 +1,88 @@
+.custom-calendar {
+    background-color: var(--color-background-shade-1) !important; /* Light gray background */
+    color: var(--color-text) !important; /* Dark text */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.custom-calendar .react-datepicker__day {
+    color: var(--color-text) !important;
+}
+
+.custom-calendar .react-datepicker__day:hover {
+    background-color: var(--color-background-shade-1) !important; /* Light gray background */
+    color: var(--color-text) !important;
+}
+
+.custom-calendar .react-datepicker__day--selected {
+
+    background-color: var(--color-background-shade-1) !important; /* Light gray background */
+    color: var(--color-text) !important;
+}
+
+.custom-calendar .react-datepicker__header {
+    background-color: var(--color-background-shade-1) !important; /* Light gray background */
+    color: var(--color-text) !important; /* Dark text */
+    border-bottom: 1px solid #0056b3; /* Optional: add a border to separate header */
+    padding: 10px; /* Add padding for better spacing */
+    border-radius: 8px 8px 0 0; /* Rounded corners at the top */
+}
+
+.custom-calendar .react-datepicker__current-month {
+    font-size: 16px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+    color: var(--color-text) !important; /* Dark text */
+
+}
+
+.custom-calendar .react-datepicker__navigation {
+    background: transparent; /* Transparent background */
+    border: none; /* Remove border */
+    color: var(--color-text) !important; /* Dark text */
+    cursor: pointer; /* Pointer cursor for better UX */
+}
+
+.custom-calendar .react-datepicker__navigation:hover {
+    color: var(--color-text) !important; /* Dark text */
+}
+
+.custom-calendar .react-datepicker__navigation-icon::before {
+    font-size: 16px; /* Adjust arrow size */
+    color: var(--color-text) !important; /* Dark text */
+}
+
+/* General Navigation Button Styles */
+.custom-calendar .react-datepicker__navigation {
+    background: transparent; /* Transparent background */
+    border: none; /* Remove border */
+    color: var(--color-text); /* Dark text for arrows */
+    cursor: pointer; /* Pointer cursor */
+    padding: 5px; /* Add padding */
+}
+
+/* Navigation Buttons Hover Effect */
+.custom-calendar .react-datepicker__navigation:hover {
+    color: var(--color-primary); /* Change arrow color on hover */
+    transform: scale(1.1); /* Optional: Slightly enlarge on hover */
+}
+
+/* Previous Button Specific Styles */
+.custom-calendar .react-datepicker__navigation--previous {
+    left: 10px; /* Adjust positioning */
+}
+
+/* Next Button Specific Styles */
+.custom-calendar .react-datepicker__navigation--next {
+    right: 10px; /* Adjust positioning */
+}
+
+/* Arrow Icons Styling */
+.custom-calendar .react-datepicker__navigation-icon::before {
+    font-size: 16px; /* Adjust arrow size */
+    color: var(--color-text); /* Match text color */
+}
+
+/* Hover Effect for Arrow Icons */
+.custom-calendar .react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
+    color: var(--color-primary); /* Highlight color on hover */
+}

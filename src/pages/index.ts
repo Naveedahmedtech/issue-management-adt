@@ -1,12 +1,12 @@
 export { default as NetworkStatus } from './NetworkStatus';
 export { default as NotFound } from './NotFound';
-export { default as Dashboard } from "./dashboard/Dashboard";
-export { default as MYTaskPage } from "./MyTaskPage/AllTaskPage";
-export { default as Profile } from "./profile/Profile";
-export { default as UserManagement } from "./userManagement/UserManagement";
-export { default as ManagerTasks } from "./ManagerTasks/ManagerTasks";
-export { default as AllTasksPage } from "./allTasks/AllTasksPage";
-export { default as TeamTask } from "./team/TeamTask";
-
-export { default as TestingBoard } from "./test/TestingBoard";
-
+export { default as ProjectDashboard } from "./projects/dashboard";
+export { default as ProjectDetails } from "./projects/details/";
+export { default as CreateProject } from "./projects/createProject/";
+export { default as EditProject } from "./projects/editProject";
+export { default as UserManagement } from "./user-management/";
+export { default as CreateUser } from "./user-management/create/";
+export { default as OrderDashboard } from "./orders/dashboard";
+export { default as OrderDetails } from "./orders/details/";
+export { default as CreateOrder } from "./orders/create/";
+export { default as EditOrder } from "./orders/edit/";
