@@ -18,16 +18,18 @@ const TaskEditForm: React.FC<{
     onSave: (task: any) => void;
     onCancel: () => void;
 }> = ({ initialTask, onSave }) => {
+    console.log("initialTask", initialTask);
     return (
         <Formik
             initialValues={{
                 title: initialTask.title || "",
                 description: initialTask.description || "",
-                status: initialTask.status || "To Do",
+                status: initialTask.status || "TO DO",
                 startDate: initialTask.startDate ? new Date(initialTask.startDate) : null,
                 endDate: initialTask.endDate ? new Date(initialTask.endDate) : null,
                 files: initialTask.files || [],
             }}
+
             validationSchema={Yup.object({
                 title: Yup.string().required("Title is required"),
                 description: Yup.string().required("Description is required"),

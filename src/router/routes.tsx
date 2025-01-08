@@ -17,7 +17,7 @@ import ErrorBoundary from "../ErrorBoundry.tsx";
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
-            <Route element={<PrivateRouteWrapper />}>
+            <Route element={<PrivateRouteWrapper />} errorElement={<ErrorBoundary />}>
                 <Route path={APP_ROUTES.APP.HOME} element={<Header />} >
                     <Route index element={<ProjectDashboard />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.DASHBOARDS.PROJECT} element={<ProjectDashboard />} errorElement={<ErrorBoundary />} />
@@ -32,7 +32,7 @@ export const router = createBrowserRouter(
                     <Route path={APP_ROUTES.APP.ORDERS.EDIT} element={<EditOrder />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>
-            <Route element={<PublicRouteWrapper />}>
+            <Route element={<PublicRouteWrapper />} errorElement={<ErrorBoundary />}>
                 <Route path={APP_ROUTES.AUTH.SIGN_IN} element={<SignIn />} errorElement={<ErrorBoundary />} />
                 <Route path={APP_ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPassword />} errorElement={<ErrorBoundary />} />
             </Route>

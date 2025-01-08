@@ -2,11 +2,13 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./features/authSlice";
 import { authApi } from "./features/authApi";
 import { useDispatch } from "react-redux";
+import { projectApi } from "./features/projectsApi";
 
 
 const rootReducer = combineReducers({
   auth: authReducer,
   [authApi.reducerPath]: authApi.reducer,
+  [projectApi.reducerPath]: projectApi.reducer,
 });
 
 export const store = configureStore({
@@ -14,6 +16,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(authApi.middleware)
+      .concat(projectApi.middleware)
 });
 
 // Define RootState and AppDispatch types once

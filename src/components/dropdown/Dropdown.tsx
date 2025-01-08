@@ -40,7 +40,6 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
             onChange(selectedOption);
         }
     };
-
     const selectedValue = isMulti
         ? options.filter((option) => Array.isArray(field.value) && field.value.includes(option.value))
         : options.find((option) => option.value === field.value);

@@ -15,7 +15,7 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
 
 
   try {
-    const response = await fetch(`${BASE_URL}/api/v1/${endpoint}`, {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
       headers: defaultHeaders,
       credentials: "include", 
       ...restOptions,

@@ -32,6 +32,7 @@ export const getFileIcon = (type: FileType) => {
     case "Word":
       return <FaFileWord className="text-blue-500 w-6 h-6" />;
     case "Excel":
+    case "XLSX":
       return <FaFileExcel className="text-green-500 w-6 h-6" />;
     default:
       return <FaFileAlt className="text-gray-500 w-6 h-6" />;
@@ -111,9 +112,9 @@ export const getUserManagementColumns = (
     render: (row: User) => <span>{row.email}</span>,
   },
   {
-    id: "password",
-    label: "Password",
-    render: (row: User) => <span>{row.password}</span>,
+    id: "name",
+    label: "Name",
+    render: (row: User) => <span>{row.displayName || '---'}</span>,
   },
   {
     id: "role",
@@ -123,7 +124,7 @@ export const getUserManagementColumns = (
   {
     id: "permissions",
     label: "Permissions",
-    render: (row: User) => <span>{row.permissions.join(", ")}</span>,
+    render: (row: User) => <span>{row.permissions.join(", ") || "---"}</span>,
   },
   {
     id: "actions",

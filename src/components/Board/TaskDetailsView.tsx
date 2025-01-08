@@ -49,8 +49,8 @@ const TaskDetailsView: React.FC<{
                         <li key={index} className="flex items-center space-x-2">
                             {renderFileIcon(file.type)}
                             <a
-                                href={file.url}
-                                rel="noopener noreferrer"
+                                // href={file.url}
+                                // rel="noopener noreferrer"
                                 className="text-text hover:underline"
                             >
                                 {file.name}

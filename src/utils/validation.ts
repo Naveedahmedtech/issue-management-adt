@@ -1,13 +1,15 @@
+import { ProjectFormData } from "../types/types";
+
 export interface ValidationError {
     field: string;
     message: string;
 }
 
-export const validateProjectForm = (formData: any): ValidationError[] => {
+export const validateProjectForm = (formData: ProjectFormData): ValidationError[] => {
     const errors: ValidationError[] = [];
 
-    if (!formData.name.trim()) {
-        errors.push({ field: "name", message: "Project Name is required." });
+    if (!formData.title.trim()) {
+        errors.push({ field: "title", message: "Project Name is required." });
     }
 
     if (!formData.description.trim()) {

@@ -28,23 +28,13 @@ export const links = [
     isDropdown: true,
     subLinks: [
       { url: "#", text: "Project List", Icon: "" },
-      {
-        url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", "1"),
-        text: "Project 1",
-        Icon: FaClipboard,
-      },
-      {
-        url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", "2"),
-        text: "Project 2",
-        Icon: FaClipboard,
-      },
     ],
   },
   {
     url: APP_ROUTES.APP.PROJECTS.CREATE,
     Icon: FaPlus,
     text: "Create Project",
-    roles: [ROLES.ADMIN],
+    roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
     className:
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },
@@ -52,7 +42,7 @@ export const links = [
     url: APP_ROUTES.DASHBOARDS.ORDER,
     Icon: FaShoppingCart,
     text: "Order Dashboard",
-    roles: [ROLES.ADMIN],
+    roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
     className:
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },
@@ -82,7 +72,7 @@ export const links = [
     url: APP_ROUTES.APP.ORDERS.CREATE,
     Icon: FaPlus,
     text: "Create Order",
-    roles: [ROLES.ADMIN],
+    roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
     className:
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },

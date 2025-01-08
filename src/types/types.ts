@@ -70,7 +70,9 @@ export type Status = "In Progress" | "Pending" | "Completed";
 export interface User {
   id: string;
   email: string;
-  password: string;
+  password?: string;
+  name?: string;
+  displayName: string;
   role: string;
   permissions: string[];
 }
@@ -91,7 +93,7 @@ export interface TaskProps {
   index: number;
   onClick: (task: ITask) => void; // Callback to open modal with task details
 }
-export type FileType = "PDF" | "Word" | "Excel" | "Text";
+export type FileType = "PDF" | "Word" | "Excel" | "Text" | "XLSX";
 
 export interface DocumentDataRow {
   id: number;
@@ -100,4 +102,27 @@ export interface DocumentDataRow {
   type: FileType;
   status?: string;
   location?: string;
+}
+
+export interface UploadedFile {
+  id: string;
+  filePath: string;
+}
+
+export interface ProjectFormData {
+  title: string;
+  description: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  status: { label: string; value: string } | null;
+  files: File[];
+}
+
+
+export interface CreateOrEditProjectProps {
+    initialData?: ProjectFormData;
+    mode: "create" | "edit";
+    onSubmit: (formData: ProjectFormData, resetFormData: () => void) => void;
+    isLoading?: boolean;
+    isSuccess?: boolean;
 }
