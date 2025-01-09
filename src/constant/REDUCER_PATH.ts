@@ -3,7 +3,8 @@ export const REDUCER_PATHS = {
   USER_API: "userApi",
   UNIVERSAL_API: "universalApi",
   TASKS_API: "tasksApi",
-  PROJECT_API: "projectAPI"
+  PROJECT_API: "projectAPI",
+  ISSUE_API: "issueAPI",
 };
 
 export const SLICES_PATH = {

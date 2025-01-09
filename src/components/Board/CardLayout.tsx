@@ -12,11 +12,18 @@ const CardLayout = ({
                         groupedTasks,
                         setIsEditMode,
                         isEditMode,
-                        component
+                        component,
+                        refetch,
+                        isLoading
                     }: any) => {
     // Determine sections to show based on the active filter
     const sectionsToShow = activeFilter === "All" ? Object.keys(groupedTasks) : [activeFilter];
 
+    if (isLoading) return (
+        <div className="flex justify-center items-center min-h-[200px]">
+            <div className="text-primary text-lg font-semibold">Loading issues...</div>
+        </div>
+    );
     return (
         <div className="">
             {/* Filter Buttons */}
@@ -57,6 +64,7 @@ const CardLayout = ({
                         setIsModalOpen(false);
                     }}
                     component={component}
+                    refetch={refetch}
                 />
             )}
         </div>

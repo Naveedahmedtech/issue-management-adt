@@ -10,12 +10,12 @@ import { projectDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
-import { fetchMockProject } from "../../../mock/mockAPI.ts";
 import CardLayout from "../../../components/Board/CardLayout.tsx";
 import { useDeleteProjectMutation, useGetProjectByIdQuery, useGetProjectFilesQuery, useGetProjectIssuesQuery, useUploadFilesToProjectMutation } from "../../../redux/features/projectsApi.ts";
 import { toast } from "react-toastify";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
+import { useAuth } from "../../../hooks/useAuth.ts";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -47,50 +47,52 @@ const ProjectDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
 
+      const { userData } = useAuth();
+      const { userData: { role } } = userData;
+    
+
 
     const params = useParams();
     const navigate = useNavigate();
     const { projectId } = params;
 
     const { data: projectData } = useGetProjectByIdQuery(projectId);
-    const { data: projectIssues } = useGetProjectIssuesQuery(projectId);
+    const { data: projectIssues, isLoading: isLoadingIssues, refetch: refetchIssues } = useGetProjectIssuesQuery(projectId);
     const { data: projectFiles, isLoading: isLoadingProjectFiles, refetch: refetchProjectFiles } = useGetProjectFilesQuery(projectId);
     const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
-      // ✅ Use the deleteProject mutation
-    const [deleteProject, {isLoading: isDeletingProject}] = useDeleteProjectMutation();
+    // ✅ Use the deleteProject mutation
+    const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
 
 
     useEffect(() => {
         if (projectFiles?.data?.files) {
-          const formattedProjectFiles = projectFiles.data.files.map((file: any) => ({
-            id: file.id,
-            fileName: file.filePath.split("/").pop(),
-            date: new Date(file.createdAt).toLocaleDateString("en-GB"),
-            type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
-          }));
-      
-          // ✅ Replace the document data instead of merging
-          setDocumentData(formattedProjectFiles);
+            const formattedProjectFiles = projectFiles.data.files.map((file: any) => ({
+                id: file.id,
+                fileName: file.filePath.split("/").pop(),
+                date: new Date(file.createdAt).toLocaleDateString("en-GB"),
+                type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
+            }));
+
+            // ✅ Replace the document data instead of merging
+            setDocumentData(formattedProjectFiles);
         }
-      }, [projectFiles]);
-      
+    }, [projectFiles]);
+
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            const data = await fetchMockProject();
-            const allTasks = data.columns.flatMap((column) => column.tasks);
+        if (projectIssues?.data) {
+            const allTasks = projectIssues.data.flatMap((column: any) => column.tasks);
             setTasks(allTasks);
-            setFilteredTasks(allTasks); // Initialize with all tasks
-        };
-        fetchTasks();
-    }, []);
+            setFilteredTasks(allTasks); // Initialize filtered tasks with all tasks
+        }
+    }, [projectIssues]);
 
     const handleFilterChange = (status: string) => {
         setActiveFilter(status);
         if (status === "All") {
             setFilteredTasks(tasks);
         } else {
-            setFilteredTasks(tasks.filter((task: any) => task.status === status));
+            setFilteredTasks(tasks.filter((task: any) => task.status?.toUpperCase() === status?.toUpperCase()));
         }
     };
 
@@ -151,27 +153,27 @@ const ProjectDetails = () => {
 
     const handleUploadSubmit = async () => {
         if (files.length === 0) {
-          toast.error("Please select at least one file to upload.");
-          return;
+            toast.error("Please select at least one file to upload.");
+            return;
         }
-      
+
         const formData = new FormData();
         files.forEach((file) => {
-          formData.append("files", file);
+            formData.append("files", file);
         });
-      
+
         try {
-          await uploadFilesToProject({ projectId, formData }).unwrap();
-          toast.success("Files uploaded successfully!");
-          setFiles([]); 
-          refetchProjectFiles(); 
-          setIsUploadModalOpen(false); 
+            await uploadFilesToProject({ projectId, formData }).unwrap();
+            toast.success("Files uploaded successfully!");
+            setFiles([]);
+            refetchProjectFiles();
+            setIsUploadModalOpen(false);
         } catch (error: any) {
-          console.error("Failed to upload files:", error);
-          toast.error("Failed to upload files. Please try again.");
+            console.error("Failed to upload files:", error);
+            toast.error("Failed to upload files. Please try again.");
         }
-      };
-      
+    };
+
 
     useEffect(() => {
         if (dropdownOpen) {
@@ -185,9 +187,9 @@ const ProjectDetails = () => {
     }, [dropdownOpen]);
 
     const groupedTasks = {
-        "To Do": filteredTasks.filter((task: any) => task.status === "To Do"),
-        "In Progress": filteredTasks.filter((task: any) => task.status === "In Progress"),
-        "Done": filteredTasks.filter((task: any) => task.status === "Completed"),
+        "To Do": filteredTasks.filter((task: any) => task.status.toUpperCase() === "TO DO"),
+        "In Progress": filteredTasks.filter((task: any) => task.status.toUpperCase() === "IN PROGRESS"),
+        "Completed": filteredTasks.filter((task: any) => task.status.toUpperCase() === "COMPLETED"),
     };
 
     const renderActiveTab = () => {
@@ -204,7 +206,13 @@ const ProjectDetails = () => {
                     groupedTasks={groupedTasks}
                     isEditMode={isEditMode}
                     setIsEditMode={setIsEditMode}
-                /> : <Board projectIssues={projectIssues?.data} />;
+                    refetch={refetchIssues}
+                    isLoading={isLoadingIssues}
+                /> : <Board
+                    projectIssues={projectIssues?.data}
+                    refetch={refetchIssues}
+                    isLoading={isLoadingIssues}
+                />;
             case "documents":
                 return <Documents columns={documentColumns} data={documentData} setIsUploadModalOpen={setIsUploadModalOpen} isLoading={isLoadingProjectFiles} />;
             case "info":
@@ -216,16 +224,16 @@ const ProjectDetails = () => {
 
     const handleDelete = async () => {
         try {
-          await deleteProject(projectId).unwrap();
-          
-          toast.success("Project deleted successfully!");
-          setIsDeleteModalOpen(false); 
-          navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+            await deleteProject(projectId).unwrap();
+
+            toast.success("Project deleted successfully!");
+            setIsDeleteModalOpen(false);
+            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
         } catch (error: any) {
-          console.error("Failed to delete project:", error);
-          toast.error("Failed to delete project. Please try again.");
+            console.error("Failed to delete project:", error);
+            toast.error("Failed to delete project. Please try again.");
         }
-      };
+    };
 
     const handleArchive = () => {
         console.log(`Project with ID ${projectId} archived`);
@@ -249,6 +257,7 @@ const ProjectDetails = () => {
                             setIsDeleteModalOpen={setIsDeleteModalOpen}
                             setIsArchiveModalOpen={setIsArchiveModalOpen}
                             setIsUploadModalOpen={setIsUploadModalOpen}
+                            role={role}
                         />
                     )}
                 </div>

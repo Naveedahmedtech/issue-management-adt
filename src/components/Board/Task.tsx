@@ -7,7 +7,7 @@ const STATUS_COLORS: Record<string, string> = {
     "TO DO": "bg-todo text-text",
     "IN PROGRESS": "bg-pending text-text",
     "COMPLETED": "bg-success text-text",
-    Default: "bg-pending text-text",
+    Default: "bg-todo text-text",
 };
 
 

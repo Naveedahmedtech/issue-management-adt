@@ -7,6 +7,7 @@ const CSRF_BASE = `${API_BASE}/csrf-token`;
 const ROLE_BASE = `${API_BASE}/role`;
 const PERMISSION_BASE = `${API_BASE}/permission`;
 const PROJECT_BASE = `${API_BASE}/project`;
+const ISSUE_BASE = `${API_BASE}/issue`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -49,6 +50,9 @@ export const API_ROUTES = {
     LIST: `${PROJECT_BASE}/list`,
     FILES: 'files',
     ISSUES: 'issues',
+  },
+  ISSUE: {
+    ROOT: `${ISSUE_BASE}`
   }
 };
 

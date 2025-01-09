@@ -2,19 +2,39 @@ import React, { useState } from "react";
 import Button from "../buttons/Button.tsx";
 import ModalContainer from "../modal/ModalContainer.tsx";
 import { renderFileIcon, formatDate } from "../../utils/TaskUtils.tsx";
+import { useDeleteIssueMutation } from "../../redux/features/issueApi.ts";
+import { toast } from "react-toastify";
+import { useAuth } from "../../hooks/useAuth.ts";
+import { ROLES } from "../../constant/ROLES.ts";
 
 const TaskDetailsView: React.FC<{
     task: any;
     onEdit: () => void;
     onDelete: () => void;
     onClose: () => void;
+    refetch: () => void;
     component?: string;
-}> = ({ task, onEdit, onDelete, component }) => {
+}> = ({ task, onEdit, onDelete, component, refetch }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    const handleDelete = () => {
-        setIsDeleteModalOpen(false);
-        onDelete();
+
+    const { userData } = useAuth();
+    const { userData: { role } } = userData;
+
+    // Using the delete issue mutation
+    const [deleteIssue, { isLoading }] = useDeleteIssueMutation();
+
+    const handleDelete = async () => {
+        try {
+            await deleteIssue(task.id).unwrap();
+            onDelete(); // Callback to handle successful delete
+            setIsDeleteModalOpen(false);
+            refetch()
+            toast.success("Issue deleted successfully!")
+        } catch (err) {
+            console.error("Failed to delete issue:", err);
+            toast.error("Unable to delete issue, please try again!")
+        }
     };
 
     return (
@@ -49,8 +69,6 @@ const TaskDetailsView: React.FC<{
                         <li key={index} className="flex items-center space-x-2">
                             {renderFileIcon(file.type)}
                             <a
-                                // href={file.url}
-                                // rel="noopener noreferrer"
                                 className="text-text hover:underline"
                             >
                                 {file.name}
@@ -66,12 +84,16 @@ const TaskDetailsView: React.FC<{
                     fullWidth={false}
                     className="bg-primary text-white"
                 />
-                <Button
-                    text="Delete"
-                    onClick={() => setIsDeleteModalOpen(true)}
-                    fullWidth={false}
-                    preview={'danger'}
-                />
+                {
+                    role !== ROLES.WORKER && (
+                        <Button
+                            text="Delete"
+                            onClick={() => setIsDeleteModalOpen(true)}
+                            fullWidth={false}
+                            preview={"danger"}
+                        />
+                    )
+                }
             </div>
 
             {isDeleteModalOpen && (
@@ -81,14 +103,15 @@ const TaskDetailsView: React.FC<{
                     title={`Delete ${component === "order" ? "Order" : "Issue"} Confirmation`}
                 >
                     <p className="text-text">
-                        Are you sure you want to delete this {component === "order" ? "Order" : "Issue"} ? This action cannot be undone.
+                        Are you sure you want to delete this {component === "order" ? "Order" : "Issue"}? This action cannot be undone.
                     </p>
                     <div className="flex justify-end mt-6 space-x-4">
                         <Button
-                            text="Delete"
+                            text={"Delete"}
                             onClick={handleDelete}
                             fullWidth={false}
-                            preview={'danger'}
+                            preview={"danger"}
+                            isSubmitting={isLoading}
                         />
                     </div>
                 </ModalContainer>

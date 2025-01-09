@@ -21,28 +21,44 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isLargeScreen, setIsLargeScreen] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [projectLinks, setProjectLinks] = useState<any[]>([]);
+
   const location = useLocation();
   const navigate = useNavigate();
   const { userData } = useAuth();
   const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
 
-  // ✅ Use the project list query
-  const { data: projectList, isLoading: isProjectsLoading } = useGetProjectListQuery({
-    page: 1,
-    limit: 10,
-  });
+  const {
+    data: projectList,
+    isFetching: isProjectsFetching,
+  } = useGetProjectListQuery({ page: currentPage, limit: 5 });
 
-  // ✅ Filter links based on role
+  // Filter links based on role
   const { userData: { role } } = userData;
   const filteredLinks = staticLinks.filter((link) => link.roles.includes(role));
 
-  // ✅ Dynamically add projects to the "Projects" dropdown
-  const projectLinks = projectList?.data?.projects?.map((project:any) => ({
-    url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id),
-    text: project.title,
-    Icon: FaClipboard,
-  })) || [];
+  // Add unique projects to the state
+  useEffect(() => {
+    if (projectList?.data?.projects) {
+      const existingProjectIds = new Set(projectLinks.map((project) => project.url));
+      const uniqueProjects = projectList.data.projects.filter(
+        (project:any) => !existingProjectIds.has(APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id))
+      );
+
+      if (uniqueProjects.length > 0) {
+        setProjectLinks((prevProjects) => [
+          ...prevProjects,
+          ...uniqueProjects.map((project:any) => ({
+            url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id),
+            text: project.title,
+            Icon: FaClipboard,
+          })),
+        ]);
+      }
+    }
+  }, [projectList]);
 
   // Detect screen size
   useEffect(() => {
@@ -73,8 +89,19 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
     setOpenDropdown(openDropdown === url ? null : url);
   };
 
+  const loadMoreProjects = () => {
+    if (currentPage < projectList?.data?.totalPages) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const showLessProjects = () => {
+    setCurrentPage(1);
+    setProjectLinks((prevProjects) => prevProjects.slice(0, 5));
+  };
+
   return (
-    <div className="flex flex-col justify-between h-screen bg-backgroundShade1 p-4 z-50">
+    <div className="flex flex-col justify-between h-screen overflow-auto bg-backgroundShade1 p-4 z-50">
       <Link
         to={APP_ROUTES.APP.HOME_ALIAS}
         className="flex items-center justify-between mb-6 cursor-pointer"
@@ -118,7 +145,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
             </div>
 
             {link.isDropdown && openDropdown === link.url && (
-              <div className="ml-6 mt-2 space-y-2">
+              <div className="ml-6 mt-2 space-y-2 max-h-64 overflow-y-auto">
                 {link.subLinks.map((subLink, subIndex) => (
                   <Link
                     key={subIndex}
@@ -135,26 +162,41 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
                   </Link>
                 ))}
 
-                {/* ✅ Add dynamically loaded project links */}
-                {isProjectsLoading ? (
-                  <p className="text-sm text-text">Loading projects...</p>
+                {projectLinks.map((project, projectIndex) => (
+                  <Link
+                    key={projectIndex}
+                    className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer ${
+                      location.pathname === project.url ? "bg-backgroundShade2" : "hover:bg-backgroundShade2"
+                    }`}
+                    to={project.url}
+                    onClick={() => {
+                      if (!isLargeScreen) toggleSidebar();
+                    }}
+                  >
+                    {project.Icon && <project.Icon className="text-base" />}
+                    <span className="text-sm text-text">{project.text}</span>
+                  </Link>
+                ))}
+
+                {currentPage < projectList?.data?.totalPages ? (
+                  <button
+                    onClick={loadMoreProjects}
+                    className="text-sm text-primary mt-2 hover:underline"
+                  >
+                    Load More Projects
+                  </button>
                 ) : (
-                  projectLinks.map((project:any, projectIndex:any) => (
-                    <Link
-                      key={projectIndex}
-                      className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer ${
-                        location.pathname === project.url ? "bg-backgroundShade2" : "hover:bg-backgroundShade2"
-                      }`}
-                      to={project.url}
-                      onClick={() => {
-                        if (!isLargeScreen) toggleSidebar();
-                      }}
+                  projectList?.data?.total > 5 && (
+                    <button
+                      onClick={showLessProjects}
+                      className="text-sm text-primary mt-2 hover:underline"
                     >
-                      {project.Icon && <project.Icon className="text-base" />}
-                      <span className="text-sm text-text">{project.text}</span>
-                    </Link>
-                  ))
+                      Show Less Projects
+                    </button>
+                  )
                 )}
+
+                {isProjectsFetching && <p className="text-sm text-text">Loading more projects...</p>}
               </div>
             )}
           </div>

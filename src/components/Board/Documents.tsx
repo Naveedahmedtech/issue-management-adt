@@ -12,7 +12,7 @@ const Documents = ({
 }) => {
   return (
     <div className="bg-background min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+      {/* <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-auto">
             <input
@@ -38,7 +38,7 @@ const Documents = ({
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ✅ Handle loading state */}
       {isLoading ? (
