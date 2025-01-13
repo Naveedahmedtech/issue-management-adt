@@ -2,9 +2,26 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { fetchMockProject } from "../../mock/mockAPI";
 import Column from "./Column";
+import { useUpdateIssueMutation } from "../../redux/features/issueApi";
+import { toast } from "react-toastify";
 
-const Board: React.FC = () => {
-    const [project, setProject] = useState<any | null>(null);
+interface Task {
+    id: string;
+    status: string;
+    [key: string]: any;
+}
+
+interface ColumnType {
+    id: string;
+    name: string;
+    tasks: Task[];
+}
+
+const Board: React.FC<any> = ({ projectIssues, refetch, isLoading }) => {
+    const [, setProject] = useState<any | null>(null);
+    const [localProjectIssues, setLocalProjectIssues] = useState<ColumnType[]>(projectIssues);
+
+    const [updateIssue] = useUpdateIssueMutation();
 
     useEffect(() => {
         const loadProject = async () => {
@@ -14,45 +31,101 @@ const Board: React.FC = () => {
         loadProject();
     }, []);
 
-    const onDragEnd = (result: DropResult) => {
-        if (!project) return;
+    useEffect(() => {
+        setLocalProjectIssues(projectIssues);
+    }, [projectIssues]);
 
-        const { source, destination } = result;
-        if (!destination) return;
-
-        const sourceColumnIndex = project.columns.findIndex((col: any) => col.id === source.droppableId);
-        const destinationColumnIndex = project.columns.findIndex((col: any) => col.id === destination.droppableId);
-
-        const sourceColumn = project.columns[sourceColumnIndex];
-        const destinationColumn = project.columns[destinationColumnIndex];
-
-        const sourceTasks = Array.from(sourceColumn.tasks);
-        const [movedTask] = sourceTasks.splice(source.index, 1);
-
-        if (sourceColumn.id === destinationColumn.id) {
-            sourceTasks.splice(destination.index, 0, movedTask);
-            const updatedColumns = [...project.columns];
-            updatedColumns[sourceColumnIndex].tasks = sourceTasks;
-            setProject({ ...project, columns: updatedColumns });
-        } else {
-            const destinationTasks = Array.from(destinationColumn.tasks);
-            destinationTasks.splice(destination.index, 0, movedTask);
-
-            const updatedColumns = [...project.columns];
-            updatedColumns[sourceColumnIndex].tasks = sourceTasks;
-            updatedColumns[destinationColumnIndex].tasks = destinationTasks;
-            setProject({ ...project, columns: updatedColumns });
-        }
+    const statusMapping: Record<string, string> = {
+        "To Do": "TO DO",
+        "In Progress": "IN PROGRESS",
+        "Completed": "COMPLETED",
     };
 
-    if (!project) return <div className="text-text">Loading...</div>;
+    const onDragEnd = async (result: DropResult) => {
+        if (!localProjectIssues) return;
+    
+        const { source, destination } = result;
+        if (!destination) return;
+    
+        // Store the previous state to rollback if necessary
+        const previousState = [...localProjectIssues];
+    
+        // Find source and destination columns
+        const sourceColumnIndex = localProjectIssues.findIndex((col) => col.id === source.droppableId);
+        const destinationColumnIndex = localProjectIssues.findIndex((col) => col.id === destination.droppableId);
+    
+        if (sourceColumnIndex === -1 || destinationColumnIndex === -1) return;
+    
+        const sourceColumn = { ...localProjectIssues[sourceColumnIndex] };
+        const destinationColumn = { ...localProjectIssues[destinationColumnIndex] };
+    
+        // Clone tasks array to avoid direct mutation
+        const sourceTasks = Array.from(sourceColumn.tasks);
+        const [movedTask] = sourceTasks.splice(source.index, 1);
+    
+        if (!movedTask) return;
+    
+        // Clone the task object to update its status locally
+        const updatedTask: Task = { ...movedTask };
+    
+        if (sourceColumn.id === destinationColumn.id) {
+            // Moving within the same column
+            sourceTasks.splice(destination.index, 0, updatedTask);
+            sourceColumn.tasks = sourceTasks;
+    
+            const updatedColumns = [...localProjectIssues];
+            updatedColumns[sourceColumnIndex] = sourceColumn;
+            setLocalProjectIssues(updatedColumns);
+        } else {
+            // Moving between columns
+            const destinationTasks = Array.from(destinationColumn.tasks);
+            destinationTasks.splice(destination.index, 0, updatedTask);
+    
+            sourceColumn.tasks = sourceTasks;
+            destinationColumn.tasks = destinationTasks;
+    
+            // Update the task's status locally
+            const newStatus = statusMapping[destinationColumn.name];
+            if (newStatus) {
+                updatedTask.status = newStatus;
+    
+                // Optimistically update the local state
+                const updatedColumns = [...localProjectIssues];
+                updatedColumns[sourceColumnIndex] = sourceColumn;
+                updatedColumns[destinationColumnIndex] = destinationColumn;
+                setLocalProjectIssues(updatedColumns);
+    
+                // API call to update the issue's status on the backend
+                const formData = new FormData();
+                formData.append("status", newStatus);
+                try {
+                    await updateIssue({ issueId: updatedTask.id, formData }).unwrap();
+                    refetch();
+                } catch (error: any) {
+                    // Rollback to the previous state if API call fails
+                    setLocalProjectIssues(previousState);
+                    toast.error(error?.data?.error?.message || "Failed to update issue status");
+                    console.error("Failed to update issue status", error);
+                }
+            } else {
+                console.error("Invalid column name for status mapping");
+            }
+        }
+    };
+    
+
+    if (isLoading) return (
+        <div className="flex justify-center items-center min-h-[200px]">
+            <div className="text-primary text-lg font-semibold">Loading issues...</div>
+        </div>
+    );
 
     return (
         <div className="p-6 bg-background min-h-screen">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4">
-                    {project.columns.map((column: any) => (
-                        <Column key={column.id} column={column} />
+                    {localProjectIssues?.map((column) => (
+                        <Column key={column.id} column={column} refetch={refetch} />
                     ))}
                 </div>
             </DragDropContext>

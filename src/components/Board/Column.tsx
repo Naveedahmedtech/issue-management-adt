@@ -5,7 +5,7 @@ import { FiFolder } from "react-icons/fi";
 import TaskModal from "../modal/TaskModal";
 import { ITask } from "../../types/types.ts";
 
-const Column: React.FC<any> = ({ column }) => {
+const Column: React.FC<any> = ({ column, refetch }) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
@@ -22,6 +22,7 @@ const Column: React.FC<any> = ({ column }) => {
         console.log("Updated Task:", updatedTask);
         setSelectedTask(updatedTask);
     };
+
 
     return (
         <div className="bg-backgroundShade1 rounded-md shadow-md p-4 flex-grow">
@@ -55,6 +56,7 @@ const Column: React.FC<any> = ({ column }) => {
                     setIsEditMode={setIsEditMode}
                     onSave={handleSave}
                     onClose={handleCloseModal}
+                    refetch={refetch}
                 />
             )}
         </div>

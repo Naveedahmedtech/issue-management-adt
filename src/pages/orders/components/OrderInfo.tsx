@@ -1,24 +1,16 @@
 import React from "react";
-import { FaMapMarkerAlt,  FaRegClock } from "react-icons/fa";
+import { FaMapMarkerAlt, FaRegClock, FaDollarSign } from "react-icons/fa";
+import { OrderInfoProps } from "../../../types/types";
 
-interface OrderInfoProps {
-    orderId: string | undefined;
-}
+const OrderInfo: React.FC<OrderInfoProps> = ({ data, isLoading }) => {
 
-const OrderInfo: React.FC<OrderInfoProps> = ({ orderId }) => {
-    const order = {
-        id: orderId,
-        title: "Website Redesign",
-        description: "Revamping the company website with a modern design.",
-        status: "In Progress",
-        location: "123 Main Street, Springfield, USA",
-    };
+    console.log("data", data);
 
     const getStatusBadge = (status: string) => {
         let badgeColor = "bg-yellow-500"; // Default color
-        if (status === "Completed") badgeColor = "bg-success";
-        if (status === "In Progress") badgeColor = "bg-pending";
-        if (status === "Pending") badgeColor = "bg-todo";
+        if (status?.toLocaleLowerCase() === "completed") badgeColor = "bg-success";
+        if (status?.toLocaleLowerCase() === "in progress") badgeColor = "bg-pending";
+        if (status?.toLocaleLowerCase() === "pending") badgeColor = "bg-todo";
 
         return (
             <span
@@ -29,23 +21,38 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ orderId }) => {
         );
     };
 
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-[200px]">
+                <div className="text-primary text-lg font-semibold">Loading order...</div>
+            </div>
+        )
+    }
+
     return (
         <div className="p-6 bg-backgroundShade1 rounded-lg shadow-lg">
-            <h3 className="text-2xl font-bold text-primary mb-4">{order.title}</h3>
-            <p className="text-text text-lg mb-6">{order.description}</p>
+            <h3 className="text-2xl font-bold text-primary mb-4">{data.name}</h3>
+            <p className="text-text text-lg mb-6">{data.description || ''}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="flex items-center space-x-4">
                     <FaRegClock className="text-primary text-lg" />
                     <div>
                         <p className="text-sm text-textLight font-medium">Status</p>
-                        {getStatusBadge(order.status)}
+                        {getStatusBadge(data.status)}
                     </div>
                 </div>
                 <div className="flex items-center space-x-4">
                     <FaMapMarkerAlt className="text-primary text-lg" />
                     <div>
                         <p className="text-sm text-textLight font-medium">Location</p>
-                        <p className="text-text font-medium">{order.location}</p>
+                        <p className="text-text font-medium">{data.location || ""}</p>
+                    </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <FaDollarSign className="text-primary text-lg" />
+                    <div>
+                        <p className="text-sm text-textLight font-medium">Price</p>
+                        <p className="text-text font-medium">${data?.price?.toFixed(2) || "0.00"}</p>
                     </div>
                 </div>
             </div>

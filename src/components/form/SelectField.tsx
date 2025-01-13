@@ -19,43 +19,49 @@ const SelectField: React.FC<{
             styles={{
                 control: (provided) => ({
                     ...provided,
-                    borderColor: 'var(--color-border)', // Custom border color
-                    backgroundColor: 'var(--color-background-shade-1)', // Background color for the control
+                    borderColor: 'var(--color-border)',
+                    backgroundColor: 'var(--color-background-shade-1)',
                     borderRadius: '8px',
                     padding: '5px',
                     cursor: 'pointer',
                     '&:hover': {
-                        borderColor: 'var(--color-primary)', // Hover border color
+                        borderColor: 'var(--color-primary)',
                     },
                 }),
-                // Targeting the placeholder directly in the 'control' element
+                singleValue: (provided) => ({
+                    ...provided,
+                    color: 'var(--color-text)',
+                }),
                 placeholder: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text) !important', // Force text color of input
-
+                    color: 'var(--color-text-light)', // Use a lighter text color for the placeholder
                 }),
                 input: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text) !important', // Force text color of input
+                    color: 'var(--color-text)',
                 }),
                 dropdownIndicator: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text)  !important', // Dropdown arrow color
+                    color: 'var(--color-text)',
                     cursor: 'pointer',
                 }),
                 menu: (provided) => ({
                     ...provided,
-                    backgroundColor: 'var(--color-background-shade-1)', // Background color for dropdown menu
+                    backgroundColor: 'var(--color-background-shade-1)',
                 }),
-                option: (provided:any) => ({
+                option: (provided) => ({
                     ...provided,
                     backgroundColor: 'var(--color-background-shade-1)',
                     color: 'var(--color-text)',
                     cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: 'var(--color-primary)', // Hover background color
-                        color: 'var(--color-text)', // Hover text color
+                        backgroundColor: 'var(--color-primary)',
+                        color: 'var(--color-text)',
                     },
+                }),
+                multiValueLabel: (provided) => ({
+                    ...provided,
+                    color: 'var(--color-text)',
                 }),
             }}
         />

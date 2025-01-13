@@ -26,7 +26,7 @@ export const authApi = createApi({
     }),
     logout: builder.mutation({
       query: () => ({
-        url: API_ROUTES.AUTH.LOGOUT,
+        url: API_ROUTES.USER.LOGOUT,
         method: "POST",
       }),
     }),
@@ -58,6 +58,39 @@ export const authApi = createApi({
         body,
       }),
     }),
+    createAzureUser: builder.mutation({
+      query: (body) => ({
+        url: API_ROUTES.USER.AZURE_CREATE_USER,
+        method: "POST",
+        body,
+      }),
+    }),
+    updateAzureUser: builder.mutation({
+      query: ({ body, userId }) => ({
+        url: `${API_ROUTES.USER.AZURE_CREATE_USER}/${userId}`,
+        method: "PUT",
+        body,
+      }),
+    }),
+    deleteAzureUser: builder.mutation({
+      query: (userId) => ({
+        url: `${API_ROUTES.USER.AZURE_CREATE_USER}/${userId}`,
+        method: "DELETE",
+      }),
+    }),
+    azureLogin: builder.query({
+      query: () => API_ROUTES.USER.AZURE_LOGIN,
+    }),
+    getAllUsers: builder.query({
+      query: ({ page, limit }: { page: string; limit: string }) =>
+        `${API_ROUTES.USER.ROOT}?page=${page}&limit=${limit}`,
+    }),
+    roles: builder.query({
+      query: () => API_ROUTES.ROLES.ROOT,
+    }),
+    permissions: builder.query({
+      query: () => API_ROUTES.PERMISSIONS.ROOT,
+    }),
   }),
 });
 
@@ -69,4 +102,11 @@ export const {
   useVerifyCodeMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
+  useAzureLoginQuery,
+  useGetAllUsersQuery,
+  useRolesQuery,
+  usePermissionsQuery,
+  useCreateAzureUserMutation,
+  useUpdateAzureUserMutation,
+  useDeleteAzureUserMutation
 } = authApi;

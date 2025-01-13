@@ -32,6 +32,7 @@ export const getFileIcon = (type: FileType) => {
     case "Word":
       return <FaFileWord className="text-blue-500 w-6 h-6" />;
     case "Excel":
+    case "XLSX":
       return <FaFileExcel className="text-green-500 w-6 h-6" />;
     default:
       return <FaFileAlt className="text-gray-500 w-6 h-6" />;
@@ -42,7 +43,7 @@ export const projectDocumentColumns = (
     handleAnnotateFile: (user: User) => void,
     handleSignFile: (userId: string) => void
 ) => [
-  { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
+  // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
   { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
   { id: "date", label: "Date", render: (row: DocumentDataRow) => row.date },
   { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
@@ -74,10 +75,8 @@ export const orderDocumentColumns = (
 ) => [
   {id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type)},
   {id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName},
-  {id: "date", label: "Date", render: (row: DocumentDataRow) => row.date},
+  {id: "date", label: "Last Modified", render: (row: DocumentDataRow) => row.date},
   {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
-  {id: "status", label: "Status", render: (row: DocumentDataRow) => row.status},
-  {id: "location", label: "Location", render: (row: DocumentDataRow) => row.location},
   {
     id: "actions",
     label: "Actions",
@@ -111,9 +110,9 @@ export const getUserManagementColumns = (
     render: (row: User) => <span>{row.email}</span>,
   },
   {
-    id: "password",
-    label: "Password",
-    render: (row: User) => <span>{row.password}</span>,
+    id: "name",
+    label: "Name",
+    render: (row: User) => <span>{row.displayName || '---'}</span>,
   },
   {
     id: "role",
@@ -123,7 +122,7 @@ export const getUserManagementColumns = (
   {
     id: "permissions",
     label: "Permissions",
-    render: (row: User) => <span>{row.permissions.join(", ")}</span>,
+    render: (row: User) => <span>{row.permissions.join(", ") || "---"}</span>,
   },
   {
     id: "actions",

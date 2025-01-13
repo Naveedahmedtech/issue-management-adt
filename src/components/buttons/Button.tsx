@@ -36,7 +36,7 @@ const Button = ({
             onClick={onClick}
             style={style}
         >
-            {isSubmitting ? <BeatLoader color="var(--color-primary)" size={10} /> : text}
+            {isSubmitting ? <BeatLoader color="var(--color-text)" size={10} /> : text}
         </button>
     );
 };

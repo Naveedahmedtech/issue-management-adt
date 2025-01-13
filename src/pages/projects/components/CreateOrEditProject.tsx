@@ -5,25 +5,15 @@ import SelectField from "../../../components/form/SelectField.tsx";
 import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
 import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
+import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
 
-interface ProjectFormData {
-    name: string;
-    description: string;
-    startDate: Date | null;
-    endDate: Date | null;
-    status: { label: string; value: string } | null;
-    files: File[];
-}
 
-interface CreateOrEditProjectProps {
-    initialData?: ProjectFormData;
-    mode: "create" | "edit";
-    onSubmit: (formData: ProjectFormData) => void;
-}
 
-const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit }) => {
+
+
+const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
-        name: "",
+        title: "",
         description: "",
         startDate: null,
         endDate: null,
@@ -62,6 +52,18 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         setFormData({ ...formData, status: option });
     };
 
+
+    const resetFormData = () => {
+        setFormData({
+            title: "",
+            description: "",
+            status: { label: "", value: "" },
+            startDate: null,
+            endDate: null,
+            files: [],
+          });
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -72,7 +74,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             setErrors(validationErrors);
         } else {
             setErrors([]);
-            onSubmit(formData); // Pass form data to parent for create/update logic
+            onSubmit(formData, resetFormData); // Pass form data to parent for create/update logic
         }
     };
 
@@ -93,8 +95,8 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 <InputField
                     label="Project Name"
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="title"
+                    value={formData.title}
                     onChange={handleChange}
                     className="w-full"
                 />
@@ -156,6 +158,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     onChange={handleFileUpload}
                     accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     className="w-full"
+                    
                 />
                 {getError("files") && <p className="text-red-500 text-sm mt-1">{getError("files")}</p>}
             </div>
@@ -164,7 +167,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 <Button
                     text={mode === "create" ? "Create Project" : "Update Project"}
                     type="submit"
-                    isSubmitting={false}
+                    isSubmitting={isLoading}
                 />
             </div>
         </form>

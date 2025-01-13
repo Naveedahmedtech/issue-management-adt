@@ -1,8 +1,14 @@
-const API_BASE = "/api/v1";
+const apiVersion = "v1"
+const API_BASE = `/api/${apiVersion}`;
 const AUTH_BASE = `${API_BASE}/auth`;
-const USER_BASE = `${API_BASE}/users`;
+const USER_BASE = `${API_BASE}/user`;
 const TASKS_BASE = `${API_BASE}/tasks`;
 const CSRF_BASE = `${API_BASE}/csrf-token`;
+const ROLE_BASE = `${API_BASE}/role`;
+const PERMISSION_BASE = `${API_BASE}/permission`;
+const PROJECT_BASE = `${API_BASE}/project`;
+const ISSUE_BASE = `${API_BASE}/issue`;
+const ORDER_BASE = `${API_BASE}/order`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -14,13 +20,22 @@ export const API_ROUTES = {
     RESET_PASSWORD: `${AUTH_BASE}/reset-password`,
     CHANGE_PASSWORD: `${AUTH_BASE}/reset-password`,
   },
+  ROLES: {
+    ROOT: `${ROLE_BASE}`
+  },
+  PERMISSIONS: {
+    ROOT: `${PERMISSION_BASE}`
+  },
   USER: {
     ROOT: `${USER_BASE}`,
     GET_USER: `${USER_BASE}/get`,
     ASSIGN_MANAGER: `${USER_BASE}/oversight`,
     GET_ASSIGN_TASK: `${USER_BASE}/manager`,
     GET_DASHBOARD_COUNT: `${USER_BASE}/dashboard/count`,
-    BY_TOKEN: 'users/by-token',
+    BY_TOKEN: `${USER_BASE}/by/token`,
+    LOGOUT: `${USER_BASE}/logout`,
+    AZURE_LOGIN: `${USER_BASE}/azure/login`,
+    AZURE_CREATE_USER: `${USER_BASE}/azure`,
   },
   TASKS: {
     ROOT: `${TASKS_BASE}/`,
@@ -31,6 +46,25 @@ export const API_ROUTES = {
   CSRF: {
     FETCH_TOKEN: `${CSRF_BASE}/csrf-token`,
   },
+  PROJECT: {
+    ROOT: `${PROJECT_BASE}`,
+    LIST: `${PROJECT_BASE}/list`,
+    FILES: 'files',
+    ISSUES: 'issues',
+    STATS: `${PROJECT_BASE}/dashboard/stats`,
+    RECENT: `${PROJECT_BASE}/dashboard/recent`,
+    GENERATE_REPORT: `generate-report`,
+  },
+  ORDER: {
+    ROOT: `${ORDER_BASE}`,
+    LIST: `${ORDER_BASE}/list`,
+    FILES: 'files',
+    STATS: `${ORDER_BASE}/dashboard/stats`,
+    RECENT: `${ORDER_BASE}/dashboard/recent`,
+  },
+  ISSUE: {
+    ROOT: `${ISSUE_BASE}`
+  }
 };
 
 

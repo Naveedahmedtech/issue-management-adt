@@ -4,10 +4,10 @@ import { format } from "date-fns";
 import {TaskProps} from "../../types/types.ts";
 
 const STATUS_COLORS: Record<string, string> = {
-    "To Do": "bg-todo text-text",
-    "In Progress": "bg-pending text-text",
-    "Done": "bg-success text-text",
-    Default: "bg-pending text-text",
+    "TO DO": "bg-todo text-text",
+    "IN PROGRESS": "bg-pending text-text",
+    "COMPLETED": "bg-success text-text",
+    Default: "bg-todo text-text",
 };
 
 

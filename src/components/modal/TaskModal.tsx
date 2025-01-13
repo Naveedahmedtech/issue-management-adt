@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ModalContainer from "./ModalContainer.tsx";
 import TaskDetailsView from "../Board/TaskDetailsView.tsx";
 import TaskEditForm from "../Board/TaskEditForm.tsx";
@@ -10,11 +10,10 @@ const TaskModal: React.FC<{
     onSave: (updatedTask: any) => void;
     onClose: () => void;
     component?: string;
-}> = ({ task, isEditMode, setIsEditMode, onClose, component }) => {
-    const [editableTask] = useState(task);
-    //
+    refetch: () => void;
+}> = ({ task, isEditMode, setIsEditMode, onClose, component, refetch }) => {
     const handleSave = () => {
-        // onSave(editableTask);
+        onClose();
         setIsEditMode(false);
     };
 
@@ -26,10 +25,11 @@ const TaskModal: React.FC<{
         >
             {isEditMode ? (
                 <TaskEditForm
-                    initialTask={editableTask}
+                    initialTask={task}
                     // setTask={setEditableTask}
                     onSave={handleSave}
                     onCancel={onClose}
+                    refetch={refetch}
                 />
             ) : (
                 <TaskDetailsView
@@ -38,6 +38,7 @@ const TaskModal: React.FC<{
                     onClose={onClose}
                     onDelete={onClose}
                     component={component}
+                    refetch={refetch}
                 />
             )}
         </ModalContainer>
