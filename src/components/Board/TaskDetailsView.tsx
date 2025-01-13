@@ -6,6 +6,7 @@ import { useDeleteIssueMutation } from "../../redux/features/issueApi.ts";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth.ts";
 import { ROLES } from "../../constant/ROLES.ts";
+import { BASE_URL } from "../../constant/BASE_URL.ts";
 
 const TaskDetailsView: React.FC<{
     task: any;
@@ -65,11 +66,13 @@ const TaskDetailsView: React.FC<{
             <div>
                 <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
                 <ul className="space-y-2">
-                    {task.files?.map((file: any, index: number) => (
+                    {task.files?.map((file: {name: string, type: string, url: string}, index: number) => (
                         <li key={index} className="flex items-center space-x-2">
                             {renderFileIcon(file.type)}
                             <a
                                 className="text-text hover:underline"
+                                href={`${BASE_URL}/${file?.url}`}
+                                target="_blank"
                             >
                                 {file.name}
                             </a>

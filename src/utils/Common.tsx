@@ -43,7 +43,7 @@ export const projectDocumentColumns = (
     handleAnnotateFile: (user: User) => void,
     handleSignFile: (userId: string) => void
 ) => [
-  { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
+  // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
   { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
   { id: "date", label: "Date", render: (row: DocumentDataRow) => row.date },
   { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
@@ -75,10 +75,8 @@ export const orderDocumentColumns = (
 ) => [
   {id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type)},
   {id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName},
-  {id: "date", label: "Date", render: (row: DocumentDataRow) => row.date},
+  {id: "date", label: "Last Modified", render: (row: DocumentDataRow) => row.date},
   {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
-  {id: "status", label: "Status", render: (row: DocumentDataRow) => row.status},
-  {id: "location", label: "Location", render: (row: DocumentDataRow) => row.location},
   {
     id: "actions",
     label: "Actions",

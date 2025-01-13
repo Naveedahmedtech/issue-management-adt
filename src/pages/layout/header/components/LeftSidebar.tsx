@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../../../redux/features/authApi.ts";
 import { useAuth } from "../../../../hooks/useAuth.ts";
 import { useGetProjectListQuery } from "../../../../redux/features/projectsApi.ts";
+import { useGetOrderListQuery } from "../../../../redux/features/orderApi.ts";
 
 interface LeftSidebarProps {
   toggleSidebar: () => void;
@@ -21,8 +22,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isLargeScreen, setIsLargeScreen] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentProjectPage, setCurrentProjectPage] = useState<number>(1);
+  const [currentOrderPage, setCurrentOrderPage] = useState<number>(1);
   const [projectLinks, setProjectLinks] = useState<any[]>([]);
+  const [orderLinks, setOrderLinks] = useState<any[]>([]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -33,7 +36,14 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   const {
     data: projectList,
     isFetching: isProjectsFetching,
-  } = useGetProjectListQuery({ page: currentPage, limit: 5 });
+    refetch: refetchProjects
+  } = useGetProjectListQuery({ page: currentProjectPage, limit: 5 });
+
+  const {
+    data: orderList,
+    isFetching: isOrdersFetching,
+    refetch: refetchOrders
+  } = useGetOrderListQuery({ page: currentOrderPage, limit: 5 });
 
   // Filter links based on role
   const { userData: { role } } = userData;
@@ -42,23 +52,26 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   // Add unique projects to the state
   useEffect(() => {
     if (projectList?.data?.projects) {
-      const existingProjectIds = new Set(projectLinks.map((project) => project.url));
-      const uniqueProjects = projectList.data.projects.filter(
-        (project:any) => !existingProjectIds.has(APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id))
-      );
-
-      if (uniqueProjects.length > 0) {
-        setProjectLinks((prevProjects) => [
-          ...prevProjects,
-          ...uniqueProjects.map((project:any) => ({
-            url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id),
-            text: project.title,
-            Icon: FaClipboard,
-          })),
-        ]);
-      }
+      const updatedProjects = projectList.data.projects.map((project: any) => ({
+        url: APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id),
+        text: project.title,
+        Icon: FaClipboard,
+      }));
+      setProjectLinks(updatedProjects);
     }
   }, [projectList]);
+
+  // Add unique orders to the state
+  useEffect(() => {
+    if (orderList?.data?.orders) {
+      const updatedOrders = orderList.data.orders.map((order: any) => ({
+        url: APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", order.id),
+        text: order.name,
+        Icon: FaClipboard,
+      }));
+      setOrderLinks(updatedOrders);
+    }
+  }, [orderList]);
 
   // Detect screen size
   useEffect(() => {
@@ -90,14 +103,29 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   };
 
   const loadMoreProjects = () => {
-    if (currentPage < projectList?.data?.totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
+    if (currentProjectPage < projectList?.data?.totalPages) {
+      setCurrentProjectPage((prevPage) => prevPage + 1);
+      refetchProjects();
+    }
+  };
+
+  const loadMoreOrders = () => {
+    if (currentOrderPage < orderList?.data?.totalPages) {
+      setCurrentOrderPage((prevPage) => prevPage + 1);
+      refetchOrders();
     }
   };
 
   const showLessProjects = () => {
-    setCurrentPage(1);
+    setCurrentProjectPage(1);
     setProjectLinks((prevProjects) => prevProjects.slice(0, 5));
+    refetchProjects();
+  };
+
+  const showLessOrders = () => {
+    setCurrentOrderPage(1);
+    setOrderLinks((prevOrders) => prevOrders.slice(0, 5));
+    refetchOrders();
   };
 
   return (
@@ -146,23 +174,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
 
             {link.isDropdown && openDropdown === link.url && (
               <div className="ml-6 mt-2 space-y-2 max-h-64 overflow-y-auto">
-                {link.subLinks.map((subLink, subIndex) => (
-                  <Link
-                    key={subIndex}
-                    className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer ${
-                      location.pathname === subLink.url ? "bg-backgroundShade2" : "hover:bg-backgroundShade2"
-                    }`}
-                    to={subLink.url}
-                    onClick={() => {
-                      if (!isLargeScreen) toggleSidebar();
-                    }}
-                  >
-                    {subLink.Icon && <subLink.Icon className="text-base" />}
-                    <span className="text-sm text-text">{subLink.text}</span>
-                  </Link>
-                ))}
-
-                {projectLinks.map((project, projectIndex) => (
+                {link.text === "Projects" && projectLinks.map((project, projectIndex) => (
                   <Link
                     key={projectIndex}
                     className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer ${
@@ -178,25 +190,60 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
                   </Link>
                 ))}
 
-                {currentPage < projectList?.data?.totalPages ? (
+                {link.text === "Orders" && orderLinks.map((order, orderIndex) => (
+                  <Link
+                    key={orderIndex}
+                    className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer ${
+                      location.pathname === order.url ? "bg-backgroundShade2" : "hover:bg-backgroundShade2"
+                    }`}
+                    to={order.url}
+                    onClick={() => {
+                      if (!isLargeScreen) toggleSidebar();
+                    }}
+                  >
+                    {order.Icon && <order.Icon className="text-base" />}
+                    <span className="text-sm text-text">{order.text}</span>
+                  </Link>
+                ))}
+
+                {currentProjectPage < projectList?.data?.totalPages && link.text === "Projects" && (
                   <button
                     onClick={loadMoreProjects}
                     className="text-sm text-primary mt-2 hover:underline"
                   >
                     Load More Projects
                   </button>
-                ) : (
-                  projectList?.data?.total > 5 && (
-                    <button
-                      onClick={showLessProjects}
-                      className="text-sm text-primary mt-2 hover:underline"
-                    >
-                      Show Less Projects
-                    </button>
-                  )
                 )}
 
-                {isProjectsFetching && <p className="text-sm text-text">Loading more projects...</p>}
+                {currentOrderPage < orderList?.data?.totalPages && link.text === "Orders" && (
+                  <button
+                    onClick={loadMoreOrders}
+                    className="text-sm text-primary mt-2 hover:underline"
+                  >
+                    Load More Orders
+                  </button>
+                )}
+
+                {currentProjectPage > 1 && link.text === "Projects" && (
+                  <button
+                    onClick={showLessProjects}
+                    className="text-sm text-primary mt-2 hover:underline"
+                  >
+                    Show Less Projects
+                  </button>
+                )}
+
+                {currentOrderPage > 1 && link.text === "Orders" && (
+                  <button
+                    onClick={showLessOrders}
+                    className="text-sm text-primary mt-2 hover:underline"
+                  >
+                    Show Less Orders
+                  </button>
+                )}
+
+                {isProjectsFetching && link.text === "Projects" && <p className="text-sm text-text">Loading more projects...</p>}
+                {isOrdersFetching && link.text === "Orders" && <p className="text-sm text-text">Loading more orders...</p>}
               </div>
             )}
           </div>

@@ -117,7 +117,16 @@ export interface ProjectFormData {
   status: { label: string; value: string } | null;
   files: File[];
 }
-
+export interface OrderFormData {
+  name: string;
+  description: string;
+  location: string;
+  price: number | undefined;
+  startDate: Date | null;
+  endDate: Date | null;
+  status: { label: string; value: string } | null;
+  files: File[];
+}
 
 export interface CreateOrEditProjectProps {
     initialData?: ProjectFormData;
@@ -125,4 +134,29 @@ export interface CreateOrEditProjectProps {
     onSubmit: (formData: ProjectFormData, resetFormData: () => void) => void;
     isLoading?: boolean;
     isSuccess?: boolean;
+}
+
+
+
+export interface CreateOrEditOrderProps {
+  initialData?: OrderFormData;
+  mode: "create" | "edit";
+  onSubmit: (formData: OrderFormData , resetFormData: () => void) => void;
+  isLoading?: boolean;
+  isSuccess?: boolean;
+}
+
+
+
+
+export interface OrderInfoProps {
+    data: {
+        id: string;
+        name: string;
+        description: string | null;
+        status: string;
+        location: string | null;
+        price: number | null;
+    }
+    isLoading: boolean;
 }

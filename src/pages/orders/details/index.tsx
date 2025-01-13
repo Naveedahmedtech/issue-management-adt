@@ -1,33 +1,21 @@
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Tabs from "../../../components/Tabs";
-import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import OrderInfo from "../components/OrderInfo.tsx";
-import { Link, useParams } from "react-router-dom";
-import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
+import { useNavigate, useParams } from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import { orderDocumentColumns } from "../../../utils/Common.tsx";
-import { orderDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
-import CardLayout from "../../../components/Board/CardLayout.tsx";
-import {fetchMockProject} from "../../../mock/mockAPI.ts";
+import { useDeleteOrderMutation, useGetOrderByIdQuery, useUploadFilesToOrderMutation } from "../../../redux/features/orderApi.ts";
+import OrderDropDown from "../components/OrderDropDown.tsx";
+import { useAuth } from "../../../hooks/useAuth.ts";
+import { toast } from "react-toastify";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 
-const useWindowSize = () => {
-    const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
-
-    useEffect(() => {
-        const handleResize = () => setSize([window.innerWidth, window.innerHeight]);
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    return size;
-};
-
-const ProjectDetails = () => {
-    const [activeTab, setActiveTab] = useState("board");
+const OrderDetails = () => {
+    const [activeTab, setActiveTab] = useState("info");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -35,38 +23,19 @@ const ProjectDetails = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-    const [documentData] = useState(orderDocumentData);
-    const [isEditMode, setIsEditMode] = useState(false);
+    const { userData } = useAuth();
+    const params = useParams();
+    const navigate = useNavigate();
 
-    const [tasks, setTasks] = useState<any>([]);
-    const [filteredTasks, setFilteredTasks] = useState<any>([]);
-    const [selectedTask, setSelectedTask] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
+    const { userData: { role } } = userData;
+    const { orderId: orderId } = params;
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            const data = await fetchMockProject();
-            const allTasks = data.columns.flatMap((column) => column.tasks);
-            setTasks(allTasks);
-            setFilteredTasks(allTasks); // Initialize with all tasks
-        };
-        fetchTasks();
-    }, []);
+    const { data: orderData, isLoading: isOrderDataLoading, refetch: refetchOrders } = useGetOrderByIdQuery(orderId);
 
-    const handleFilterChange = (status: string) => {
-        setActiveFilter(status);
-        if (status === "All") {
-            setFilteredTasks(tasks);
-        } else {
-            setFilteredTasks(tasks.filter((task:any) => task.status === status));
-        }
-    };
+    const [uploadFilesToOrder, { isLoading: isUploadingOrderFile }] = useUploadFilesToOrderMutation();
+    const [deleteOrder, { isLoading: isDeletingOrder }] = useDeleteOrderMutation();
 
-    const handleViewTask = (task: any) => {
-        setSelectedTask(task);
-        setIsModalOpen(true);
-    };
+
     const handleAnnotateFile = (file: any) => {
         console.log("Annotating file:", file);
         // Add logic for file annotation
@@ -77,17 +46,23 @@ const ProjectDetails = () => {
         // Add logic for file signing
     };
 
-    const documentColumns = orderDocumentColumns(handleAnnotateFile, handleSignFile);
-    const [windowWidth] = useWindowSize();
-    const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
+    const transformFilesData = (files: any[]) => {
+        return files.map((file, index) => ({
+            id: index + 1,
+            fileName: file.filePath.split("/").pop(), // Extract file name from filePath
+            date: new Date(file.updatedAt).toLocaleDateString(),
+            type: file.filePath.split(".").pop()?.toUpperCase() || "Unknown", // Extract file type
+            location: "", // Ignored as per the requirement
+            status: "Pending", // Default status
+        }));
+    };
 
-    const params = useParams();
-    const { orderId: projectId } = params;
+
+    const documentColumns = orderDocumentColumns(handleAnnotateFile, handleSignFile);
 
     const tabs = [
-        { id: "board", label: "Issues" },
-        { id: "documents", label: "Documents" },
         { id: "info", label: "Order Info" },
+        { id: "documents", label: "Documents" },
     ];
 
     const handleOutsideClick = (event: MouseEvent) => {
@@ -117,11 +92,27 @@ const ProjectDetails = () => {
         setFiles((prevFiles) => [...prevFiles, ...validFiles]);
     };
 
+    const handleUploadSubmit = async () => {
+        if (files.length === 0) {
+            toast.error("Please select at least one file to upload.");
+            return;
+        }
 
-    const handleUploadSubmit = () => {
-        console.log("Files uploaded:", files);
-        setIsUploadModalOpen(false);
-        // Add logic to update the projectDocumentData with uploaded files
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append("files", file);
+        });
+
+        try {
+            await uploadFilesToOrder({ orderId, formData }).unwrap();
+            toast.success("Files uploaded successfully!");
+            setFiles([]);
+            refetchOrders();
+            setIsUploadModalOpen(false);
+        } catch (error: any) {
+            console.error("Failed to upload files:", error);
+            toast.error(error?.data?.error?.message || "Failed to upload files. Please try again.");
+        }
     };
 
     useEffect(() => {
@@ -134,42 +125,41 @@ const ProjectDetails = () => {
             document.removeEventListener("mousedown", handleOutsideClick);
         };
     }, [dropdownOpen]);
-    const groupedTasks = {
-        "To Do": filteredTasks.filter((task:any) => task.status === "To Do"),
-        "In Progress": filteredTasks.filter((task:any) => task.status === "In Progress"),
-        "Done": filteredTasks.filter((task:any) => task.status === "Completed"),
-    };
+
     const renderActiveTab = () => {
         switch (activeTab) {
-            case "board":
-                return isSmallScreen ? <CardLayout
-                    handleFilterChange={handleFilterChange}
-                    activeFilter={activeFilter}
-                    handleViewTask={handleViewTask}
-                    isModalOpen={isModalOpen}
-                    selectedTask={selectedTask}
-                    setIsModalOpen={setIsModalOpen}
-                    groupedTasks={groupedTasks}
-                    isEditMode={isEditMode}
-                    setIsEditMode={setIsEditMode}
-                    component={'order'}
-                />  : <Board />;
             case "documents":
-                return <Documents columns={documentColumns} data={documentData} setIsUploadModalOpen={setIsUploadModalOpen} />;
+                return (
+                    <Documents
+                        columns={documentColumns}
+                        data={transformFilesData(orderData?.data?.files || [])}
+                        setIsUploadModalOpen={setIsUploadModalOpen}
+                        isLoading={isOrderDataLoading}
+                    />
+                );
             case "info":
-                return <OrderInfo orderId={projectId} />;
+                return <OrderInfo data={orderData?.data} isLoading={isOrderDataLoading} />;
             default:
                 return null;
         }
     };
 
-    const handleDelete = () => {
-        console.log(`Project with ID ${projectId} deleted`);
-        setIsDeleteModalOpen(false);
+    const handleDelete = async () => {
+        try {
+            await deleteOrder(orderId).unwrap();
+
+            toast.success("Order deleted successfully!");
+            setIsDeleteModalOpen(false);
+            refetchOrders();
+            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+        } catch (error: any) {
+            console.error("Failed to delete order:", error);
+            toast.error("Failed to delete order. Please try again.");
+        }
     };
 
     const handleArchive = () => {
-        console.log(`Project with ID ${projectId} archived`);
+        console.log(`Project with ID ${orderId} archived`);
         setIsArchiveModalOpen(false);
     };
 
@@ -185,42 +175,13 @@ const ProjectDetails = () => {
                         <BsThreeDotsVertical className="text-xl" />
                     </button>
                     {dropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-56 bg-background rounded-md shadow-lg z-50">
-                            <ul className="py-2">
-                                <li>
-                                    <Link
-                                        to={`${APP_ROUTES.APP.PROJECTS.EDIT}/${projectId}`}
-                                        className="block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
-                                    >
-                                        Edit Order
-                                    </Link>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => setIsDeleteModalOpen(true)}
-                                        className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
-                                    >
-                                        Delete Order
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => setIsArchiveModalOpen(true)}
-                                        className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
-                                    >
-                                        Archive Order
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => setIsUploadModalOpen(true)}
-                                        className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
-                                    >
-                                        Upload File
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+                        <OrderDropDown
+                            orderId={orderId}
+                            setIsDeleteModalOpen={setIsDeleteModalOpen}
+                            setIsArchiveModalOpen={setIsArchiveModalOpen}
+                            setIsUploadModalOpen={setIsUploadModalOpen}
+                            role={role}
+                        />
                     )}
                 </div>
             </div>
@@ -239,6 +200,7 @@ const ProjectDetails = () => {
                         text={'Delete'}
                         onClick={handleDelete}
                         preview={'danger'}
+                        isSubmitting={isDeletingOrder}
                     />
                 </div>
             </ModalContainer>
@@ -275,12 +237,12 @@ const ProjectDetails = () => {
                     <Button
                         text={'Upload'}
                         onClick={handleUploadSubmit}
+                        isSubmitting={isUploadingOrderFile}
                     />
-
                 </div>
             </ModalContainer>
         </main>
     );
 };
 
-export default ProjectDetails;
+export default OrderDetails;

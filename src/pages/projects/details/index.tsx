@@ -13,9 +13,9 @@ import Button from "../../../components/buttons/Button.tsx";
 import CardLayout from "../../../components/Board/CardLayout.tsx";
 import { useDeleteProjectMutation, useGetProjectByIdQuery, useGetProjectFilesQuery, useGetProjectIssuesQuery, useUploadFilesToProjectMutation } from "../../../redux/features/projectsApi.ts";
 import { toast } from "react-toastify";
-import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import { useAuth } from "../../../hooks/useAuth.ts";
+import ProjectDropDown from "../components/ProjectDropDown.tsx";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -70,7 +70,8 @@ const ProjectDetails = () => {
                 id: file.id,
                 fileName: file.filePath.split("/").pop(),
                 date: new Date(file.createdAt).toLocaleDateString("en-GB"),
-                type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
+                // type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
+                type: `${file.type === "issueFile" ? `${file.type} (${file.issue.title})` : file.type}` || "UNKNOWN",
             }));
 
             // ✅ Replace the document data instead of merging

@@ -26,7 +26,7 @@ const UserManagement: React.FC = () => {
     const [updateAzureUser, { isLoading: isUpdating }] = useUpdateAzureUserMutation();
 
     // Fetch users from API
-    const { data, isLoading, isError, error, refetch } = useGetAllUsersQuery({ page: "1", limit: "10" });
+    const { data, isLoading, isError,  refetch } = useGetAllUsersQuery({ page: "1", limit: "10" });
 
     // Fetch roles and permissions
     const { data: rolesData } = useRolesQuery({});
@@ -65,10 +65,6 @@ const UserManagement: React.FC = () => {
     };
 
 
-    const handleDeleteModal = (user: User) => {
-        setSelectedUser(user);
-        setIsDeleteModalOpen(!isDeleteModalOpen);
-    }
 
     // Edit user
     const handleEditUser = (user: User) => {
@@ -143,7 +139,7 @@ const UserManagement: React.FC = () => {
                         label=""
                         name="roleFilter"
                         options={[{ label: "All Roles", value: "" }, ...rolesOptions]}
-                        value={rolesOptions.find((option) => option.value === selectedRole) || null}
+                        value={rolesOptions.find((option:any) => option.value === selectedRole) || null}
                         onChange={(option) => handleFilterChange(option?.value || null)}
                     />
                     <Link to="/users/create">
@@ -155,7 +151,7 @@ const UserManagement: React.FC = () => {
             {isLoading ? (
                 <p>Loading users...</p>
             ) : isError ? (
-                <p>Error loading users: {error?.message}</p>
+                <p>Error loading users</p>
             ) : (
                 <Table columns={columns} data={filteredUsers} />
             )}
@@ -171,12 +167,12 @@ const UserManagement: React.FC = () => {
                             email: selectedUser.email,
                             displayName: selectedUser.displayName,
                             // Map role name to role ID
-                            role: rolesOptions.find((role) => role.label === selectedUser.role)?.value || "",
+                            role: rolesOptions.find((role:any) => role.label === selectedUser.role)?.value || "",
                             // Map permissions to IDs based on matching labels
                             permissions: selectedUser.permissions
                                 .map((permission) =>
                                     permissionsOptions.find(
-                                        (option) => option.label.toUpperCase().replace(/\s/g, "_") === permission
+                                        (option:any) => option.label.toUpperCase().replace(/\s/g, "_") === permission
                                     )?.value
                                 )
                                 .filter(Boolean), // Remove undefined values

@@ -8,16 +8,20 @@ export const projectApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     credentials: "include",
+    prepareHeaders: (headers) => {
+      headers.set("Accept", "application/pdf");
+      return headers;
+    },
   }),
   // ✅ Enable tagTypes
-  tagTypes: ["Project"],
+  tagTypes: ["Project", "RecentProjects"],
 
   endpoints: (builder) => ({
     // ✅ Assign tag to getProjectList query
     getProjectList: builder.query({
       query: ({ page = 1, limit = 10 }) =>
         `${API_ROUTES.PROJECT.LIST}?page=${page}&limit=${limit}`,
-      providesTags: ["Project"],
+      providesTags: ["Project", "RecentProjects"],
     }),
 
     // ✅ Invalidate the tag after creating a project
@@ -27,7 +31,7 @@ export const projectApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Project"],
+      invalidatesTags: ["Project", "RecentProjects"],
     }),
 
     updateProject: builder.mutation({
@@ -36,16 +40,15 @@ export const projectApi = createApi({
         method: "PUT",
         body: formData,
       }),
-      invalidatesTags: ["Project"],
+      invalidatesTags: ["Project", "RecentProjects"],
     }),
-
 
     deleteProject: builder.mutation({
       query: (projectId) => ({
         url: `${API_ROUTES.PROJECT.ROOT}/${projectId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Project"],
+      invalidatesTags: ["Project", "RecentProjects"],
     }),
 
     uploadFilesToProject: builder.mutation({
@@ -68,11 +71,28 @@ export const projectApi = createApi({
     }),
 
     getProjectIssues: builder.query({
-        query: (projectId) =>
-          `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.ISSUES}`,
-        providesTags: ["Project"],
-      }),
+      query: (projectId) =>
+        `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.ISSUES}`,
+      providesTags: ["Project"],
+    }),
 
+    getProjectStats: builder.query({
+      query: () => `${API_ROUTES.PROJECT.STATS}`,
+    }),
+
+    getRecentProjects: builder.query({
+      query: () => `${API_ROUTES.PROJECT.RECENT}`,
+      providesTags: ["RecentProjects"],
+    }),
+
+
+    generateProjectReport: builder.query({
+      query: (projectId) => `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.GENERATE_REPORT}`,
+      transformResponse: async (response: Response) => {
+        const blob = await response.blob();
+        return blob;
+      },
+    }),
   }),
 });
 
@@ -84,5 +104,8 @@ export const {
   useUploadFilesToProjectMutation,
   useUpdateProjectMutation,
   useDeleteProjectMutation,
-  useGetProjectIssuesQuery
+  useGetProjectIssuesQuery,
+  useGetProjectStatsQuery,
+  useGetRecentProjectsQuery,
+  useLazyGenerateProjectReportQuery 
 } = projectApi;

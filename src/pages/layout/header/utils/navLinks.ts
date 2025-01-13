@@ -2,7 +2,6 @@ import {
   FaHome,
   FaTasks,
   FaUser,
-  FaClipboard,
   FaShoppingCart,
   FaPlus
 } from "react-icons/fa";
@@ -56,16 +55,6 @@ export const links = [
     isDropdown: true,
     subLinks: [
       { url: "#", text: "Order List", Icon: "" },
-      {
-        url: APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", "1"),
-        text: "Order 1",
-        Icon: FaClipboard,
-      },
-      {
-        url: APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", "2"),
-        text: "Order 2",
-        Icon: FaClipboard,
-      },
     ],
   },
   {

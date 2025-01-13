@@ -5,6 +5,7 @@ export const REDUCER_PATHS = {
   TASKS_API: "tasksApi",
   PROJECT_API: "projectAPI",
   ISSUE_API: "issueAPI",
+  ORDER_API: "orderAPI",
 };
 
 export const SLICES_PATH = {

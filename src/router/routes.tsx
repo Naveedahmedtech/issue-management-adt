@@ -29,7 +29,7 @@ export const router = createBrowserRouter(
                     <Route path={`${APP_ROUTES.DASHBOARDS.ORDER}`} element={<OrderDashboard />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.DETAILS} element={<OrderDetails />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.CREATE} element={<CreateOrder />} errorElement={<ErrorBoundary />} />
-                    <Route path={APP_ROUTES.APP.ORDERS.EDIT} element={<EditOrder />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.ORDERS.EDIT}/:orderId`} element={<EditOrder />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>
             <Route element={<PublicRouteWrapper />} errorElement={<ErrorBoundary />}>

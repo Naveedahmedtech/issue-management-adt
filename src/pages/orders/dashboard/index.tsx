@@ -1,8 +1,11 @@
 import React from 'react';
 import StatCard from "../../../components/cards/StatCard.tsx";
-
+import RecentOrders from '../components/RecentOrders.tsx';
+import { useGetOrderStatsQuery, useGetRecentOrdersQuery } from '../../../redux/features/orderApi.ts';
 
 const Index: React.FC = () => {
+    const { data, error, isLoading } = useGetOrderStatsQuery({});
+    const { data: recentOrders, error: recentOrderError, isLoading: isRecentOrderLoading } = useGetRecentOrdersQuery({});
 
 
     return (
@@ -13,26 +16,53 @@ const Index: React.FC = () => {
                 </h2>
                 <section className="mb-6">
                     <h3 className="text-xl font-semibold text-text mb-4">Stats</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <StatCard
-                                title="Total Orders" value={10}
-                                color={"var(--color-text)"}
-                            />
-                            <StatCard
-                                title="Total Completed"
-                                value={5}
-                                color="green"
-                            />
-                            <StatCard
-                                title="Total In Progress"
-                                value={2}
-                                color={"var(--color-todo)"}
-                            />
-                            <StatCard
-                                title="Total Pending" value={3}
-                                color={"orange"}
-                            />
+                    {error && (
+                        <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+                            Failed to load project statistics. Please try again later.
                         </div>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {isLoading ? (
+                            [1, 2, 3, 4].map((index) => (
+                                <div key={index} className="p-4 bg-backgroundShade2 rounded shadow animate-pulse">
+                                    <div className="h-6 bg-background mb-4 rounded"></div>
+                                    <div className="h-4 bg-background w-1/2 rounded"></div>
+                                </div>
+                            ))
+                        ) : (
+                            <>
+                                <StatCard
+                                    title="Total Orders"
+                                    value={data?.data?.totalOrders || 0}
+                                    color={"var(--color-text)"}
+                                />
+                                <StatCard
+                                    title="Total Completed Orders"
+                                    value={data?.data?.totalCompletedOrders || 0}
+                                    color="green"
+                                />
+                                <StatCard
+                                    title="Total In Progress Orders"
+                                    value={data?.data?.totalInProgressOrders || 0}
+                                    color={"var(--color-text)"}
+                                />
+                                <StatCard
+                                    title="Total Pending Orders"
+                                    value={data?.data?.totalPendingOrders || 0}
+                                    color="orange"
+                                />
+                            </>
+                        )}
+                    </div>
+                </section>
+
+
+                <section className='mb-6'>
+                    <RecentOrders
+                        recentOrders={recentOrders}
+                        error={recentOrderError}
+                        isLoading={isRecentOrderLoading}
+                    />
                 </section>
             </main>
         </div>

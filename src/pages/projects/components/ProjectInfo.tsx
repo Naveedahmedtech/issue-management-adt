@@ -22,9 +22,9 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
   // Function to get the status badge with a dynamic color
   const getStatusBadge = (status: string) => {
     let badgeColor = "bg-yellow-500"; // Default color
-    if (status === "Completed") badgeColor = "bg-success";
-    if (status === "In Progress") badgeColor = "bg-todo";
-    if (status === "Pending") badgeColor = "bg-pending";
+    if (status.toLocaleLowerCase() === "completed") badgeColor = "bg-success";
+    if (status.toLocaleLowerCase() === "in progress") badgeColor = "bg-todo";
+    if (status.toLocaleLowerCase() === "pending") badgeColor = "bg-pending";
 
     return (
       <span

@@ -8,6 +8,7 @@ const ROLE_BASE = `${API_BASE}/role`;
 const PERMISSION_BASE = `${API_BASE}/permission`;
 const PROJECT_BASE = `${API_BASE}/project`;
 const ISSUE_BASE = `${API_BASE}/issue`;
+const ORDER_BASE = `${API_BASE}/order`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -50,6 +51,16 @@ export const API_ROUTES = {
     LIST: `${PROJECT_BASE}/list`,
     FILES: 'files',
     ISSUES: 'issues',
+    STATS: `${PROJECT_BASE}/dashboard/stats`,
+    RECENT: `${PROJECT_BASE}/dashboard/recent`,
+    GENERATE_REPORT: `generate-report`,
+  },
+  ORDER: {
+    ROOT: `${ORDER_BASE}`,
+    LIST: `${ORDER_BASE}/list`,
+    FILES: 'files',
+    STATS: `${ORDER_BASE}/dashboard/stats`,
+    RECENT: `${ORDER_BASE}/dashboard/recent`,
   },
   ISSUE: {
     ROOT: `${ISSUE_BASE}`
