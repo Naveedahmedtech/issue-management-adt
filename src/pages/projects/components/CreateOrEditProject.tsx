@@ -100,7 +100,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     onChange={handleChange}
                     className="w-full"
                 />
-                {getError("name") && <p className="text-red-500 text-sm mt-1">{getError("name")}</p>}
+                {getError("title") && <p className="text-red-500 text-sm mt-1">{getError("title")}</p>}
             </div>
 
             <div>

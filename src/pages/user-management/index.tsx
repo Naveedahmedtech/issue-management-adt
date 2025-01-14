@@ -56,9 +56,10 @@ const UserManagement: React.FC = () => {
 
     // Filter users by role
     const handleFilterChange = (role: string | null) => {
-        setSelectedRole(role);
-        if (role) {
-            setFilteredUsers(users.filter((user) => user.role === role));
+        if (role && role !== "All Roles") {
+            const updatedRoleName = role === "SUPER ADMIN" ? "SUPER_ADMIN" : role;
+            setSelectedRole(updatedRoleName);
+            setFilteredUsers(users.filter((user) => user.role === updatedRoleName));
         } else {
             setFilteredUsers(users);
         }
@@ -113,8 +114,8 @@ const UserManagement: React.FC = () => {
                 body: {
                     email: values.email,
                     displayName: values.displayName,
-                    roleId: values.role, // Use role ID
-                    permissionIds: values.permissions, // Use array of permission IDs
+                    roleId: values.role, 
+                    permissions: values.permissions, 
                 },
             }).unwrap();
 
@@ -140,7 +141,7 @@ const UserManagement: React.FC = () => {
                         name="roleFilter"
                         options={[{ label: "All Roles", value: "" }, ...rolesOptions]}
                         value={rolesOptions.find((option:any) => option.value === selectedRole) || null}
-                        onChange={(option) => handleFilterChange(option?.value || null)}
+                        onChange={(option) => handleFilterChange(option?.label || null)}
                     />
                     <Link to="/users/create">
                         <Button text="Create User" fullWidth={false} />
