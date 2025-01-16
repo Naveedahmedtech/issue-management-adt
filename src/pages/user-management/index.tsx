@@ -8,7 +8,13 @@ import InputField from "../../components/InputField";
 import FormikSelect from "../../components/dropdown/Dropdown.tsx";
 import { Link } from "react-router-dom";
 import { User } from "../../types/types";
-import { useGetAllUsersQuery, useUpdateAzureUserMutation, usePermissionsQuery, useRolesQuery, useDeleteAzureUserMutation } from "../../redux/features/authApi.ts";
+import {
+    useGetAllUsersQuery,
+    useUpdateAzureUserMutation,
+    usePermissionsQuery,
+    useRolesQuery,
+    useDeleteAzureUserMutation,
+} from "../../redux/features/authApi.ts";
 import { toast } from "react-toastify";
 import { getUserManagementColumns } from "../../utils/Common.tsx";
 import SelectField from "../../components/SelectField.tsx";
@@ -21,12 +27,14 @@ const UserManagement: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     // Mutation to update user
     const [updateAzureUser, { isLoading: isUpdating }] = useUpdateAzureUserMutation();
 
     // Fetch users from API
-    const { data, isLoading, isError,  refetch } = useGetAllUsersQuery({ page: "1", limit: "10" });
+    const { data, isLoading, isError, refetch } = useGetAllUsersQuery({ page: currentPage, limit: 1 });
 
     // Fetch roles and permissions
     const { data: rolesData } = useRolesQuery({});
@@ -34,23 +42,28 @@ const UserManagement: React.FC = () => {
 
     const [deleteAzureUser, { isLoading: isDeleting }] = useDeleteAzureUserMutation();
 
-
     // Prepare dropdown options for roles and permissions
-    const rolesOptions = rolesData?.data?.map((role: { id: string; name: string }) => ({
-        label: role.name.replace("_", " ").replace(/\b\w/g, (char: string) => char.toUpperCase()),
-        value: role.id,
-    })) || [];
+    const rolesOptions =
+        rolesData?.data?.map((role: { id: string; name: string }) => ({
+            label: role.name.replace("_", " ").replace(/\b\w/g, (char: string) => char.toUpperCase()),
+            value: role.id,
+        })) || [];
 
-    const permissionsOptions = permissionsData?.data?.map((permission: { id: string; action: string }) => ({
-        label: permission.action.toLowerCase().replace(/_/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase()),
-        value: permission.id,
-    })) || [];
+    const permissionsOptions =
+        permissionsData?.data?.map((permission: { id: string; action: string }) => ({
+            label: permission.action
+                .toLowerCase()
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (char: string) => char.toUpperCase()),
+            value: permission.id,
+        })) || [];
 
     // Load users when data is available
     useEffect(() => {
-        if (data?.data) {
-            setUsers(data.data);
-            setFilteredUsers(data.data);
+        if (data?.data?.users) {
+            setUsers(data.data.users);
+            setFilteredUsers(data.data.users);
+            setTotalPages(Math.ceil(data.data.pagination.total / data.data.pagination.limit));
         }
     }, [data]);
 
@@ -64,8 +77,6 @@ const UserManagement: React.FC = () => {
             setFilteredUsers(users);
         }
     };
-
-
 
     // Edit user
     const handleEditUser = (user: User) => {
@@ -84,17 +95,11 @@ const UserManagement: React.FC = () => {
         if (!userToDelete) return;
 
         try {
-            // API call to delete user
             await deleteAzureUser(userToDelete).unwrap();
-    
-            // Remove user from local state
             setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
             setFilteredUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
-    
             toast.success("User deleted successfully!");
             refetch();
-    
-            // Close modal
             setIsDeleteModalOpen(false);
             setUserToDelete(null);
         } catch (error) {
@@ -102,27 +107,22 @@ const UserManagement: React.FC = () => {
             toast.error("Failed to delete user. Please try again.");
         }
     };
-    
 
     // Update user after edit
     const handleModalSubmit = async (values: any) => {
         if (!selectedUser) return;
         try {
-            // API call to update user
             await updateAzureUser({
                 userId: selectedUser.id,
                 body: {
                     email: values.email,
                     displayName: values.displayName,
-                    roleId: values.role, 
-                    permissions: values.permissions, 
+                    roleId: values.role,
+                    permissions: values.permissions,
                 },
             }).unwrap();
-
             refetch();
-
             toast.success("User updated successfully!");
-
             setIsModalOpen(false);
         } catch (error) {
             console.error("Error updating user:", error);
@@ -131,6 +131,11 @@ const UserManagement: React.FC = () => {
     };
 
     const columns = getUserManagementColumns(handleEditUser, handleDeleteClick);
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
+
     return (
         <div className="p-6">
             <div className="flex flex-wrap gap-x-10 justify-between items-center mb-4">
@@ -140,7 +145,7 @@ const UserManagement: React.FC = () => {
                         label=""
                         name="roleFilter"
                         options={[{ label: "All Roles", value: "" }, ...rolesOptions]}
-                        value={rolesOptions.find((option:any) => option.value === selectedRole) || null}
+                        value={rolesOptions.find((option: any) => option.value === selectedRole) || null}
                         onChange={(option) => handleFilterChange(option?.label || null)}
                     />
                     <Link to="/users/create">
@@ -154,29 +159,32 @@ const UserManagement: React.FC = () => {
             ) : isError ? (
                 <p>Error loading users</p>
             ) : (
-                <Table columns={columns} data={filteredUsers} />
+                <>
+                    <Table
+                        columns={columns}
+                        data={filteredUsers}
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
+                </>
             )}
 
             {isModalOpen && selectedUser && (
-                <ModalContainer
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    title="Edit User"
-                >
+                <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit User">
                     <Formik
                         initialValues={{
                             email: selectedUser.email,
                             displayName: selectedUser.displayName,
-                            // Map role name to role ID
-                            role: rolesOptions.find((role:any) => role.label === selectedUser.role)?.value || "",
-                            // Map permissions to IDs based on matching labels
+                            role: rolesOptions.find((role: any) => role.label === selectedUser.role)?.value || "",
                             permissions: selectedUser.permissions
                                 .map((permission) =>
                                     permissionsOptions.find(
-                                        (option:any) => option.label.toUpperCase().replace(/\s/g, "_") === permission
+                                        (option: any) =>
+                                            option.label.toUpperCase().replace(/\s/g, "_") === permission
                                     )?.value
                                 )
-                                .filter(Boolean), // Remove undefined values
+                                .filter(Boolean),
                         }}
                         validationSchema={Yup.object({
                             displayName: Yup.string().required("Required"),
@@ -185,7 +193,6 @@ const UserManagement: React.FC = () => {
                         })}
                         onSubmit={handleModalSubmit}
                     >
-
                         <Form>
                             <InputField label="Email" name="email" type="email" disabled />
                             <InputField label="Display Name" name="displayName" type="text" />
@@ -213,7 +220,7 @@ const UserManagement: React.FC = () => {
                     </Formik>
                 </ModalContainer>
             )}
-            {/* Delete Confirmation Modal */}
+
             {isDeleteModalOpen && (
                 <ModalContainer
                     isOpen={isDeleteModalOpen}
@@ -234,7 +241,6 @@ const UserManagement: React.FC = () => {
                     </div>
                 </ModalContainer>
             )}
-
         </div>
     );
 };

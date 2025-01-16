@@ -4,6 +4,8 @@ import PublicRouteWrapper from './components/PublicRouteWrapper';
 import { Header } from '../pages/layout';
 import { ForgotPassword, SignIn } from '../pages/auth';
 import {
+    ArchivedOrders,
+    ArchivedProjects,
     CreateOrder,
     CreateProject, CreateUser, EditOrder,
     EditProject,
@@ -30,6 +32,8 @@ export const router = createBrowserRouter(
                     <Route path={APP_ROUTES.APP.ORDERS.DETAILS} element={<OrderDetails />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.CREATE} element={<CreateOrder />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.ORDERS.EDIT}/:orderId`} element={<EditOrder />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.PROJECTS.ARCHIVED}`} element={<ArchivedProjects />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.ORDERS.ARCHIVED}`} element={<ArchivedOrders />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>
             <Route element={<PublicRouteWrapper />} errorElement={<ErrorBoundary />}>

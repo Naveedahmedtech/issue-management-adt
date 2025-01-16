@@ -11,7 +11,8 @@ const TaskModal: React.FC<{
     onClose: () => void;
     component?: string;
     refetch: () => void;
-}> = ({ task, isEditMode, setIsEditMode, onClose, component, refetch }) => {
+    isArchived: boolean;
+}> = ({ task, isEditMode, setIsEditMode, onClose, component, refetch, isArchived }) => {
     const handleSave = () => {
         onClose();
         setIsEditMode(false);
@@ -39,6 +40,7 @@ const TaskModal: React.FC<{
                     onDelete={onClose}
                     component={component}
                     refetch={refetch}
+                    isArchived={isArchived}
                 />
             )}
         </ModalContainer>

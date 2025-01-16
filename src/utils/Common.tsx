@@ -1,6 +1,6 @@
 import { APP_NAME } from "../constant/BASE_URL";
 import Text from "../components/Text";
-import {DocumentDataRow, FileType, ITitleText, User,} from "../types/types";
+import { DocumentDataRow, FileType, ITitleText, User, } from "../types/types";
 import {
   FaFileAlt,
   FaFileExcel,
@@ -8,11 +8,11 @@ import {
   FaFileWord,
 } from "react-icons/fa";
 import React from "react";
-import {PERMISSIONS, ROLES} from "../constant/ROLES.ts";
+import { PERMISSIONS, ROLES } from "../constant/ROLES.ts";
 
 const Hello = () => {
   return (
-      <>Hello</>
+    <>Hello</>
   )
 }
 
@@ -40,94 +40,111 @@ export const getFileIcon = (type: FileType) => {
 };
 
 export const projectDocumentColumns = (
-    handleAnnotateFile: (user: User) => void,
-    handleSignFile: (userId: string) => void
+  handleAnnotateFile: (file: DocumentDataRow) => void,
+  handleSignFile: (userId: string) => void,
+  handleDownloadFile: (file: DocumentDataRow) => void,
+  isArchived: boolean
 ) => [
-  // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
-  { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
-  { id: "date", label: "Date", render: (row: DocumentDataRow) => row.date },
-  { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
-  {
-    id: "actions",
-    label: "Actions",
-    render: (row: User) => (
-        <div className="flex space-x-2">
-          <button
-              className="text-primary hover:underline"
-              onClick={() => handleAnnotateFile(row)}
-          >
-            Annotate
-          </button>
-          <button
-              className="text-primary hover:underline"
-              onClick={() => handleSignFile("")}
-          >
-            Signing
-          </button>
-        </div>
-    ),
-  },
-];
+    // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
+    { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
+    { id: "date", label: "Date", render: (row: DocumentDataRow) => row.date },
+    { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
+    {
+      id: "actions",
+      label: "Actions",
+      render: (row: DocumentDataRow) => {
+        return (
+          <>
+            {
+              !isArchived &&
+              <div className="flex space-x-2" >
+                <button
+                  className="text-primary hover:underline"
+                  onClick={() => handleAnnotateFile(row)}
+                >
+                  Annotate
+                </button>
+                <button
+                  className="text-primary hover:underline"
+                  onClick={() => handleSignFile("")}
+                >
+                  Signing
+                </button>
+                <button
+                  className="text-primary hover:underline"
+                  onClick={() => handleDownloadFile(row)}
+                >
+                  Download
+                </button>
+              </div>
+            }
+          </>
+        )
+      }
+    },
+  ];
 
 export const orderDocumentColumns = (
-    handleAnnotateFile: (user: User) => void,
-    handleSignFile: (userId: string) => void
+  handleSignFile: (user: DocumentDataRow) => void,
+  isArchived: boolean
 ) => [
-  {id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type)},
-  {id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName},
-  {id: "date", label: "Last Modified", render: (row: DocumentDataRow) => row.date},
-  {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
-  {
-    id: "actions",
-    label: "Actions",
-    render: (row: User) => (
-        <div className="flex space-x-2">
-          <button
-              className="text-primary hover:underline"
-              onClick={() => handleAnnotateFile(row)}
-          >
-            Annotate
-          </button>
-          <button
-              className="text-primary hover:underline"
-              onClick={() => handleSignFile("")}
-          >
-            Signing
-          </button>
-        </div>
-    ),
-  },
-];
+    { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
+    { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
+    { id: "date", label: "Last Modified", render: (row: DocumentDataRow) => row.date },
+    { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
+    {
+      id: "actions",
+      label: "Actions",
+      render: (row: DocumentDataRow) => {
+
+        return (
+          <>
+            {
+              !isArchived &&
+              <div className="flex space-x-2">
+                <button
+                  className="text-primary hover:underline"
+                  onClick={() => handleSignFile(row)}
+                >
+                  Signing
+                </button>
+              </div>
+            }
+          </>
+        )
+      }
+    },
+  ];
 
 
 export const getUserManagementColumns = (
-    handleEditUser: (user: User) => void,
-    handleDeleteUser: (userId: string) => void
+  handleEditUser: (user: User) => void,
+  handleDeleteUser: (userId: string) => void
 ) => [
-  {
-    id: "email",
-    label: "Email",
-    render: (row: User) => <span>{row.email}</span>,
-  },
-  {
-    id: "name",
-    label: "Name",
-    render: (row: User) => <span>{row.displayName || '---'}</span>,
-  },
-  {
-    id: "role",
-    label: "Role",
-    render: (row: User) => <span>{row.role}</span>,
-  },
-  {
-    id: "permissions",
-    label: "Permissions",
-    render: (row: User) => <span>{row.permissions.join(", ") || "---"}</span>,
-  },
-  {
-    id: "actions",
-    label: "Actions",
-    render: (row: User) => (
+    {
+      id: "email",
+      label: "Email",
+      render: (row: User) => <span>{row.email}</span>,
+    },
+    {
+      id: "name",
+      label: "Name",
+      render: (row: User) => <span>{row.displayName || '---'}</span>,
+    },
+    {
+      id: "role",
+      label: "Role",
+      render: (row: User) => <span>{row.role}</span>,
+    },
+    {
+      id: "permissions",
+      label: "Permissions",
+      render: (row: User) => <span>{row.permissions.join(", ") || "---"}</span>,
+    },
+    {
+      id: "actions",
+      label: "Actions",
+      render: (row: User) => (
         <div className="flex space-x-2">
           <button className="text-primary" onClick={() => handleEditUser(row)}>
             Edit
@@ -136,9 +153,9 @@ export const getUserManagementColumns = (
             Delete
           </button>
         </div>
-    ),
-  },
-];
+      ),
+    },
+  ];
 
 
 export const rolesOptions = Object.values(ROLES).map((role) => ({
@@ -148,8 +165,8 @@ export const rolesOptions = Object.values(ROLES).map((role) => ({
 
 export const permissionsOptions = Object.values(PERMISSIONS).map((permission) => ({
   label: permission
-      .toLowerCase()
-      .replace(/_/g, " ") // Replaces underscores with spaces
-      .replace(/\b\w/g, (char) => char.toUpperCase()), // Capitalizes each word
+    .toLowerCase()
+    .replace(/_/g, " ") // Replaces underscores with spaces
+    .replace(/\b\w/g, (char) => char.toUpperCase()), // Capitalizes each word
   value: permission,
 }));

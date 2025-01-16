@@ -59,6 +59,24 @@ export const projectApi = createApi({
       }),
     }),
 
+
+    updateFile: builder.mutation({
+      query: ({ fileId, formData }) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${fileId}/${API_ROUTES.PROJECT.UPDATE_FILE}`,
+        method: "PUT",
+        body: formData,
+      }),
+    }),
+
+
+    toggleArchive: builder.mutation({
+      query: (projectId) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.TOGGLE_ARCHIVED}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Project", "RecentProjects"],
+    }),
+
     getProjectById: builder.query({
       query: (projectId) => `${API_ROUTES.PROJECT.ROOT}/${projectId}`,
       providesTags: ["Project"],
@@ -93,6 +111,12 @@ export const projectApi = createApi({
         return blob;
       },
     }),
+
+
+    getArchivedProjects: builder.query({
+      query: ({page, limit}) => `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ARCHIVED}?page=${page}&limit=${limit}`,
+    }),
+
   }),
 });
 
@@ -107,5 +131,8 @@ export const {
   useGetProjectIssuesQuery,
   useGetProjectStatsQuery,
   useGetRecentProjectsQuery,
-  useLazyGenerateProjectReportQuery 
+  useLazyGenerateProjectReportQuery,
+  useUpdateFileMutation,
+  useGetArchivedProjectsQuery,
+  useToggleArchiveMutation
 } = projectApi;

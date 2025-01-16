@@ -3,7 +3,7 @@ import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import { projectDocumentColumns } from "../../../utils/Common.tsx";
 import { projectDocumentData } from "../../../mock/tasks.ts";
@@ -11,11 +11,14 @@ import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
 import CardLayout from "../../../components/Board/CardLayout.tsx";
-import { useDeleteProjectMutation, useGetProjectByIdQuery, useGetProjectFilesQuery, useGetProjectIssuesQuery, useUploadFilesToProjectMutation } from "../../../redux/features/projectsApi.ts";
+import { useDeleteProjectMutation, useGetProjectByIdQuery, useGetProjectFilesQuery, useGetProjectIssuesQuery, useToggleArchiveMutation, useUploadFilesToProjectMutation } from "../../../redux/features/projectsApi.ts";
 import { toast } from "react-toastify";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import { useAuth } from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
+import { DocumentDataRow } from "../../../types/types.ts";
+import { BASE_URL } from "../../../constant/BASE_URL.ts";
+import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -46,14 +49,20 @@ const ProjectDetails = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
+    const [selectedFile, setSelectedFile] = useState<DocumentDataRow>();
 
-      const { userData } = useAuth();
-      const { userData: { role } } = userData;
-    
+
+
+    const { userData } = useAuth();
+    const { userData: { role } } = userData;
+
 
 
     const params = useParams();
+    const location = useLocation();
     const navigate = useNavigate();
+
+    const isArchived = location.state?.archive;
     const { projectId } = params;
 
     const { data: projectData } = useGetProjectByIdQuery(projectId);
@@ -62,16 +71,18 @@ const ProjectDetails = () => {
     const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
     // ✅ Use the deleteProject mutation
     const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
+    const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
 
 
     useEffect(() => {
         if (projectFiles?.data?.files) {
-            const formattedProjectFiles = projectFiles.data.files.map((file: any) => ({
+            const formattedProjectFiles = projectFiles.data.files.map((file: DocumentDataRow) => ({
                 id: file.id,
                 fileName: file.filePath.split("/").pop(),
+                filePath: file.filePath,
                 date: new Date(file.createdAt).toLocaleDateString("en-GB"),
                 // type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
-                type: `${file.type === "issueFile" ? `${file.type} (${file.issue.title})` : file.type}` || "UNKNOWN",
+                type: `${file.type === "issueFile" ? `${file.type} (${file?.issue && file?.issue.title})` : file.type}` || "UNKNOWN",
             }));
 
             // ✅ Replace the document data instead of merging
@@ -102,17 +113,69 @@ const ProjectDetails = () => {
         setIsModalOpen(true);
     };
 
-    const handleAnnotateFile = (file: any) => {
-        console.log("Annotating file:", file);
-        // Add logic for file annotation
-    };
+    const handleAnnotateFile = (file: DocumentDataRow) => {
+        if (file.fileName.endsWith('.xlsx')) {
+            setSelectedFile(file);
+        } else {
+            toast.info("We are working on PDF annotation for you!");
+        }
+    }
 
     const handleSignFile = (file: any) => {
         console.log("Signing file:", file);
         // Add logic for file signing
     };
 
-    const documentColumns = projectDocumentColumns(handleAnnotateFile, handleSignFile);
+
+    const handleDownloadFile = async (file: DocumentDataRow) => {
+        toast.info("Downloading file, please wait...");
+        const type = file.type === 'projectFile' ? 'project' : 'issue';
+        try {
+            const response = await fetch(
+                `${BASE_URL}${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.FILES}/${file.id}/${API_ROUTES.PROJECT.DOWNLOAD}?type=${type}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include'
+                }
+            );
+
+            if (!response.ok) {
+                console.log("ERRR!!!", response)
+                throw new Error("Failed to download file");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            // Create an anchor and trigger the download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = file.fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            toast.success("File downloaded successfully!");
+        } catch (error) {
+            console.error("Download error:", error);
+            toast.error("Failed to download the file.");
+        }
+    };
+
+
+    // Function to handle view button click
+
+
+    // Function to handle edit button click (you can extend this as needed)
+    // const handleEditExcel = (filePath: string) => {
+    //     alert(`Edit functionality is not implemented yet for: ${filePath}`);
+    // };
+
+
+    const documentColumns = projectDocumentColumns(handleAnnotateFile, handleSignFile, handleDownloadFile, isArchived);
     const [windowWidth] = useWindowSize();
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
 
@@ -129,6 +192,8 @@ const ProjectDetails = () => {
             setDropdownOpen(false);
         }
     };
+
+
 
     const handleFileUpload = (uploadedFiles: File[]) => {
         const allowedFileTypes = [".pdf", ".xlsx"]; // Allowed file extensions
@@ -164,8 +229,12 @@ const ProjectDetails = () => {
         });
 
         try {
-            await uploadFilesToProject({ projectId, formData }).unwrap();
-            toast.success("Files uploaded successfully!");
+            const response = await uploadFilesToProject({ projectId, formData }).unwrap();
+            const { uploadedFiles, skippedFiles } = response?.data as any;
+
+            toast.success(
+                `Files processed successfully! Uploaded: ${uploadedFiles.length}, Skipped: ${skippedFiles.length}`
+            );
             setFiles([]);
             refetchProjectFiles();
             setIsUploadModalOpen(false);
@@ -209,13 +278,23 @@ const ProjectDetails = () => {
                     setIsEditMode={setIsEditMode}
                     refetch={refetchIssues}
                     isLoading={isLoadingIssues}
+                    isArchived={isArchived}
                 /> : <Board
                     projectIssues={projectIssues?.data}
                     refetch={refetchIssues}
                     isLoading={isLoadingIssues}
+                    isArchived={isArchived}
                 />;
             case "documents":
-                return <Documents columns={documentColumns} data={documentData} setIsUploadModalOpen={setIsUploadModalOpen} isLoading={isLoadingProjectFiles} />;
+                return <Documents
+                    columns={documentColumns}
+                    data={documentData}
+                    setIsUploadModalOpen={setIsUploadModalOpen}
+                    isLoading={isLoadingProjectFiles}
+                    selectedFile={selectedFile}
+                    projectIdForNow={projectId}
+                    refetch={refetchProjectFiles}
+                />;
             case "info":
                 return <ProjectInfo projectId={projectId} projectData={projectData?.data} />;
             default:
@@ -236,9 +315,17 @@ const ProjectDetails = () => {
         }
     };
 
-    const handleArchive = () => {
-        console.log(`Project with ID ${projectId} archived`);
-        setIsArchiveModalOpen(false);
+    const handleArchive = async () => {
+        try {
+            await archiveProject(projectId);
+            toast.success("Project archived successfully!");
+            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+        } catch (error) {
+            toast.error("Failed to archive project. Please try again.");
+
+        } finally {
+            setIsArchiveModalOpen(false);
+        }
     };
 
     return (
@@ -246,12 +333,15 @@ const ProjectDetails = () => {
             <div className="flex justify-between items-center mb-4">
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
                 <div ref={dropdownRef} className="relative">
-                    <button
-                        onClick={() => setDropdownOpen((prev) => !prev)}
-                        className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
-                    >
-                        <BsThreeDotsVertical className="text-xl" />
-                    </button>
+                    {
+                        !isArchived &&
+                        <button
+                            onClick={() => setDropdownOpen((prev) => !prev)}
+                            className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                        >
+                            <BsThreeDotsVertical className="text-xl" />
+                        </button>
+                    }
                     {dropdownOpen && (
                         <ProjectDropDown
                             projectId={projectId}
@@ -297,6 +387,7 @@ const ProjectDetails = () => {
                         text={'Archive'}
                         onClick={handleArchive}
                         fullWidth={false}
+                        isSubmitting={isArchiveProject}
                     />
                 </div>
             </ModalContainer>
@@ -318,7 +409,6 @@ const ProjectDetails = () => {
                         onClick={handleUploadSubmit}
                         isSubmitting={isUploadingProjectFile}
                     />
-
                 </div>
             </ModalContainer>
         </main>

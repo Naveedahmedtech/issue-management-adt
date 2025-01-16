@@ -82,7 +82,7 @@ export const authApi = createApi({
       query: () => API_ROUTES.USER.AZURE_LOGIN,
     }),
     getAllUsers: builder.query({
-      query: ({ page, limit }: { page: string; limit: string }) =>
+      query: ({ page, limit }: { page: number; limit: number }) =>
         `${API_ROUTES.USER.ROOT}?page=${page}&limit=${limit}`,
     }),
     roles: builder.query({

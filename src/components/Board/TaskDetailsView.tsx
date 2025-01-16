@@ -15,7 +15,8 @@ const TaskDetailsView: React.FC<{
     onClose: () => void;
     refetch: () => void;
     component?: string;
-}> = ({ task, onEdit, onDelete, component, refetch }) => {
+    isArchived: boolean
+}> = ({ task, onEdit, onDelete, component, refetch, isArchived }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
 
@@ -66,7 +67,7 @@ const TaskDetailsView: React.FC<{
             <div>
                 <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
                 <ul className="space-y-2">
-                    {task.files?.map((file: {name: string, type: string, url: string}, index: number) => (
+                    {task.files?.map((file: { name: string, type: string, url: string }, index: number) => (
                         <li key={index} className="flex items-center space-x-2">
                             {renderFileIcon(file.type)}
                             <a
@@ -81,14 +82,17 @@ const TaskDetailsView: React.FC<{
                 </ul>
             </div>
             <div className="flex justify-end space-x-4 mt-6">
-                <Button
-                    text="Edit"
-                    onClick={onEdit}
-                    fullWidth={false}
-                    className="bg-primary text-white"
-                />
                 {
-                    role !== ROLES.WORKER && (
+                    !isArchived &&
+                    <Button
+                        text="Edit"
+                        onClick={onEdit}
+                        fullWidth={false}
+                        className="bg-primary text-white"
+                    />
+                }
+                {
+                    role !== ROLES.WORKER && !isArchived && (
                         <Button
                             text="Delete"
                             onClick={() => setIsDeleteModalOpen(true)}

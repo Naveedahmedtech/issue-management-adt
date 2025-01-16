@@ -1,5 +1,6 @@
 import React from "react";
-import { FaMapMarkerAlt, FaRegClock, FaDollarSign } from "react-icons/fa";
+import { FaMapMarkerAlt, FaRegClock, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
+import { format } from "date-fns"; // Importing date-fns for formatting
 import { OrderInfoProps } from "../../../types/types";
 
 const OrderInfo: React.FC<OrderInfoProps> = ({ data, isLoading }) => {
@@ -26,8 +27,12 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ data, isLoading }) => {
             <div className="flex justify-center items-center min-h-[200px]">
                 <div className="text-primary text-lg font-semibold">Loading order...</div>
             </div>
-        )
+        );
     }
+
+    const formatDate = (date: string | undefined) => {
+        return date ? format(new Date(date), "MMM dd, yyyy") : "N/A";
+    };
 
     return (
         <div className="p-6 bg-backgroundShade1 rounded-lg shadow-lg">
@@ -53,6 +58,20 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ data, isLoading }) => {
                     <div>
                         <p className="text-sm text-textLight font-medium">Price</p>
                         <p className="text-text font-medium">${data?.price?.toFixed(2) || "0.00"}</p>
+                    </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <FaCalendarAlt className="text-primary text-lg" />
+                    <div>
+                        <p className="text-sm text-textLight font-medium">Start Date</p>
+                        <p className="text-text font-medium">{data?.startDate && formatDate(data?.startDate)}</p>
+                    </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                    <FaCalendarAlt className="text-primary text-lg" />
+                    <div>
+                        <p className="text-sm text-textLight font-medium">End Date</p>
+                        <p className="text-text font-medium">{data?.endDate && formatDate(data?.endDate)}</p>
                     </div>
                 </div>
             </div>
