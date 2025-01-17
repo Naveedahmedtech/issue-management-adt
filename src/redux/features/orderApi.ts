@@ -55,6 +55,14 @@ export const orderApi = createApi({
       }),
     }),
 
+    toggleArchive: builder.mutation({
+      query: (projectId) => ({
+        url: `${API_ROUTES.ORDER.ROOT}/${projectId}/${API_ROUTES.ORDER.TOGGLE_ARCHIVED}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Order", "RecentOrders"],
+    }),
+
     getOrderById: builder.query({
       query: (orderId) => `${API_ROUTES.ORDER.ROOT}/${orderId}`,
       providesTags: ["Order"],
@@ -79,15 +87,10 @@ export const orderApi = createApi({
     
     getArchivedOrders: builder.query({
       query: ({page, limit}) => `${API_ROUTES.ORDER.ROOT}/${API_ROUTES.ORDER.ARCHIVED}?page=${page}&limit=${limit}`,
+      providesTags: ["Order", "RecentOrders"],
     }),
 
-    toggleArchive: builder.mutation({
-      query: (projectId) => ({
-        url: `${API_ROUTES.ORDER.ROOT}/${projectId}/${API_ROUTES.ORDER.TOGGLE_ARCHIVED}`,
-        method: "PATCH",
-      }),
-      invalidatesTags: ["Order", "RecentOrders"],
-    }),
+
 
   }),
 });

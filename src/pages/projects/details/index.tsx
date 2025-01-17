@@ -36,6 +36,7 @@ const ProjectDetails = () => {
     const [activeTab, setActiveTab] = useState("board");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+    const [isUnArchiveModalOpen, setIsUnArchiveModalOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -49,7 +50,7 @@ const ProjectDetails = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
-    const [selectedFile, setSelectedFile] = useState<DocumentDataRow>();
+    const [selectedFile, setSelectedFile] = useState<DocumentDataRow | null>();
 
 
 
@@ -115,7 +116,10 @@ const ProjectDetails = () => {
 
     const handleAnnotateFile = (file: DocumentDataRow) => {
         if (file.fileName.endsWith('.xlsx')) {
-            setSelectedFile(file);
+            setSelectedFile(null); // Temporarily reset the selected file
+            setTimeout(() => {
+                setSelectedFile(file); // Re-select the file to trigger useEffect
+            }, 0);
         } else {
             toast.info("We are working on PDF annotation for you!");
         }
@@ -318,7 +322,7 @@ const ProjectDetails = () => {
     const handleArchive = async () => {
         try {
             await archiveProject(projectId);
-            toast.success("Project archived successfully!");
+            toast.success(`Project ${isArchived ? "unarchived" : "archived"} successfully!`);
             navigate(APP_ROUTES.APP.PROJECTS.CREATE)
         } catch (error) {
             toast.error("Failed to archive project. Please try again.");
@@ -334,13 +338,18 @@ const ProjectDetails = () => {
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
                 <div ref={dropdownRef} className="relative">
                     {
-                        !isArchived &&
-                        <button
-                            onClick={() => setDropdownOpen((prev) => !prev)}
-                            className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
-                        >
-                            <BsThreeDotsVertical className="text-xl" />
-                        </button>
+                        !isArchived ?
+                            <button
+                                onClick={() => setDropdownOpen((prev) => !prev)}
+                                className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                            >
+                                <BsThreeDotsVertical className="text-xl" />
+                            </button>
+                            :
+                            <Button
+                                text="Unarchive"
+                                onClick={() => setIsUnArchiveModalOpen(true)}
+                            />
                     }
                     {dropdownOpen && (
                         <ProjectDropDown
@@ -391,6 +400,27 @@ const ProjectDetails = () => {
                     />
                 </div>
             </ModalContainer>
+
+
+
+            <ModalContainer
+                isOpen={isUnArchiveModalOpen}
+                onClose={() => setIsUnArchiveModalOpen(false)}
+                title="Archive Project Confirmation"
+            >
+                <p className="text-text">
+                    Are you sure you want to unarchive this project?
+                </p>
+                <div className="flex justify-end mt-6 space-x-4">
+                    <Button
+                        text={'Unarchive'}
+                        onClick={handleArchive}
+                        fullWidth={false}
+                        isSubmitting={isArchiveProject}
+                    />
+                </div>
+            </ModalContainer>
+
 
             <ModalContainer
                 isOpen={isUploadModalOpen}

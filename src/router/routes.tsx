@@ -15,6 +15,7 @@ import {
 } from '../pages';
 import { APP_ROUTES } from '../constant/APP_ROUTES';
 import ErrorBoundary from "../ErrorBoundry.tsx";
+import AnnotationIframe from '../mock/AnnotationIframe.tsx';
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -34,6 +35,7 @@ export const router = createBrowserRouter(
                     <Route path={`${APP_ROUTES.APP.ORDERS.EDIT}/:orderId`} element={<EditOrder />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.ARCHIVED}`} element={<ArchivedProjects />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.ORDERS.ARCHIVED}`} element={<ArchivedOrders />} errorElement={<ErrorBoundary />} />
+                    <Route path={`test`} element={<AnnotationIframe />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>
             <Route element={<PublicRouteWrapper />} errorElement={<ErrorBoundary />}>

@@ -96,7 +96,7 @@ export interface TaskProps {
 export type FileType = "PDF" | "Word" | "Excel" | "Text" | "XLSX" | "issueFile" | "projectFile";
 
 export interface DocumentDataRow {
-  id: number;
+  id: string;
   fileName: string;
   date: string;
   filePath: string;

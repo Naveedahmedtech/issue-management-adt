@@ -85,7 +85,8 @@ body {
 
 
 ::-webkit-scrollbar {
-    width: 3px; /* Make it thinner */
+    width: 5px; 
+    height: 5px;
 }
 
 /* Track */
@@ -105,6 +106,17 @@ body {
 }
 
 
+.custom-scrollbar {
+    scrollbar-width: none;
+    /* For Firefox */
+    -ms-overflow-style: none;
+    /* For Internet Explorer and Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
 
 
 
@@ -135,17 +147,6 @@ button:hover {
     transform: translateY(-2px);
 }
 
-.custom-scrollbar {
-    scrollbar-width: none;
-    /* For Firefox */
-    -ms-overflow-style: none;
-    /* For Internet Explorer and Edge */
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-}
 
 
 .swiper-wrapper {
