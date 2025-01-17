@@ -16,21 +16,21 @@ export const validateProjectForm = (formData: ProjectFormData): ValidationError[
         errors.push({ field: "description", message: "Description is required." });
     }
 
-    if (!formData.startDate) {
-        errors.push({ field: "startDate", message: "Start Date is required." });
-    }
+    // if (!formData.startDate) {
+    //     errors.push({ field: "startDate", message: "Start Date is required." });
+    // }
 
-    if (!formData.endDate) {
-        errors.push({ field: "endDate", message: "End Date is required." });
-    }
+    // if (!formData.endDate) {
+    //     errors.push({ field: "endDate", message: "End Date is required." });
+    // }
 
     if (!formData.status) {
         errors.push({ field: "status", message: "Status is required." });
     }
 
-    if (formData.files.length === 0) {
-        errors.push({ field: "files", message: "At least one file must be uploaded." });
-    }
+    // if (formData.files.length === 0) {
+    //     errors.push({ field: "files", message: "At least one file must be uploaded." });
+    // }
 
     return errors;
 };

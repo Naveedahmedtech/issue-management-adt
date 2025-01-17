@@ -50,10 +50,14 @@ export const API_ROUTES = {
     ROOT: `${PROJECT_BASE}`,
     LIST: `${PROJECT_BASE}/list`,
     FILES: 'files',
+    DOWNLOAD: 'download',
+    UPDATE_FILE: 'update-file',
     ISSUES: 'issues',
     STATS: `${PROJECT_BASE}/dashboard/stats`,
     RECENT: `${PROJECT_BASE}/dashboard/recent`,
     GENERATE_REPORT: `generate-report`,
+    ARCHIVED: `archived`,
+    TOGGLE_ARCHIVED: `toggle-archive`,
   },
   ORDER: {
     ROOT: `${ORDER_BASE}`,
@@ -61,6 +65,8 @@ export const API_ROUTES = {
     FILES: 'files',
     STATS: `${ORDER_BASE}/dashboard/stats`,
     RECENT: `${ORDER_BASE}/dashboard/recent`,
+    ARCHIVED: `archived/list`,
+    TOGGLE_ARCHIVED: `toggle-archive`,
   },
   ISSUE: {
     ROOT: `${ISSUE_BASE}`

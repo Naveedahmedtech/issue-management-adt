@@ -17,7 +17,7 @@ interface ColumnType {
     tasks: Task[];
 }
 
-const Board: React.FC<any> = ({ projectIssues, refetch, isLoading }) => {
+const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived }) => {
     const [, setProject] = useState<any | null>(null);
     const [localProjectIssues, setLocalProjectIssues] = useState<ColumnType[]>(projectIssues);
 
@@ -42,6 +42,7 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading }) => {
     };
 
     const onDragEnd = async (result: DropResult) => {
+        if(isArchived) return;
         if (!localProjectIssues) return;
     
         const { source, destination } = result;
@@ -125,7 +126,7 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading }) => {
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4">
                     {localProjectIssues?.map((column) => (
-                        <Column key={column.id} column={column} refetch={refetch} />
+                        <Column key={column.id} column={column} refetch={refetch} isArchived={isArchived} />
                     ))}
                 </div>
             </DragDropContext>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Button from "../buttons/Button";
 import InputField from "../form/InputField";
@@ -21,7 +21,7 @@ const TaskEditForm: React.FC<{
     onCancel: () => void;
     refetch: () => void;
 }> = ({ initialTask, onSave, refetch }) => {
-    const [updateIssue, {isLoading}] = useUpdateIssueMutation();
+    const [updateIssue, { isLoading }] = useUpdateIssueMutation();
 
     return (
         <Formik
@@ -38,13 +38,12 @@ const TaskEditForm: React.FC<{
                 title: Yup.string().required("Title is required"),
                 description: Yup.string().required("Description is required"),
                 status: Yup.string().required("Status is required"),
-                startDate: Yup.date().required("Start date is required"),
-                endDate: Yup.date()
-                    .min(Yup.ref("startDate"), "End date cannot be before start date")
-                    .required("End date is required"),
+                // startDate: Yup.date().required("Start date is required"),
+                // endDate: Yup.date()
+                //     .min(Yup.ref("startDate"), "End date cannot be before start date")
+                //     .required("End date is required"),
             })}
             onSubmit={async (values) => {
-                // Convert form values to FormData
                 const formData = new FormData();
                 formData.append("title", values.title);
                 formData.append("description", values.description);
@@ -52,7 +51,6 @@ const TaskEditForm: React.FC<{
                 formData.append("startDate", values.startDate?.toISOString() || "");
                 formData.append("endDate", values.endDate?.toISOString() || "");
 
-                // Append each file to FormData
                 values.files.forEach((file: File) => {
                     formData.append("files", file);
                 });
@@ -70,17 +68,19 @@ const TaskEditForm: React.FC<{
         >
             {({ setFieldValue, values }) => (
                 <Form className="space-y-6">
-                    <Field
-                        name="title"
-                        component={InputField}
+                    <InputField
                         label="Title"
+                        name="title"
                         type="text"
+                        value={values.title}
+                        onChange={(e) => setFieldValue("title", e.target.value)}
                     />
-                    <Field
-                        name="description"
-                        component={InputField}
+                    <InputField
                         label="Description"
+                        name="description"
                         type="textarea"
+                        value={values.description}
+                        onChange={(e) => setFieldValue("description", e.target.value)}
                     />
                     <div className="grid grid-cols-2 gap-6">
                         <SelectField

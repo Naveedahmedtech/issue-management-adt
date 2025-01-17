@@ -20,12 +20,14 @@ export const APP_ROUTES = {
       INFO: `${BASE_ROUTES.PROJECTS}/:projectId/info`, // Project Info page
       CREATE: `${BASE_ROUTES.PROJECTS}/create`,
       EDIT: `${BASE_ROUTES.PROJECTS}/edit`,
+      ARCHIVED: `${BASE_ROUTES.PROJECTS}/archived`,
     },
     ORDERS: {
       LIST: `${BASE_ROUTES.ORDERS}`, // Page to list all projects
       DETAILS: `${BASE_ROUTES.ORDERS}/:orderId`, // Specific project details
       CREATE: `${BASE_ROUTES.ORDERS}/create`,
       EDIT: `${BASE_ROUTES.ORDERS}/edit`,
+      ARCHIVED: `${BASE_ROUTES.ORDERS}/archived`,
     },
     PROFILE: "/profile", // Common for all roles
   },

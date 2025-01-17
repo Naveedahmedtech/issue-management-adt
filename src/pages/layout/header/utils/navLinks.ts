@@ -3,7 +3,8 @@ import {
   FaTasks,
   FaUser,
   FaShoppingCart,
-  FaPlus
+  FaPlus,
+  FaArchive
 } from "react-icons/fa";
 import { ROLES } from "../../../../constant/ROLES";
 import { APP_ROUTES } from "../../../../constant/APP_ROUTES";
@@ -78,6 +79,22 @@ export const links = [
     Icon: FaPlus,
     text: "Create User",
     roles: [ROLES.SUPER_ADMIN],
+    className:
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+  },
+  {
+    url: APP_ROUTES.APP.PROJECTS.ARCHIVED,
+    Icon: FaArchive,
+    text: "Archived Projects",
+    roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
+    className:
+        "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
+  },
+  {
+    url: APP_ROUTES.APP.ORDERS.ARCHIVED,
+    Icon: FaArchive,
+    text: "Archived Orders",
+    roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
     className:
         "text-text hover:text-text hover:bg-background p-2 rounded-lg transition-all",
   },

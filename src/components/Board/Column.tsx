@@ -5,7 +5,7 @@ import { FiFolder } from "react-icons/fi";
 import TaskModal from "../modal/TaskModal";
 import { ITask } from "../../types/types.ts";
 
-const Column: React.FC<any> = ({ column, refetch }) => {
+const Column: React.FC<any> = ({ column, refetch, isArchived }) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
@@ -57,6 +57,7 @@ const Column: React.FC<any> = ({ column, refetch }) => {
                     onSave={handleSave}
                     onClose={handleCloseModal}
                     refetch={refetch}
+                    isArchived={isArchived}
                 />
             )}
         </div>

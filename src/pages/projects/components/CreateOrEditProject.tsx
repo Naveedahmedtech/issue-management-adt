@@ -7,10 +7,6 @@ import Button from "../../../components/buttons/Button.tsx";
 import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
 import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
 
-
-
-
-
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
         title: "",
@@ -19,7 +15,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         endDate: null,
         status: { label: "Pending", value: "Pending" },
         files: [],
-        ...initialData, // Use initial data if provided
+        ...initialData, // initial data if provided
     });
 
     const [errors, setErrors] = useState<ValidationError[]>([]);
@@ -100,7 +96,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     onChange={handleChange}
                     className="w-full"
                 />
-                {getError("name") && <p className="text-red-500 text-sm mt-1">{getError("name")}</p>}
+                {getError("title") && <p className="text-red-500 text-sm mt-1">{getError("title")}</p>}
             </div>
 
             <div>

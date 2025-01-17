@@ -74,6 +74,21 @@ export const orderApi = createApi({
       query: () => `${API_ROUTES.ORDER.RECENT}`,
       providesTags: ["RecentOrders"],
     }),
+    
+
+    
+    getArchivedOrders: builder.query({
+      query: ({page, limit}) => `${API_ROUTES.ORDER.ROOT}/${API_ROUTES.ORDER.ARCHIVED}?page=${page}&limit=${limit}`,
+    }),
+
+    toggleArchive: builder.mutation({
+      query: (projectId) => ({
+        url: `${API_ROUTES.ORDER.ROOT}/${projectId}/${API_ROUTES.ORDER.TOGGLE_ARCHIVED}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Order", "RecentOrders"],
+    }),
+
   }),
 });
 
@@ -85,5 +100,7 @@ export const {
   useUploadFilesToOrderMutation,
   useDeleteOrderMutation,
   useGetOrderStatsQuery,
-  useGetRecentOrdersQuery
+  useGetRecentOrdersQuery,
+  useGetArchivedOrdersQuery, 
+  useToggleArchiveMutation
 } = orderApi;

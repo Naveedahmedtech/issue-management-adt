@@ -93,15 +93,21 @@ export interface TaskProps {
   index: number;
   onClick: (task: ITask) => void; // Callback to open modal with task details
 }
-export type FileType = "PDF" | "Word" | "Excel" | "Text" | "XLSX";
+export type FileType = "PDF" | "Word" | "Excel" | "Text" | "XLSX" | "issueFile" | "projectFile";
 
 export interface DocumentDataRow {
   id: number;
   fileName: string;
   date: string;
-  type: FileType;
+  filePath: string;
+  type:  FileType;
   status?: string;
   location?: string;
+  createdAt: Date;
+  issue?: {
+    id: string;
+    title: string;
+  }
 }
 
 export interface UploadedFile {
@@ -157,6 +163,8 @@ export interface OrderInfoProps {
         status: string;
         location: string | null;
         price: number | null;
+        startDate: date | null;
+        endDate: date | null;
     }
     isLoading: boolean;
 }

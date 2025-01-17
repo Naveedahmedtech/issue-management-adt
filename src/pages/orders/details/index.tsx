@@ -2,17 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import Tabs from "../../../components/Tabs";
 import Documents from "../../../components/Board/Documents";
 import OrderInfo from "../components/OrderInfo.tsx";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import { orderDocumentColumns } from "../../../utils/Common.tsx";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
-import { useDeleteOrderMutation, useGetOrderByIdQuery, useUploadFilesToOrderMutation } from "../../../redux/features/orderApi.ts";
+import { useDeleteOrderMutation, useGetOrderByIdQuery, useToggleArchiveMutation, useUploadFilesToOrderMutation } from "../../../redux/features/orderApi.ts";
 import OrderDropDown from "../components/OrderDropDown.tsx";
 import { useAuth } from "../../../hooks/useAuth.ts";
 import { toast } from "react-toastify";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
+import { DocumentDataRow } from "../../../types/types.ts";
 
 const OrderDetails = () => {
     const [activeTab, setActiveTab] = useState("info");
@@ -25,23 +26,23 @@ const OrderDetails = () => {
 
     const { userData } = useAuth();
     const params = useParams();
+    const location = useLocation();
     const navigate = useNavigate();
+
 
     const { userData: { role } } = userData;
     const { orderId: orderId } = params;
+    const isArchived = location.state?.archive;
 
     const { data: orderData, isLoading: isOrderDataLoading, refetch: refetchOrders } = useGetOrderByIdQuery(orderId);
 
     const [uploadFilesToOrder, { isLoading: isUploadingOrderFile }] = useUploadFilesToOrderMutation();
     const [deleteOrder, { isLoading: isDeletingOrder }] = useDeleteOrderMutation();
 
+    const [archiveOrder, { isLoading: isArchiveOrder }] = useToggleArchiveMutation();
 
-    const handleAnnotateFile = (file: any) => {
-        console.log("Annotating file:", file);
-        // Add logic for file annotation
-    };
 
-    const handleSignFile = (file: any) => {
+    const handleSignFile = (file: DocumentDataRow) => {
         console.log("Signing file:", file);
         // Add logic for file signing
     };
@@ -58,7 +59,7 @@ const OrderDetails = () => {
     };
 
 
-    const documentColumns = orderDocumentColumns(handleAnnotateFile, handleSignFile);
+    const documentColumns = orderDocumentColumns(handleSignFile, isArchived);
 
     const tabs = [
         { id: "info", label: "Order Info" },
@@ -158,9 +159,17 @@ const OrderDetails = () => {
         }
     };
 
-    const handleArchive = () => {
-        console.log(`Project with ID ${orderId} archived`);
-        setIsArchiveModalOpen(false);
+    const handleArchive = async () => {
+        try {
+            await archiveOrder(orderId);
+            toast.success("Order archived successfully!");
+            navigate(APP_ROUTES.APP.ORDERS.CREATE)
+        } catch (error) {
+            toast.error("Failed to archive order. Please try again.");
+
+        } finally {
+            setIsArchiveModalOpen(false);
+        }
     };
 
     return (
@@ -168,12 +177,15 @@ const OrderDetails = () => {
             <div className="flex justify-between items-center mb-4">
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
                 <div ref={dropdownRef} className="relative">
-                    <button
-                        onClick={() => setDropdownOpen((prev) => !prev)}
-                        className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
-                    >
-                        <BsThreeDotsVertical className="text-xl" />
-                    </button>
+                    {
+                        !isArchived &&
+                        <button
+                            onClick={() => setDropdownOpen((prev) => !prev)}
+                            className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                        >
+                            <BsThreeDotsVertical className="text-xl" />
+                        </button>
+                    }
                     {dropdownOpen && (
                         <OrderDropDown
                             orderId={orderId}
@@ -218,6 +230,7 @@ const OrderDetails = () => {
                         text={'Archive'}
                         onClick={handleArchive}
                         fullWidth={false}
+                        isSubmitting={isArchiveOrder}
                     />
                 </div>
             </ModalContainer>
