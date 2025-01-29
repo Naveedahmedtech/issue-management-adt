@@ -104,7 +104,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
     };
 
     return (
-        <div className="overflow-x-auto p-4 w-full">
+        <div className="overflow-x-auto w-full">
             <table className="min-w-full bg-backgroundShade1 border border-border rounded-md">
                 <thead>
                     <tr>

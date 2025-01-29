@@ -17,5 +17,7 @@ export const useAuth = () => {
     dispatch(updateUserData(newUserData));
   };
 
+
+
   return { isLoggedIn, userData, login, logout, updateToken };
 };

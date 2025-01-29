@@ -103,17 +103,11 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   };
 
   const loadMoreProjects = () => {
-    if (currentProjectPage < projectList?.data?.totalPages) {
-      setCurrentProjectPage((prevPage) => prevPage + 1);
-      refetchProjects();
-    }
+    navigate(APP_ROUTES.APP.PROJECTS.ALL)
   };
 
   const loadMoreOrders = () => {
-    if (currentOrderPage < orderList?.data?.totalPages) {
-      setCurrentOrderPage((prevPage) => prevPage + 1);
-      refetchOrders();
-    }
+    navigate(APP_ROUTES.APP.ORDERS.ALL)
   };
 
   const showLessProjects = () => {

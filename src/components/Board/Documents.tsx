@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import { DocumentDataRow } from "../../types/types";
 import Button from "../buttons/Button";
 import { useTheme } from "../../context/ThemeContext";
+import { Link } from "react-router-dom";
+import { APP_ROUTES } from "../../constant/APP_ROUTES";
 
 const Documents = ({
   columns,
@@ -38,12 +40,12 @@ const Documents = ({
 
   useEffect(() => {
     if (selectedFile?.filePath) {
-        fetchExcelFile(selectedFile.filePath);
+      fetchExcelFile(selectedFile.filePath);
     } else {
-        setExcelData([]); // Clear the data when no file is selected
-        setModifiedData([]);
+      setExcelData([]); // Clear the data when no file is selected
+      setModifiedData([]);
     }
-}, [selectedFile]);
+  }, [selectedFile]);
 
 
   useEffect(() => {
@@ -110,7 +112,7 @@ const Documents = ({
         if (selectedFile.id) {
           // Perform the update API call
           await updateFile({ fileId: selectedFile.id, formData }).unwrap();
-          if(refetch) {
+          if (refetch) {
             refetch();
           }
           toast.success("Changes saved to the file successfully!");
@@ -155,6 +157,21 @@ const Documents = ({
             onClose={() => setIsModalOpen(false)}
             title="Excel Viewer"
           >
+            <Link
+              to={{
+                pathname: APP_ROUTES.APP.PROJECTS.EXCEL_VIEWER,
+              }}
+              state={{
+                excelData,
+                modifiedData,
+                theme,
+                selectedFile,
+                projectId: projectIdForNow,
+              }}
+              className="underline ml-5 text-textSecondary"
+            >
+              Open New Page
+            </Link>
             {excelData.length > 0 && (
               <>
                 <HotTable
@@ -165,7 +182,7 @@ const Documents = ({
                   width="100%"
                   height="500px"
                   licenseKey="non-commercial-and-evaluation"
-                  colWidths={150} 
+                  colWidths={150}
                   afterChange={(changes, source) => {
                     if (changes && source !== "loadData") {
                       const updatedData = [...modifiedData];

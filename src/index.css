@@ -11,6 +11,7 @@
     /* --color-primary: #FFC107; */
     --color-text-hover: #ffffff;
     --color-hover: #5808d1;
+    --color-text-secondary: #0202029d;
     /* Primary brand color */
     --color-background: #ffffff;
     /* Background for light theme */
@@ -38,6 +39,7 @@
 .dark {
     --color-primary: #FFC107;
     --color-text-hover: #ffffff;
+    --color-text-secondary: #ffffff6c;
     --color-hover: #4200a4;
     /* Primary brand color (same as light theme, but it will glow more) */
     --color-background: #121212;

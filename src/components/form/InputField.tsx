@@ -5,7 +5,7 @@ const InputField: React.FC<{
     label: string;
     type: string;
     name: string; // Ensure name is required
-    value?: string | number; // Accept both string and number
+    value?: string | number | null; // Accept both string and number
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     required?: boolean;
     className?: string;

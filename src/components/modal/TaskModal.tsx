@@ -1,7 +1,7 @@
 import React from "react";
-import ModalContainer from "./ModalContainer.tsx";
 import TaskDetailsView from "../Board/TaskDetailsView.tsx";
 import TaskEditForm from "../Board/TaskEditForm.tsx";
+import LargeModal from "./LargeModal.tsx";
 
 const TaskModal: React.FC<{
     task: any;
@@ -12,14 +12,18 @@ const TaskModal: React.FC<{
     component?: string;
     refetch: () => void;
     isArchived: boolean;
-}> = ({ task, isEditMode, setIsEditMode, onClose, component, refetch, isArchived }) => {
+    projectId: string;
+    setActiveTab: (tab: string) => void;    
+    setIssueId: (id: string) => void;    
+    refetchFiles: () => void;
+}> = ({ task, isEditMode, setIsEditMode, onClose, component, refetch, isArchived, projectId, setActiveTab, setIssueId, refetchFiles }) => {
     const handleSave = () => {
         onClose();
         setIsEditMode(false);
     };
 
     return (
-        <ModalContainer
+        <LargeModal
             isOpen={!!task}
             onClose={onClose}
             title={isEditMode ? `Edit ${component === "order" ? "Order" : "Issue"}` : `${component === "order" ? "Order" : "Issue"} Details`}
@@ -31,6 +35,7 @@ const TaskModal: React.FC<{
                     onSave={handleSave}
                     onCancel={onClose}
                     refetch={refetch}
+                    refetchFiles={refetchFiles}
                 />
             ) : (
                 <TaskDetailsView
@@ -41,9 +46,13 @@ const TaskModal: React.FC<{
                     component={component}
                     refetch={refetch}
                     isArchived={isArchived}
+                    projectId={projectId}
+                    setActiveTab={setActiveTab}
+                    setIssueId={setIssueId}
+                    refetchFiles={refetchFiles}
                 />
             )}
-        </ModalContainer>
+        </LargeModal>
     );
 };
 

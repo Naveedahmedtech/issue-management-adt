@@ -3,7 +3,7 @@ import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import { projectDocumentColumns } from "../../../utils/Common.tsx";
 import { projectDocumentData } from "../../../mock/tasks.ts";
@@ -19,6 +19,9 @@ import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import { DocumentDataRow } from "../../../types/types.ts";
 import { BASE_URL } from "../../../constant/BASE_URL.ts";
 import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
+import Activity from "../components/Activity.tsx";
+import LargeModal from "../../../components/modal/LargeModal.tsx";
+import AnnotationIframe from "../../../mock/AnnotationIframe.tsx";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -51,11 +54,13 @@ const ProjectDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
     const [selectedFile, setSelectedFile] = useState<DocumentDataRow | null>();
+    const [isAnnotationModal, setIsAnnotationModal] = useState(false)
+    const [issueId, setIssueId] = useState();
 
 
 
     const { userData } = useAuth();
-    const { userData: { role } } = userData;
+    const { userData: { role, id: userId } } = userData;
 
 
 
@@ -80,8 +85,9 @@ const ProjectDetails = () => {
             const formattedProjectFiles = projectFiles.data.files.map((file: DocumentDataRow) => ({
                 id: file.id,
                 fileName: file.filePath.split("/").pop(),
+                extension: file.filePath.split(".").pop(),
                 filePath: file.filePath,
-                date: new Date(file.createdAt).toLocaleDateString("en-GB"),
+                date: new Date(file.updatedAt).toLocaleDateString("en-GB"),
                 // type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
                 type: `${file.type === "issueFile" ? `${file.type} (${file?.issue && file?.issue.title})` : file.type}` || "UNKNOWN",
             }));
@@ -93,12 +99,13 @@ const ProjectDetails = () => {
 
 
     useEffect(() => {
-        if (projectIssues?.data) {
-            const allTasks = projectIssues.data.flatMap((column: any) => column.tasks);
+        if (projectIssues?.data?.columns) {
+            const allTasks = projectIssues.data?.columns?.flatMap((column: any) => column.tasks);
             setTasks(allTasks);
             setFilteredTasks(allTasks); // Initialize filtered tasks with all tasks
         }
     }, [projectIssues]);
+
 
     const handleFilterChange = (status: string) => {
         setActiveFilter(status);
@@ -121,7 +128,9 @@ const ProjectDetails = () => {
                 setSelectedFile(file); // Re-select the file to trigger useEffect
             }, 0);
         } else {
-            toast.info("We are working on PDF annotation for you!");
+            // toast.info("We are working on PDF annotation for you!");
+            setSelectedFile(file);
+            setIsAnnotationModal(true);
         }
     }
 
@@ -189,6 +198,7 @@ const ProjectDetails = () => {
         { id: "board", label: "Issues" },
         { id: "documents", label: "Documents" },
         { id: "info", label: "Project Info" },
+        { id: "activity", label: "Activity" },
     ];
 
     const handleOutsideClick = (event: MouseEvent) => {
@@ -259,11 +269,10 @@ const ProjectDetails = () => {
             document.removeEventListener("mousedown", handleOutsideClick);
         };
     }, [dropdownOpen]);
-
     const groupedTasks = {
-        "To Do": filteredTasks.filter((task: any) => task.status.toUpperCase() === "TO DO"),
-        "In Progress": filteredTasks.filter((task: any) => task.status.toUpperCase() === "IN PROGRESS"),
-        "Completed": filteredTasks.filter((task: any) => task.status.toUpperCase() === "COMPLETED"),
+        "To Do": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "TO DO"),
+        "In Progress": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "IN PROGRESS"),
+        "Completed": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "COMPLETED"),
     };
 
     const renderActiveTab = () => {
@@ -283,11 +292,19 @@ const ProjectDetails = () => {
                     refetch={refetchIssues}
                     isLoading={isLoadingIssues}
                     isArchived={isArchived}
+                    projectId={projectId}
+                    setActiveTab={setActiveTab}
+                    setIssueId={setIssueId}
+                    refetchFiles={refetchProjectFiles}
                 /> : <Board
-                    projectIssues={projectIssues?.data}
+                    projectIssues={projectIssues?.data?.columns}
                     refetch={refetchIssues}
                     isLoading={isLoadingIssues}
                     isArchived={isArchived}
+                    projectId={projectId}
+                    setActiveTab={setActiveTab}
+                    setIssueId={setIssueId}
+                    refetchFiles={refetchProjectFiles}
                 />;
             case "documents":
                 return <Documents
@@ -301,6 +318,8 @@ const ProjectDetails = () => {
                 />;
             case "info":
                 return <ProjectInfo projectId={projectId} projectData={projectData?.data} />;
+            case "activity":
+                return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />;
             default:
                 return null;
         }
@@ -312,7 +331,7 @@ const ProjectDetails = () => {
 
             toast.success("Project deleted successfully!");
             setIsDeleteModalOpen(false);
-            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+            navigate(APP_ROUTES.APP.PROJECTS.ALL)
         } catch (error: any) {
             console.error("Failed to delete project:", error);
             toast.error("Failed to delete project. Please try again.");
@@ -441,6 +460,27 @@ const ProjectDetails = () => {
                     />
                 </div>
             </ModalContainer>
+
+            <LargeModal
+                isOpen={isAnnotationModal}
+                onClose={() => setIsAnnotationModal(false)}
+                title="Webview"
+            >
+                <div className="relative h-full">
+                <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId} />
+                    <div className="sticky bottom-0 bg-background">
+                        <Link
+                            to={{
+                                pathname: APP_ROUTES.APP.PROJECTS.PDF_VIEWER,
+                            }}
+                            className="underline text-textSecondary"
+                        >
+                            Open New Page
+                        </Link>
+                    </div>
+                </div>
+            </LargeModal>
+
         </main>
     );
 };

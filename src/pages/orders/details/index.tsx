@@ -45,6 +45,7 @@ const OrderDetails = () => {
 
     const handleSignFile = (file: DocumentDataRow) => {
         console.log("Signing file:", file);
+        toast.info("We are working hard to bring this feature!")
         // Add logic for file signing
     };
 
@@ -153,7 +154,7 @@ const OrderDetails = () => {
             toast.success("Order deleted successfully!");
             setIsDeleteModalOpen(false);
             refetchOrders();
-            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+            navigate(APP_ROUTES.APP.ORDERS.ALL)
         } catch (error: any) {
             console.error("Failed to delete order:", error);
             toast.error("Failed to delete order. Please try again.");

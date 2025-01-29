@@ -32,11 +32,15 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick }) => {
                     <div className="text-xs text-text-muted mb-2">
                         <p>
                             <strong>Start Date:</strong>{" "}
-                            <span>{format(new Date(task.startDate), "MMM dd, yyyy")}</span>
+                            <span>{task.startDate ? format(new Date(task.startDate), "MMM dd, yyyy") : ""}</span>
                         </p>
                         <p>
                             <strong>End Date:</strong>{" "}
-                            <span>{format(new Date(task.endDate), "MMM dd, yyyy")}</span>
+                            <span>{task.endDate ? format(new Date(task.endDate), "MMM dd, yyyy") : ""}</span>
+                        </p>
+                        <p>
+                            <strong>Created by:</strong>{" "}
+                            <span>{task.user.displayName}</span>
                         </p>
                     </div>
                     <span

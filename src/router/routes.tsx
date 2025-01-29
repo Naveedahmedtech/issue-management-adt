@@ -4,12 +4,16 @@ import PublicRouteWrapper from './components/PublicRouteWrapper';
 import { Header } from '../pages/layout';
 import { ForgotPassword, SignIn } from '../pages/auth';
 import {
+    AllOrders,
+    AllProjects,
     ArchivedOrders,
     ArchivedProjects,
     CreateOrder,
     CreateProject, CreateUser, EditOrder,
     EditProject,
+    ExcelViewer,
     NotFound, OrderDashboard, OrderDetails,
+    PdfViewer,
     ProjectDashboard,
     ProjectDetails, UserManagement
 } from '../pages';
@@ -25,12 +29,16 @@ export const router = createBrowserRouter(
                     <Route index element={<ProjectDashboard />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.DASHBOARDS.PROJECT} element={<ProjectDashboard />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.PROJECTS.DETAILS} element={<ProjectDetails />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.PROJECTS.ALL} element={<AllProjects />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.PROJECTS.CREATE} element={<CreateProject />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.PROJECTS.EXCEL_VIEWER}`} element={<ExcelViewer />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}`} element={<PdfViewer />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.EDIT}/:projectId`} element={<EditProject />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT}`} element={<UserManagement />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.SUPERADMIN.USERS.CREATE}`} element={<CreateUser />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.DASHBOARDS.ORDER}`} element={<OrderDashboard />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.DETAILS} element={<OrderDetails />} errorElement={<ErrorBoundary />} />
+                    <Route path={APP_ROUTES.APP.ORDERS.ALL} element={<AllOrders />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.CREATE} element={<CreateOrder />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.ORDERS.EDIT}/:orderId`} element={<EditOrder />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.ARCHIVED}`} element={<ArchivedProjects />} errorElement={<ErrorBoundary />} />

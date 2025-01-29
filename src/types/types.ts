@@ -86,6 +86,10 @@ export interface ITask {
   startDate: string; // Assuming dates are passed as ISO strings
   endDate: string;
   files: any[];
+  user: {
+    email: string;
+    displayName: string;
+  }
 }
 
 export interface TaskProps {
@@ -103,7 +107,9 @@ export interface DocumentDataRow {
   type:  FileType;
   status?: string;
   location?: string;
+  extension?: string;
   createdAt: Date;
+  updatedAt: Date;
   issue?: {
     id: string;
     title: string;
@@ -122,6 +128,7 @@ export interface ProjectFormData {
   endDate: Date | null;
   status: { label: string; value: string } | null;
   files: File[];
+  companyName: string | null;
 }
 export interface OrderFormData {
   name: string;
@@ -132,6 +139,7 @@ export interface OrderFormData {
   endDate: Date | null;
   status: { label: string; value: string } | null;
   files: File[];
+  companyName: string | null;
 }
 
 export interface CreateOrEditProjectProps {
@@ -163,8 +171,21 @@ export interface OrderInfoProps {
         status: string;
         location: string | null;
         price: number | null;
-        startDate: date | null;
-        endDate: date | null;
+        startDate: string;
+        endDate: string;
+        companyName: string;
     }
     isLoading: boolean;
+}
+
+export interface Task {
+    id: string;
+    status: string;
+    [key: string]: any;
+}
+
+export interface ColumnType {
+    id: string;
+    name: string;
+    tasks: Task[];
 }

@@ -9,16 +9,16 @@ export const issueApi = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
   }),
-
+  tagTypes: ['Issue', 'Stats'],
 
   endpoints: (builder) => ({
-
     updateIssue: builder.mutation({
         query: ({ issueId, formData }) => ({
           url: `${API_ROUTES.ISSUE.ROOT}/${issueId}`,
           method: "PUT",
           body: formData,
         }),
+        invalidatesTags: ['Stats']
       }),
 
 

@@ -21,6 +21,9 @@ export const APP_ROUTES = {
       CREATE: `${BASE_ROUTES.PROJECTS}/create`,
       EDIT: `${BASE_ROUTES.PROJECTS}/edit`,
       ARCHIVED: `${BASE_ROUTES.PROJECTS}/archived`,
+      ALL: `${BASE_ROUTES.PROJECTS}/all`,
+      EXCEL_VIEWER: `${BASE_ROUTES.PROJECTS}/excel-viewer`,
+      PDF_VIEWER: `${BASE_ROUTES.PROJECTS}/pdf-viewer`,
     },
     ORDERS: {
       LIST: `${BASE_ROUTES.ORDERS}`, // Page to list all projects
@@ -28,6 +31,7 @@ export const APP_ROUTES = {
       CREATE: `${BASE_ROUTES.ORDERS}/create`,
       EDIT: `${BASE_ROUTES.ORDERS}/edit`,
       ARCHIVED: `${BASE_ROUTES.ORDERS}/archived`,
+      ALL: `${BASE_ROUTES.ORDERS}/all`,
     },
     PROFILE: "/profile", // Common for all roles
   },

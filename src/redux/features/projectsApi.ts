@@ -14,7 +14,7 @@ export const projectApi = createApi({
     },
   }),
   // ✅ Enable tagTypes
-  tagTypes: ["Project", "RecentProjects"],
+  tagTypes: ["Project", "RecentProjects", "ActivityLogs", "Stats"],
 
   endpoints: (builder) => ({
     // ✅ Assign tag to getProjectList query
@@ -48,7 +48,7 @@ export const projectApi = createApi({
         url: `${API_ROUTES.PROJECT.ROOT}/${projectId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Project", "RecentProjects"],
+      invalidatesTags: ["Project", "RecentProjects", "Stats"],
     }),
 
     uploadFilesToProject: builder.mutation({
@@ -59,7 +59,6 @@ export const projectApi = createApi({
       }),
     }),
 
-
     updateFile: builder.mutation({
       query: ({ fileId, formData }) => ({
         url: `${API_ROUTES.PROJECT.ROOT}/${fileId}/${API_ROUTES.PROJECT.UPDATE_FILE}`,
@@ -68,13 +67,12 @@ export const projectApi = createApi({
       }),
     }),
 
-
     toggleArchive: builder.mutation({
       query: (projectId) => ({
         url: `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.TOGGLE_ARCHIVED}`,
         method: "PATCH",
       }),
-      invalidatesTags: ["Project", "RecentProjects"],
+      invalidatesTags: ["Project", "RecentProjects", "Stats"],
     }),
 
     getProjectById: builder.query({
@@ -96,27 +94,69 @@ export const projectApi = createApi({
 
     getProjectStats: builder.query({
       query: () => `${API_ROUTES.PROJECT.STATS}`,
+      providesTags: ["Stats"],
     }),
 
     getRecentProjects: builder.query({
-      query: () => `${API_ROUTES.PROJECT.RECENT}`,
+      query: ({
+        page = 1,
+        limit = 10,
+        search,
+        status,
+        startDate,
+        endDate,
+        sortOrder,
+      }) => {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (search) params.append("search", search);
+        if (status) params.append("status", status);
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+
+        return `${API_ROUTES.PROJECT.RECENT}?${params.toString()}`;
+      },
       providesTags: ["RecentProjects"],
     }),
 
-
     generateProjectReport: builder.query({
-      query: (projectId) => `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.GENERATE_REPORT}`,
+      query: (projectId) =>
+        `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.GENERATE_REPORT}`,
       transformResponse: async (response: Response) => {
         const blob = await response.blob();
         return blob;
       },
     }),
 
-
     getArchivedProjects: builder.query({
-      query: ({page, limit}) => `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ARCHIVED}?page=${page}&limit=${limit}`,
+      query: ({ page, limit }) =>
+        `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ARCHIVED}?page=${page}&limit=${limit}`,
     }),
 
+    updateIssueLogHistory: builder.mutation({
+      query: ({ issueId, body }) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ISSUES}/${issueId}/${API_ROUTES.PROJECT.ISSUE_LOG_HISTORY}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["ActivityLogs"],
+    }),
+
+    getProjectActiveLogs: builder.query({
+      query: ({ projectId, page, limit, issueId }) => {
+        const params = new URLSearchParams();
+        if (issueId) params.append("issueId", issueId);
+        if (page) params.append("page", page);
+        if (limit) params.append("limit", limit);
+
+        return `${API_ROUTES.PROJECT.ROOT}/${projectId}/${
+          API_ROUTES.PROJECT.ACTIVITY_LOGS
+        }?${params.toString()}`;
+      },
+      providesTags: ["ActivityLogs"],
+    }),
   }),
 });
 
@@ -134,5 +174,7 @@ export const {
   useLazyGenerateProjectReportQuery,
   useUpdateFileMutation,
   useGetArchivedProjectsQuery,
-  useToggleArchiveMutation
+  useToggleArchiveMutation,
+  useUpdateIssueLogHistoryMutation,
+  useGetProjectActiveLogsQuery,
 } = projectApi;

@@ -79,7 +79,18 @@ export const orderApi = createApi({
     }),
 
     getRecentOrders: builder.query({
-      query: () => `${API_ROUTES.ORDER.RECENT}`,
+      query: ({ page = 1, limit = 10, search, status, startDate, endDate, sortOrder }) => {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (search) params.append("search", search);
+        if (status) params.append("status", status);
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+    
+        return `${API_ROUTES.ORDER.RECENT}?${params.toString()}`; 
+      },
       providesTags: ["RecentOrders"],
     }),
     

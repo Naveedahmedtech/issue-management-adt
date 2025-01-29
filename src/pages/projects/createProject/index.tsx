@@ -16,6 +16,7 @@ const CreateProject: React.FC = () => {
     // Append the fields
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
+    formDataToSend.append("companyName", formData.companyName || "");
     formDataToSend.append("status", formData.status?.value || "");
   
     // Format and append dates
@@ -42,7 +43,7 @@ const CreateProject: React.FC = () => {
       toast.success("Project created successfully!");
       console.log("Project created successfully!");
     } catch (error:any) {
-      toast.error(error?.data?.message || "Failed to create project. Please try again.");
+      toast.error(error?.data?.message || error?.data?.error?.message || "Failed to create project. Please try again.");
       console.error("Failed to create project:", error);
     }
   };
