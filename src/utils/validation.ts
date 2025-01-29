@@ -20,6 +20,10 @@ export const validateProjectForm = (formData: ProjectFormData): ValidationError[
     //     errors.push({ field: "startDate", message: "Start Date is required." });
     // }
 
+    // if (!formData.companyName) {
+    //     errors.push({ field: "companyName", message: "Company Name is required." });
+    // }
+
     // if (!formData.endDate) {
     //     errors.push({ field: "endDate", message: "End Date is required." });
     // }

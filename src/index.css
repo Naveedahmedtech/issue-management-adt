@@ -11,6 +11,7 @@
     /* --color-primary: #FFC107; */
     --color-text-hover: #ffffff;
     --color-hover: #5808d1;
+    --color-text-secondary: #0202029d;
     /* Primary brand color */
     --color-background: #ffffff;
     /* Background for light theme */
@@ -38,6 +39,7 @@
 .dark {
     --color-primary: #FFC107;
     --color-text-hover: #ffffff;
+    --color-text-secondary: #ffffff6c;
     --color-hover: #4200a4;
     /* Primary brand color (same as light theme, but it will glow more) */
     --color-background: #121212;
@@ -85,7 +87,8 @@ body {
 
 
 ::-webkit-scrollbar {
-    width: 3px; /* Make it thinner */
+    width: 5px; 
+    height: 5px;
 }
 
 /* Track */
@@ -105,6 +108,17 @@ body {
 }
 
 
+.custom-scrollbar {
+    scrollbar-width: none;
+    /* For Firefox */
+    -ms-overflow-style: none;
+    /* For Internet Explorer and Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
 
 
 
@@ -135,17 +149,6 @@ button:hover {
     transform: translateY(-2px);
 }
 
-.custom-scrollbar {
-    scrollbar-width: none;
-    /* For Firefox */
-    -ms-overflow-style: none;
-    /* For Internet Explorer and Edge */
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-}
 
 
 .swiper-wrapper {

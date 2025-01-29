@@ -13,6 +13,7 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
         description: "",
         location: "",
         price: undefined,
+        companyName: "",
         status: { label: "Pending", value: "Pending" },
         startDate: null,
         endDate: null,
@@ -65,6 +66,7 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
             startDate: null,
             endDate: null,
             files: [],
+            companyName: '',
         });
     };
 
@@ -117,6 +119,18 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
                     className="w-full"
                 />
                 {getError("description") && <p className="text-red-500 text-sm mt-1">{getError("description")}</p>}
+            </div>
+
+            <div>
+                <InputField
+                    label="Company Name"
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    className="w-full"
+                />
+                {getError("companyName") && <p className="text-red-500 text-sm mt-1">{getError("companyName")}</p>}
             </div>
 
             <div>

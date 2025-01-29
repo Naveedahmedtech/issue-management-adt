@@ -55,6 +55,14 @@ export const orderApi = createApi({
       }),
     }),
 
+    toggleArchive: builder.mutation({
+      query: (projectId) => ({
+        url: `${API_ROUTES.ORDER.ROOT}/${projectId}/${API_ROUTES.ORDER.TOGGLE_ARCHIVED}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Order", "RecentOrders"],
+    }),
+
     getOrderById: builder.query({
       query: (orderId) => `${API_ROUTES.ORDER.ROOT}/${orderId}`,
       providesTags: ["Order"],
@@ -71,7 +79,18 @@ export const orderApi = createApi({
     }),
 
     getRecentOrders: builder.query({
-      query: () => `${API_ROUTES.ORDER.RECENT}`,
+      query: ({ page = 1, limit = 10, search, status, startDate, endDate, sortOrder }) => {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (search) params.append("search", search);
+        if (status) params.append("status", status);
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+    
+        return `${API_ROUTES.ORDER.RECENT}?${params.toString()}`; 
+      },
       providesTags: ["RecentOrders"],
     }),
     
@@ -79,15 +98,10 @@ export const orderApi = createApi({
     
     getArchivedOrders: builder.query({
       query: ({page, limit}) => `${API_ROUTES.ORDER.ROOT}/${API_ROUTES.ORDER.ARCHIVED}?page=${page}&limit=${limit}`,
+      providesTags: ["Order", "RecentOrders"],
     }),
 
-    toggleArchive: builder.mutation({
-      query: (projectId) => ({
-        url: `${API_ROUTES.ORDER.ROOT}/${projectId}/${API_ROUTES.ORDER.TOGGLE_ARCHIVED}`,
-        method: "PATCH",
-      }),
-      invalidatesTags: ["Order", "RecentOrders"],
-    }),
+
 
   }),
 });

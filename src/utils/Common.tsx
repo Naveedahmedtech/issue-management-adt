@@ -62,14 +62,18 @@ export const projectDocumentColumns = (
                   className="text-primary hover:underline"
                   onClick={() => handleAnnotateFile(row)}
                 >
-                  Annotate
+                  {(row.extension && row.extension.toLowerCase() === "pdf") ? "Annotate" : (row.extension && row.extension.toLowerCase() == "xlsx") ? "View" : ""}
                 </button>
-                <button
-                  className="text-primary hover:underline"
-                  onClick={() => handleSignFile("")}
-                >
-                  Signing
-                </button>
+                {
+                  (row.extension && row.extension.toLowerCase() != "xlsx") && (
+                    <button
+                      className="text-primary hover:underline"
+                      onClick={() => handleSignFile("")}
+                    >
+                      Signing
+                    </button>
+                  )
+                }
                 <button
                   className="text-primary hover:underline"
                   onClick={() => handleDownloadFile(row)}

@@ -34,7 +34,7 @@ const UserManagement: React.FC = () => {
     const [updateAzureUser, { isLoading: isUpdating }] = useUpdateAzureUserMutation();
 
     // Fetch users from API
-    const { data, isLoading, isError, refetch } = useGetAllUsersQuery({ page: currentPage, limit: 1 });
+    const { data, isLoading, isError, refetch } = useGetAllUsersQuery({ page: currentPage, limit: 10 });
 
     // Fetch roles and permissions
     const { data: rolesData } = useRolesQuery({});

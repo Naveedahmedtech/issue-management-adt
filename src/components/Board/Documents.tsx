@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { HotTable } from "@handsontable/react";
 import Table from "../Table";
 import { BASE_URL } from "../../constant/BASE_URL";
-import * as XLSX from "xlsx"; // Importing SheetJS to parse Excel files
+import * as XLSX from "xlsx"; // SheetJS to parse Excel files
 import LargeModal from "../modal/LargeModal";
 import 'handsontable/styles/handsontable.min.css';
 import 'handsontable/styles/ht-theme-main.min.css';
@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import { DocumentDataRow } from "../../types/types";
 import Button from "../buttons/Button";
 import { useTheme } from "../../context/ThemeContext";
+import { Link } from "react-router-dom";
+import { APP_ROUTES } from "../../constant/APP_ROUTES";
 
 const Documents = ({
   columns,
@@ -24,23 +26,34 @@ const Documents = ({
   data: any;
   setIsUploadModalOpen: any;
   isLoading: boolean;
-  selectedFile?: DocumentDataRow;
+  selectedFile?: DocumentDataRow | null;
   projectIdForNow?: string;
   refetch?: () => void;
 }) => {
   const [excelData, setExcelData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modifiedData, setModifiedData] = useState<any[]>([]);
+
   const { theme } = useTheme();
 
   const [updateFile, { isLoading: isUpdateFile }] = useUpdateFileMutation();
 
-
   useEffect(() => {
     if (selectedFile?.filePath) {
       fetchExcelFile(selectedFile.filePath);
+    } else {
+      setExcelData([]); // Clear the data when no file is selected
+      setModifiedData([]);
     }
   }, [selectedFile]);
+
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      setExcelData([]); // Clear data when modal is closed
+      setModifiedData([]);
+    }
+  }, [isModalOpen]);
 
   // Function to load and parse the Excel file using XLSX
   const fetchExcelFile = async (filePath: string) => {
@@ -65,7 +78,6 @@ const Documents = ({
       console.error("Error fetching the Excel file:", error);
     }
   };
-
 
   // Function to save the modified Excel data back to the backend
   const saveExcelFile = async () => {
@@ -100,7 +112,7 @@ const Documents = ({
         if (selectedFile.id) {
           // Perform the update API call
           await updateFile({ fileId: selectedFile.id, formData }).unwrap();
-          if(refetch) {
+          if (refetch) {
             refetch();
           }
           toast.success("Changes saved to the file successfully!");
@@ -145,6 +157,21 @@ const Documents = ({
             onClose={() => setIsModalOpen(false)}
             title="Excel Viewer"
           >
+            <Link
+              to={{
+                pathname: APP_ROUTES.APP.PROJECTS.EXCEL_VIEWER,
+              }}
+              state={{
+                excelData,
+                modifiedData,
+                theme,
+                selectedFile,
+                projectId: projectIdForNow,
+              }}
+              className="underline ml-5 text-textSecondary"
+            >
+              Open New Page
+            </Link>
             {excelData.length > 0 && (
               <>
                 <HotTable
@@ -155,6 +182,7 @@ const Documents = ({
                   width="100%"
                   height="500px"
                   licenseKey="non-commercial-and-evaluation"
+                  colWidths={150}
                   afterChange={(changes, source) => {
                     if (changes && source !== "loadData") {
                       const updatedData = [...modifiedData];

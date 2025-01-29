@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCalendarAlt, FaRegClock } from "react-icons/fa";
+import { FaCalendarAlt, FaRegClock, FaBuilding, FaUser } from "react-icons/fa";
 import { format } from "date-fns";
 
 interface ProjectInfoProps {
@@ -7,14 +7,19 @@ interface ProjectInfoProps {
   projectData: {
     id: string;
     title: string;
-    description: string;
+    description: string | null;
     status: string;
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
     archived: boolean;
     createdAt: string;
     updatedAt: string;
     userId: string;
+    companyName: string | null;
+    user: {
+      email: string;
+      displayName: string;
+    };
   };
 }
 
@@ -50,6 +55,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
       <p className="text-text text-lg mb-6">{projectData?.description}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Status */}
         <div className="flex items-center space-x-4">
           <FaRegClock className="text-primary text-lg" />
           <div>
@@ -58,6 +64,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
           </div>
         </div>
 
+        {/* Start Date */}
         <div className="flex items-center space-x-4">
           <FaCalendarAlt className="text-primary text-lg" />
           <div>
@@ -66,11 +73,35 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
           </div>
         </div>
 
+        {/* End Date */}
         <div className="flex items-center space-x-4">
           <FaCalendarAlt className="text-primary text-lg" />
           <div>
             <p className="text-sm text-textLight font-medium">End Date</p>
             <p className="text-text font-medium">{formattedEndDate}</p>
+          </div>
+        </div>
+
+        {/* Company Name */}
+        <div className="flex items-center space-x-4">
+          <FaBuilding className="text-primary text-lg" />
+          <div>
+            <p className="text-sm text-textLight font-medium">Company</p>
+            <p className="text-text font-medium">
+              {projectData?.companyName || "N/A"}
+            </p>
+          </div>
+        </div>
+
+        {/* Created By */}
+        <div className="flex items-center space-x-4">
+          <FaUser className="text-primary text-lg" />
+          <div>
+            <p className="text-sm text-textLight font-medium">Created By</p>
+            <p className="text-text font-medium">
+              {projectData?.user?.displayName || "Unknown"} 
+              {/* ({projectData?.user?.email || "N/A"}) */}
+            </p>
           </div>
         </div>
       </div>

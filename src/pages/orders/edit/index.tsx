@@ -25,6 +25,7 @@ const EditOrder: React.FC = () => {
     // Append form fields
     formDataToSend.append("name", formData.name);
     formDataToSend.append("description", formData.description);
+    formDataToSend.append("companyName", formData.companyName || '');
     formDataToSend.append("location", formData.location);
     formDataToSend.append("price", formData.price?.toString() ||  "");
     formDataToSend.append(
@@ -71,6 +72,7 @@ const EditOrder: React.FC = () => {
                 name: orderData?.data?.name,
                 description: orderData?.data?.description,
                 location: orderData?.data?.location,
+                companyName: orderData?.data?.companyName,
                 status: { label: orderData?.data?.status, value: orderData?.data?.status },
                 price: orderData?.data?.price,
                 files: orderData?.data?.files || [],

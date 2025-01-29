@@ -1,10 +1,10 @@
-import {ITask, User} from "../types/types.ts";
+import { User} from "../types/types.ts";
 
 
-type Column = { id: string; name: string; tasks: ITask[] };
-type Project = { title: string; description: string; status: string; columns: Column[] };
+// type Column = { id: string; name: string; tasks: ITask[] };
+// type Project = { title: string; description: string; status: string; columns: Column[] };
 
-export const fetchMockProject = (): Promise<Project> => {
+export const fetchMockProject = (): Promise<any> => {
     return new Promise((resolve) =>
         setTimeout(() => {
             resolve({

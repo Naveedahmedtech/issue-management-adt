@@ -20,6 +20,7 @@ const CreateOrder: React.FC = () => {
         formDataToSend.append("location", formData.location);
         formDataToSend.append("description", formData.description);
         formDataToSend.append("status", formData.status?.value || "");
+        formDataToSend.append("companyName", formData.companyName || "");
     
         // Format and append dates
         formDataToSend.append(

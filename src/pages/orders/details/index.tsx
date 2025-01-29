@@ -19,6 +19,7 @@ const OrderDetails = () => {
     const [activeTab, setActiveTab] = useState("info");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+    const [isUnArchiveModalOpen, setIsUnArchiveModalOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -44,6 +45,7 @@ const OrderDetails = () => {
 
     const handleSignFile = (file: DocumentDataRow) => {
         console.log("Signing file:", file);
+        toast.info("We are working hard to bring this feature!")
         // Add logic for file signing
     };
 
@@ -152,7 +154,7 @@ const OrderDetails = () => {
             toast.success("Order deleted successfully!");
             setIsDeleteModalOpen(false);
             refetchOrders();
-            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+            navigate(APP_ROUTES.APP.ORDERS.ALL)
         } catch (error: any) {
             console.error("Failed to delete order:", error);
             toast.error("Failed to delete order. Please try again.");
@@ -178,13 +180,18 @@ const OrderDetails = () => {
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
                 <div ref={dropdownRef} className="relative">
                     {
-                        !isArchived &&
+                        !isArchived ?
                         <button
                             onClick={() => setDropdownOpen((prev) => !prev)}
                             className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                         >
                             <BsThreeDotsVertical className="text-xl" />
                         </button>
+                        :
+                        <Button
+                        text="Unarchive"
+                        onClick={() => setIsUnArchiveModalOpen(true)}
+                    />
                     }
                     {dropdownOpen && (
                         <OrderDropDown
@@ -228,6 +235,24 @@ const OrderDetails = () => {
                 <div className="flex justify-end mt-6 space-x-4">
                     <Button
                         text={'Archive'}
+                        onClick={handleArchive}
+                        fullWidth={false}
+                        isSubmitting={isArchiveOrder}
+                    />
+                </div>
+            </ModalContainer>
+
+            <ModalContainer
+                isOpen={isUnArchiveModalOpen}
+                onClose={() => setIsUnArchiveModalOpen(false)}
+                title="Archive Order Confirmation"
+            >
+                <p className="text-text">
+                    Are you sure you want to unarchive this order?
+                </p>
+                <div className="flex justify-end mt-6 space-x-4">
+                    <Button
+                        text={'Unarchive'}
                         onClick={handleArchive}
                         fullWidth={false}
                         isSubmitting={isArchiveOrder}

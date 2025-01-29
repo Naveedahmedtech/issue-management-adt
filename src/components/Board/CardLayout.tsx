@@ -15,7 +15,11 @@ const CardLayout = ({
                         component,
                         refetch,
                         isLoading,
-                        isArchived
+                        isArchived,
+                        projectId,
+                        setActiveTab, 
+                        setIssueId,
+                        refetchProjectFiles
                     }: any) => {
     // Determine sections to show based on the active filter
     const sectionsToShow = activeFilter === "All" ? Object.keys(groupedTasks) : [activeFilter];
@@ -67,6 +71,10 @@ const CardLayout = ({
                     component={component}
                     refetch={refetch}
                     isArchived={isArchived}
+                    projectId={projectId}
+                    setActiveTab={setActiveTab}
+                    setIssueId={setIssueId}
+                    refetchFiles={refetchProjectFiles}
                 />
             )}
         </div>

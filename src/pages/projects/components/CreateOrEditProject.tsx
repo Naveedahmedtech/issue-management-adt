@@ -13,6 +13,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         description: "",
         startDate: null,
         endDate: null,
+        companyName: "",
         status: { label: "Pending", value: "Pending" },
         files: [],
         ...initialData, // initial data if provided
@@ -57,6 +58,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             startDate: null,
             endDate: null,
             files: [],
+            companyName: "",
           });
     }
 
@@ -109,6 +111,19 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     className="w-full"
                 />
                 {getError("description") && <p className="text-red-500 text-sm mt-1">{getError("description")}</p>}
+            </div>
+
+
+            <div>
+                <InputField
+                    label="Company Name"
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    className="w-full"
+                />
+                {getError("companyName") && <p className="text-red-500 text-sm mt-1">{getError("companyName")}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

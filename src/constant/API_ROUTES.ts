@@ -58,6 +58,8 @@ export const API_ROUTES = {
     GENERATE_REPORT: `generate-report`,
     ARCHIVED: `archived`,
     TOGGLE_ARCHIVED: `toggle-archive`,
+    ISSUE_LOG_HISTORY: 'update-log-history',
+    ACTIVITY_LOGS: 'activity-logs'
   },
   ORDER: {
     ROOT: `${ORDER_BASE}`,
