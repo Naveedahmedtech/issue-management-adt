@@ -19,7 +19,7 @@ const CardLayout = ({
                         projectId,
                         setActiveTab, 
                         setIssueId,
-                        refetchProjectFiles
+                        refetchFiles
                     }: any) => {
     // Determine sections to show based on the active filter
     const sectionsToShow = activeFilter === "All" ? Object.keys(groupedTasks) : [activeFilter];
@@ -74,7 +74,7 @@ const CardLayout = ({
                     projectId={projectId}
                     setActiveTab={setActiveTab}
                     setIssueId={setIssueId}
-                    refetchFiles={refetchProjectFiles}
+                    refetchFiles={refetchFiles}
                 />
             )}
         </div>

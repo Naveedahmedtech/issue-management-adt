@@ -95,6 +95,7 @@ const TaskDetailsView: React.FC<{
       onClose();
       toast.success(`Status updated to "${newStatus}"`);
     } catch (error: any) {
+      console.log("error", error)
       toast.error(
         error?.data?.error?.message || "Unable to update status, please try again!"
       );
@@ -126,26 +127,32 @@ const TaskDetailsView: React.FC<{
             <span className="px-4 py-2 bg-primary text-text rounded">
               {task.status}
             </span>
-            <div className="flex items-center gap-2">
-              {
-                isMovingStatus ? "moving..." : (
+            <div className="flex items-center mt-2">
+              {isMovingStatus ? (
+                  <span className="text-gray-500 italic">Moving...</span>
+              ) : (
                   <>
                     <button
-                      onClick={() => updateStatus(getPreviousStatus(task.status), false)}
-                      className="py-2 text-text underline"
+                        onClick={() => updateStatus(getPreviousStatus(task.status), false)}
+                        className="py-2 text-sm font-medium text-gray-700 underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isMovingStatus}
+                        aria-label="Move task to the previous status"
                     >
-                      Move to Previous
+                     Move Back
                     </button>
+
                     <button
-                      onClick={() => updateStatus(getNextStatus(task.status), true)}
-                      className="py-2 text-text underline"
+                        onClick={() => updateStatus(getNextStatus(task.status), true)}
+                        className="p-2 text-sm font-medium text-gray-700 underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isMovingStatus}
+                        aria-label="Move task to the next status"
                     >
-                      Move to Next
+                      Move Forward
                     </button>
                   </>
-                )
-              }
+              )}
             </div>
+
           </div>
           <div>
             <h4 className="text-lg font-bold text-primary mb-2">Dates</h4>
@@ -161,16 +168,16 @@ const TaskDetailsView: React.FC<{
           <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
           <ul className="space-y-2">
             {task.files?.map((file: { name: string; type: string; url: string }, index: number) => (
-              <li key={index} className="flex items-center space-x-2">
-                {renderFileIcon(file.type)}
-                <a
-                  className="text-text hover:underline"
-                  href={`${BASE_URL}/${file?.url}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {file.name}
-                </a>
+                <li key={index} className="flex items-center space-x-2">
+                  {renderFileIcon(file.type)}
+                  <a
+                      className="text-text hover:underline"
+                      href={`${BASE_URL}/${file?.url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                  >
+                    {file.name}
+                  </a>
               </li>
             ))}
           </ul>

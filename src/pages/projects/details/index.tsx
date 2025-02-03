@@ -22,6 +22,7 @@ import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
 import LargeModal from "../../../components/modal/LargeModal.tsx";
 import AnnotationIframe from "../../../mock/AnnotationIframe.tsx";
+import {FiRefreshCw} from "react-icons/fi";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -275,6 +276,13 @@ const ProjectDetails = () => {
         "Completed": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "COMPLETED"),
     };
 
+    const refetchData = () => {
+        console.log("🔄 Refetching data...");
+        // Call API or state update logic here
+        refetchProjectFiles();
+        refetchIssues();
+    };
+
     const renderActiveTab = () => {
         switch (activeTab) {
             case "board":
@@ -354,31 +362,41 @@ const ProjectDetails = () => {
     return (
         <main className="p-6">
             <div className="flex justify-between items-center mb-4">
-                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-                <div ref={dropdownRef} className="relative">
-                    {
-                        !isArchived ?
+                {/* Tabs Component */}
+                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab}/>
+
+                <div className="flex items-center gap-3">
+                    {/* Refetch (Refresh) Button */}
+                    <button
+                        onClick={refetchData} // Function to refetch data
+                        className="inline-flex justify-center items-center rounded-md border border-border bg-background py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                        title="Refresh"
+                    >
+                        <FiRefreshCw className="text-xl"/>
+                    </button>
+
+                    <div ref={dropdownRef} className="relative">
+                        {!isArchived ? (
                             <button
                                 onClick={() => setDropdownOpen((prev) => !prev)}
                                 className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                             >
-                                <BsThreeDotsVertical className="text-xl" />
+                                <BsThreeDotsVertical className="text-xl"/>
                             </button>
-                            :
-                            <Button
-                                text="Unarchive"
-                                onClick={() => setIsUnArchiveModalOpen(true)}
+                        ) : (
+                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)}/>
+                        )}
+
+                        {dropdownOpen && (
+                            <ProjectDropDown
+                                projectId={projectId}
+                                setIsDeleteModalOpen={setIsDeleteModalOpen}
+                                setIsArchiveModalOpen={setIsArchiveModalOpen}
+                                setIsUploadModalOpen={setIsUploadModalOpen}
+                                role={role}
                             />
-                    }
-                    {dropdownOpen && (
-                        <ProjectDropDown
-                            projectId={projectId}
-                            setIsDeleteModalOpen={setIsDeleteModalOpen}
-                            setIsArchiveModalOpen={setIsArchiveModalOpen}
-                            setIsUploadModalOpen={setIsUploadModalOpen}
-                            role={role}
-                        />
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
             <div>{renderActiveTab()}</div>
@@ -419,7 +437,6 @@ const ProjectDetails = () => {
                     />
                 </div>
             </ModalContainer>
-
 
 
             <ModalContainer
@@ -467,11 +484,14 @@ const ProjectDetails = () => {
                 title="Webview"
             >
                 <div className="relative h-full">
-                <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId} />
+                    <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId}/>
                     <div className="sticky bottom-0 bg-background">
                         <Link
                             to={{
                                 pathname: APP_ROUTES.APP.PROJECTS.PDF_VIEWER,
+                            }}
+                            state={{
+                                userId: userId, selectedFile: selectedFile, projectId: projectId
                             }}
                             className="underline text-textSecondary"
                         >

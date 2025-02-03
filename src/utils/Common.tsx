@@ -62,7 +62,7 @@ export const projectDocumentColumns = (
                   className="text-primary hover:underline"
                   onClick={() => handleAnnotateFile(row)}
                 >
-                  {(row.extension && row.extension.toLowerCase() === "pdf") ? "Annotate" : (row.extension && row.extension.toLowerCase() == "xlsx") ? "View" : ""}
+                  {(row.extension && row.extension.toLowerCase() === "pdf") ? "View" : (row.extension && row.extension.toLowerCase() == "xlsx") ? "View" : ""}
                 </button>
                 {
                   (row.extension && row.extension.toLowerCase() != "xlsx") && (

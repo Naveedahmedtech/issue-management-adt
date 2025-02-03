@@ -14,7 +14,7 @@ export const projectApi = createApi({
     },
   }),
   // ✅ Enable tagTypes
-  tagTypes: ["Project", "RecentProjects", "ActivityLogs", "Stats"],
+  tagTypes: ["Project", "RecentProjects", "ActivityLogs", "Stats", "IssueFiles", "Issues"],
 
   endpoints: (builder) => ({
     // ✅ Assign tag to getProjectList query
