@@ -59,7 +59,8 @@ export const API_ROUTES = {
     ARCHIVED: `archived`,
     TOGGLE_ARCHIVED: `toggle-archive`,
     ISSUE_LOG_HISTORY: 'update-log-history',
-    ACTIVITY_LOGS: 'activity-logs'
+    ACTIVITY_LOGS: 'activity-logs',
+    ALL_ISSUES: 'all-issues'
   },
   ORDER: {
     ROOT: `${ORDER_BASE}`,
@@ -71,7 +72,9 @@ export const API_ROUTES = {
     TOGGLE_ARCHIVED: `toggle-archive`,
   },
   ISSUE: {
-    ROOT: `${ISSUE_BASE}`
+    ROOT: `${ISSUE_BASE}`,
+    ASSIGN_TO_USER: `assign-to-user`,
+    REMOVE_USER: `remove-user`
   }
 };
 

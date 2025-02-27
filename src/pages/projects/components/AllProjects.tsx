@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Table from "../../../components/Table";
 import { format } from "date-fns";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES";
+import { PROJECT_STATUS } from "../../../constant";
 
 const AllProjectsTable: React.FC<any> = ({ projects, error, isLoading, totalPages,
     currentPage,
@@ -11,14 +12,14 @@ const AllProjectsTable: React.FC<any> = ({ projects, error, isLoading, totalPage
     const getStatusBadge = (status: string) => {
         let color = "bg-gray-500";
 
-        switch (status?.toLocaleLowerCase()) {
-            case "completed":
+        switch (status?.toUpperCase()) {
+            case PROJECT_STATUS.COMPLETED.toUpperCase():
                 color = "bg-success text-white";
                 break;
-            case "in progress":
+            case PROJECT_STATUS.ON_GOING.toUpperCase():
                 color = "bg-todo text-white";
                 break;
-            case "pending":
+            case PROJECT_STATUS.ACTIVE.toUpperCase():
                 color = "bg-pending text-white";
                 break;
             default:
@@ -42,12 +43,12 @@ const AllProjectsTable: React.FC<any> = ({ projects, error, isLoading, totalPage
         {
             id: "startDate",
             label: "Start Date",
-            render: (row: any) => <span>{format(new Date(row.startDate), 'PP')}</span>,
+            render: (row: any) => <span>{row.startDate ? format(new Date(row.startDate), 'PP') : "N/A"}</span>,
         },
         {
             id: "endDate",
             label: "End Date",
-            render: (row: any) => <span>{format(new Date(row.endDate), 'PP')}</span>,
+            render: (row: any) => <span>{row.endDate ? format(new Date(row.endDate), 'PP') : "N/A"}</span>,
         },
         {
             id: "action",

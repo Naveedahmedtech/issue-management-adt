@@ -21,8 +21,9 @@ import { BASE_URL } from "../../../constant/BASE_URL.ts";
 import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
 import LargeModal from "../../../components/modal/LargeModal.tsx";
-import AnnotationIframe from "../../../mock/AnnotationIframe.tsx";
-import {FiRefreshCw} from "react-icons/fi";
+import AnnotationIframe from "../../../components/iframe/AnnotationIframe.tsx";
+import { FiRefreshCw } from "react-icons/fi";
+import Drawer from "../../../components/modal/Drawer.tsx";
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -57,6 +58,7 @@ const ProjectDetails = () => {
     const [selectedFile, setSelectedFile] = useState<DocumentDataRow | null>();
     const [isAnnotationModal, setIsAnnotationModal] = useState(false)
     const [issueId, setIssueId] = useState();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 
 
@@ -73,18 +75,18 @@ const ProjectDetails = () => {
     const { projectId } = params;
 
     const { data: projectData } = useGetProjectByIdQuery(projectId);
-    const { data: projectIssues, isLoading: isLoadingIssues, refetch: refetchIssues } = useGetProjectIssuesQuery(projectId);
+    const { data: projectIssues, isLoading: isLoadingIssues, isFetching: isIssueFetching, refetch: refetchIssues } = useGetProjectIssuesQuery(projectId);
     const { data: projectFiles, isLoading: isLoadingProjectFiles, refetch: refetchProjectFiles } = useGetProjectFilesQuery(projectId);
     const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
     // ✅ Use the deleteProject mutation
     const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
     const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
 
-
+console.log("FILES: ", projectFiles?.data?.files)
     useEffect(() => {
         if (projectFiles?.data?.files) {
             const formattedProjectFiles = projectFiles.data.files.map((file: DocumentDataRow) => ({
-                id: file.id,
+                id: file.type === "issueFile" ? file.fileId : file.id,
                 fileName: file.filePath.split("/").pop(),
                 extension: file.filePath.split(".").pop(),
                 filePath: file.filePath,
@@ -198,8 +200,8 @@ const ProjectDetails = () => {
     const tabs = [
         { id: "board", label: "Issues" },
         { id: "documents", label: "Documents" },
-        { id: "info", label: "Project Info" },
-        { id: "activity", label: "Activity" },
+        // { id: "info", label: "Project Info" },
+        // { id: "activity", label: "Activity" },
     ];
 
     const handleOutsideClick = (event: MouseEvent) => {
@@ -298,7 +300,7 @@ const ProjectDetails = () => {
                     isEditMode={isEditMode}
                     setIsEditMode={setIsEditMode}
                     refetch={refetchIssues}
-                    isLoading={isLoadingIssues}
+                    isLoading={isLoadingIssues || isIssueFetching}
                     isArchived={isArchived}
                     projectId={projectId}
                     setActiveTab={setActiveTab}
@@ -307,7 +309,7 @@ const ProjectDetails = () => {
                 /> : <Board
                     projectIssues={projectIssues?.data?.columns}
                     refetch={refetchIssues}
-                    isLoading={isLoadingIssues}
+                    isLoading={isLoadingIssues || isIssueFetching}
                     isArchived={isArchived}
                     projectId={projectId}
                     setActiveTab={setActiveTab}
@@ -325,7 +327,7 @@ const ProjectDetails = () => {
                     refetch={refetchProjectFiles}
                 />;
             case "info":
-                return <ProjectInfo projectId={projectId} projectData={projectData?.data} />;
+                return <ProjectInfo projectData={projectData?.data} />;
             case "activity":
                 return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />;
             default:
@@ -361,18 +363,32 @@ const ProjectDetails = () => {
 
     return (
         <main className="p-6">
-            <div className="flex justify-between items-center mb-4">
+            <ProjectInfo projectData={projectData?.data} />
+            <div className="flex flex-wrap justify-between items-center mb-4">
                 {/* Tabs Component */}
-                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab}/>
+
+                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsDrawerOpen(true)}
+                        className="p-2 bg-primary text-white rounded-md"
+                    >
+                        Activity
+                    </button>
+                    {
+                        isDrawerOpen &&
+                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="500px" title={"Activity Logs"} >
+                            <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />
+                        </Drawer>
+                    }
                     {/* Refetch (Refresh) Button */}
                     <button
                         onClick={refetchData} // Function to refetch data
                         className="inline-flex justify-center items-center rounded-md border border-border bg-background py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                         title="Refresh"
                     >
-                        <FiRefreshCw className="text-xl"/>
+                        <FiRefreshCw className="text-xl" />
                     </button>
 
                     <div ref={dropdownRef} className="relative">
@@ -381,10 +397,10 @@ const ProjectDetails = () => {
                                 onClick={() => setDropdownOpen((prev) => !prev)}
                                 className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                             >
-                                <BsThreeDotsVertical className="text-xl"/>
+                                <BsThreeDotsVertical className="text-xl" />
                             </button>
                         ) : (
-                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)}/>
+                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)} />
                         )}
 
                         {dropdownOpen && (
@@ -484,7 +500,7 @@ const ProjectDetails = () => {
                 title="Webview"
             >
                 <div className="relative h-full">
-                    <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId}/>
+                    <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId} />
                     <div className="sticky bottom-0 bg-background">
                         <Link
                             to={{

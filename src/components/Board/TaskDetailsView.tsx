@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "../buttons/Button.tsx";
 import ModalContainer from "../modal/ModalContainer.tsx";
-import { renderFileIcon, formatDate } from "../../utils/TaskUtils.tsx";
+import { renderFileIcon } from "../../utils/TaskUtils.tsx";
 import { useDeleteIssueMutation, useUpdateIssueMutation } from "../../redux/features/issueApi.ts";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth.ts";
@@ -9,11 +9,12 @@ import { ROLES } from "../../constant/ROLES.ts";
 import { BASE_URL } from "../../constant/BASE_URL.ts";
 import { ITask } from "../../types/types.ts";
 import { useGetProjectActiveLogsQuery, useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi.ts";
+import { PROJECT_STATUS } from "../../constant/index.ts";
 
 const statusOptions = [
-  { label: "To Do", value: "TO DO" },
-  { label: "In Progress", value: "IN PROGRESS" },
-  { label: "Completed", value: "COMPLETED" },
+  { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
+  { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
+  { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
 ];
 
 const getNextStatus = (currentStatus: any) => {
@@ -38,7 +39,7 @@ const TaskDetailsView: React.FC<{
   setActiveTab: (tab: string) => void;
   setIssueId: (id: string) => void;
   refetchFiles: () => void;
-}> = ({ task, onEdit, onDelete, component, refetch, isArchived, projectId, setActiveTab, setIssueId, refetchFiles, onClose }) => {
+}> = ({ task, onEdit, onDelete, component, refetch, isArchived, projectId, refetchFiles, onClose }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { data: latestActivity, isLoading: isActivityLoading } = useGetProjectActiveLogsQuery({
     projectId,
@@ -63,7 +64,9 @@ const TaskDetailsView: React.FC<{
       onDelete();
       setIsDeleteModalOpen(false);
       refetch();
-      refetchFiles();
+      if(refetchFiles) {
+        refetchFiles();
+      }
       toast.success("Issue deleted successfully!");
     } catch (err) {
       console.error("Failed to delete issue:", err);
@@ -72,8 +75,8 @@ const TaskDetailsView: React.FC<{
   };
 
   const updateStatus = async (newStatus: string, prev: boolean) => {
-    if (task.status?.toLowerCase() === "to do" && !prev) return;
-    if (task.status?.toLowerCase() === "completed" && prev) return;
+    if (task.status?.toUpperCase() === PROJECT_STATUS.ACTIVE.toUpperCase() && !prev) return;
+    if (task.status?.toUpperCase() === PROJECT_STATUS.COMPLETED.toUpperCase() && prev) return;
     const formData = new FormData();
     formData.append("title", task.title);
     formData.append("description", task.description);
@@ -88,10 +91,15 @@ const TaskDetailsView: React.FC<{
       }
     ]
 
+    console.log("Formdata", formData.get("status"));
+    console.log("logbody", logBody)
+
     try {
       await updateIssue({ issueId: task.id, formData }).unwrap();
       refetch();
-      refetchFiles();
+      if(refetchFiles) {
+        refetchFiles();
+      }
       onClose();
       toast.success(`Status updated to "${newStatus}"`);
     } catch (error: any) {
@@ -154,7 +162,7 @@ const TaskDetailsView: React.FC<{
             </div>
 
           </div>
-          <div>
+          {/* <div>
             <h4 className="text-lg font-bold text-primary mb-2">Dates</h4>
             <p>
               <strong>Start:</strong> {formatDate(task.startDate)}
@@ -162,7 +170,7 @@ const TaskDetailsView: React.FC<{
             <p>
               <strong>End:</strong> {formatDate(task.endDate)}
             </p>
-          </div>
+          </div> */}
         </div>
         <div>
           <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
@@ -255,12 +263,15 @@ const TaskDetailsView: React.FC<{
         ) : (
           <p className="text-text">No recent activity.</p>
         )}
-        <div className="mt-4">
-          <span className="underline cursor-pointer" onClick={() => {
-            setActiveTab('activity');
-            setIssueId(task.id);
-          }}>See all</span>
-        </div>
+        {/*<div className="mt-4">*/}
+        {/*  <span className="underline cursor-pointer" onClick={() => {*/}
+        {/*    if(setActiveTab && setIssueId) {*/}
+        {/*    setActiveTab('activity');*/}
+        {/*    setIssueId(task.id);*/}
+        {/*    }*/}
+
+        {/*  }}>See all</span>*/}
+        {/*</div>*/}
       </div>
     </div>
   );

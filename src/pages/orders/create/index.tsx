@@ -45,8 +45,8 @@ const CreateOrder: React.FC = () => {
             resetFormData();
             toast.success("Order created successfully!");
         } catch (error: any) {
-            toast.error(error?.data?.message || "Failed to create project. Please try again.");
-            console.error("Failed to create project:", error);
+            toast.error(error?.data?.message || "Failed to create order. Please try again.");
+            console.error("Failed to create order:", error);
         }
     };
     

@@ -24,6 +24,7 @@ export const APP_ROUTES = {
       ALL: `${BASE_ROUTES.PROJECTS}/all`,
       EXCEL_VIEWER: `${BASE_ROUTES.PROJECTS}/excel-viewer`,
       PDF_VIEWER: `${BASE_ROUTES.PROJECTS}/pdf-viewer`,
+      ALL_ISSUES: `${BASE_ROUTES.PROJECTS}/all-issues`
     },
     ORDERS: {
       LIST: `${BASE_ROUTES.ORDERS}`, // Page to list all projects

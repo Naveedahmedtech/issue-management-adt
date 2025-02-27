@@ -90,17 +90,20 @@ export interface ITask {
     email: string;
     displayName: string;
   }
+  assignedUsers: any[];
 }
 
 export interface TaskProps {
   task: ITask;
   index: number;
   onClick: (task: ITask) => void; // Callback to open modal with task details
+  refetch: () => void;
 }
 export type FileType = "PDF" | "Word" | "Excel" | "Text" | "XLSX" | "issueFile" | "projectFile";
 
 export interface DocumentDataRow {
   id: string;
+  fileId: string;
   fileName: string;
   date: string;
   filePath: string;
@@ -114,6 +117,8 @@ export interface DocumentDataRow {
     id: string;
     title: string;
   }
+  signaturePath?: string;
+  initialPath?: string;
 }
 
 export interface UploadedFile {

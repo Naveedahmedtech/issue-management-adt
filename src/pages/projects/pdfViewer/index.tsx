@@ -1,4 +1,4 @@
-import AnnotationIframe from '../../../mock/AnnotationIframe'
+import AnnotationIframe from '../../../components/iframe/AnnotationIframe'
 import {useLocation} from "react-router-dom";
 
 const PdfViewer = () => {

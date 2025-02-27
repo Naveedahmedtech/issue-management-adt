@@ -3,6 +3,7 @@ export { default as NotFound } from './NotFound';
 export { default as ProjectDashboard } from "./projects/dashboard";
 export { default as ProjectDetails } from "./projects/details/";
 export { default as CreateProject } from "./projects/createProject/";
+export { default as AllIssues } from "./projects/allIssues";
 export { default as ExcelViewer } from "./projects/excelViewer/";
 export { default as PdfViewer } from "./projects/pdfViewer/";
 export { default as EditProject } from "./projects/editProject";

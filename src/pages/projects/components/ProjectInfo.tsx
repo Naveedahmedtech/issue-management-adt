@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaCalendarAlt, FaRegClock, FaBuilding, FaUser } from "react-icons/fa";
 import { format } from "date-fns";
 
 interface ProjectInfoProps {
-  projectId: string | undefined;
   projectData: {
     id: string;
     title: string;
@@ -11,97 +10,91 @@ interface ProjectInfoProps {
     status: string;
     startDate: string | null;
     endDate: string | null;
-    archived: boolean;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
     companyName: string | null;
     user: {
-      email: string;
       displayName: string;
     };
   };
 }
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
-  // Function to get the status badge with a dynamic color
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   const getStatusBadge = (status: string) => {
-    let badgeColor = "bg-yellow-500"; // Default color
-    if (status.toLocaleLowerCase() === "completed") badgeColor = "bg-success";
-    if (status.toLocaleLowerCase() === "in progress") badgeColor = "bg-todo";
-    if (status.toLocaleLowerCase() === "pending") badgeColor = "bg-pending";
+    const badgeColor = {
+      completed: "bg-success",
+      "in progress": "bg-todo",
+      pending: "bg-pending",
+    }[status?.toLowerCase()] || "bg-yellow-500";
 
     return (
-      <span
-        className={`inline-block px-3 py-1 text-sm text-white font-semibold rounded-md ${badgeColor}`}
-      >
+      <span className={`px-3 py-1 text-xs font-semibold text-text rounded-full ${badgeColor}`}>
         {status}
       </span>
     );
   };
 
-  // Format dates using date-fns
   const formattedStartDate = projectData?.startDate
-    ? format(new Date(projectData.startDate), "yyyy-MM-dd")
+    ? format(new Date(projectData.startDate), "MMM dd, yyyy")
     : "N/A";
 
   const formattedEndDate = projectData?.endDate
-    ? format(new Date(projectData.endDate), "yyyy-MM-dd")
+    ? format(new Date(projectData.endDate), "MMM dd, yyyy")
     : "N/A";
 
   return (
-    <div className="p-6 bg-backgroundShade1 rounded-lg shadow-lg">
-      <h3 className="text-2xl font-bold text-primary mb-4">{projectData?.title}</h3>
-      <p className="text-text text-lg mb-6">{projectData?.description}</p>
+    <div className="bg-backgroundShade1 px-4 py-3 rounded-lg shadow-sm mb-5">
+      {/* Title */}
+      <h3 className="text-lg font-semibold text-primary truncate">{projectData?.title}</h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {/* Description with Show More/Less */}
+      <div className="mt-1 text-sm text-textLight">
+        {showFullDescription ? projectData?.description : projectData?.description?.slice(0, 100)}
+        {projectData?.description && projectData.description.length > 100 && (
+          <button
+            onClick={() => setShowFullDescription(!showFullDescription)}
+            className="ml-2 text-primary text-xs font-medium hover:underline"
+          >
+            {showFullDescription ? "Show Less" : "Show More"}
+          </button>
+        )}
+      </div>
+
+      {/* Project Details in a Single Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm text-text mt-3">
         {/* Status */}
-        <div className="flex items-center space-x-4">
-          <FaRegClock className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Status</p>
+        <div className="flex items-center space-x-2">
+          <FaRegClock className="text-primary text-sm" />
+          <div className="flex flex-col">
+            <span className="text-xs text-textLight">Status</span>
             {getStatusBadge(projectData?.status)}
           </div>
         </div>
 
-        {/* Start Date */}
-        <div className="flex items-center space-x-4">
-          <FaCalendarAlt className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Start Date</p>
-            <p className="text-text font-medium">{formattedStartDate}</p>
-          </div>
-        </div>
-
-        {/* End Date */}
-        <div className="flex items-center space-x-4">
-          <FaCalendarAlt className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">End Date</p>
-            <p className="text-text font-medium">{formattedEndDate}</p>
+        {/* Start & End Dates */}
+        <div className="flex items-center space-x-2">
+          <FaCalendarAlt className="text-primary text-sm" />
+          <div className="flex flex-col">
+            <span className="text-xs text-textLight">Start - End</span>
+            <span>{formattedStartDate} → {formattedEndDate}</span>
           </div>
         </div>
 
         {/* Company Name */}
-        <div className="flex items-center space-x-4">
-          <FaBuilding className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Company</p>
-            <p className="text-text font-medium">
-              {projectData?.companyName || "N/A"}
-            </p>
+        <div className="flex items-center space-x-2">
+          <FaBuilding className="text-primary text-sm" />
+          <div className="flex flex-col">
+            <span className="text-xs text-textLight">Company</span>
+            <span>{projectData?.companyName || "N/A"}</span>
           </div>
         </div>
 
         {/* Created By */}
-        <div className="flex items-center space-x-4">
-          <FaUser className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Created By</p>
-            <p className="text-text font-medium">
-              {projectData?.user?.displayName || "Unknown"} 
-              {/* ({projectData?.user?.email || "N/A"}) */}
-            </p>
+        <div className="flex items-center space-x-2">
+          <FaUser className="text-primary text-sm" />
+          <div className="flex flex-col">
+            <span className="text-xs text-textLight">Created By</span>
+            <span>{projectData?.user?.displayName || "Unknown"}</span>
           </div>
         </div>
       </div>

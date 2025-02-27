@@ -9,30 +9,43 @@ export const issueApi = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
   }),
-  tagTypes: ['Issue', 'Stats'],
+  tagTypes: ["Issue", "Stats"],
 
   endpoints: (builder) => ({
     updateIssue: builder.mutation({
-        query: ({ issueId, formData }) => ({
-          url: `${API_ROUTES.ISSUE.ROOT}/${issueId}`,
-          method: "PUT",
-          body: formData,
-        }),
-        invalidatesTags: ['Stats']
+      query: ({ issueId, formData }) => ({
+        url: `${API_ROUTES.ISSUE.ROOT}/${issueId}`,
+        method: "PUT",
+        body: formData,
       }),
+      invalidatesTags: ["Stats"],
+    }),
 
+    assignIssues: builder.mutation({
+      query: ({ issueId, body }) => ({
+        url: `${API_ROUTES.ISSUE.ROOT}/${issueId}/${API_ROUTES.ISSUE.ASSIGN_TO_USER}`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Issue", "Stats"],
+    }),
+
+    removeAssignedUser: builder.mutation({
+      query: ({ issueId, userId }) => ({
+        url: `${API_ROUTES.ISSUE.ROOT}/${issueId}/${API_ROUTES.ISSUE.REMOVE_USER}/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Issue", "Stats"],
+    }),
+    
 
     deleteIssue: builder.mutation({
-        query: (issueId) => ({
-          url: `${API_ROUTES.ISSUE.ROOT}/${issueId}`,
-          method: "DELETE",
-        }),
+      query: (issueId) => ({
+        url: `${API_ROUTES.ISSUE.ROOT}/${issueId}`,
+        method: "DELETE",
       }),
-
+    }),
   }),
 });
 
-export const {
-  useUpdateIssueMutation,
-  useDeleteIssueMutation,
-} = issueApi;
+export const { useUpdateIssueMutation, useDeleteIssueMutation, useAssignIssuesMutation, useRemoveAssignedUserMutation } = issueApi;

@@ -11,17 +11,23 @@ interface FormikSelectProps {
         option: SingleValue<{ label: string; value: string }> | MultiValue<{ label: string; value: string }>
     ) => void;
     isMulti?: boolean;
+    onMenuScrollToBottom?: () => void;
+    isLoading?: boolean;  // Add loading state prop
+    hasMoreOptions?: boolean;  // To prevent unnecessary loading when no more data
 }
 
 const FormikSelect: React.FC<FormikSelectProps> = ({
-                                                       name,
-                                                       options,
-                                                       placeholder,
-                                                       className,
-                                                       value,
-                                                       onChange,
-                                                       isMulti = false,
-                                                   }) => {
+    name,
+    options,
+    placeholder,
+    className,
+    value,
+    onChange,
+    isMulti = false,
+    onMenuScrollToBottom,
+    isLoading = false,  // Default loading state
+    hasMoreOptions = true,  // Default to true
+}) => {
     const { setFieldValue } = useFormikContext();
     const [field, meta] = useField(name);
 
@@ -40,6 +46,7 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
             onChange(selectedOption);
         }
     };
+
     const selectedValue = isMulti
         ? options.filter((option) => Array.isArray(field.value) && field.value.includes(option.value))
         : options.find((option) => option.value === field.value);
@@ -52,6 +59,14 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                 value={selectedValue || value || null}
                 onChange={handleChange}
                 placeholder={placeholder}
+                onMenuScrollToBottom={() => {
+                    if (hasMoreOptions && onMenuScrollToBottom) {
+                        onMenuScrollToBottom();  // Trigger load more if more options are available
+                    }
+                }}
+                isLoading={isLoading}  // Show spinner while loading
+                noOptionsMessage={() => (isLoading ? 'Loading...' : 'No options available')}
+                loadingMessage={() => 'Loading more options...'}  // Show this when fetching more data
                 styles={{
                     control: (base, state) => ({
                         ...base,
@@ -76,13 +91,13 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                     }),
                     multiValueLabel: (provided) => ({
                         ...provided,
-                        color: 'var(--text)', // Text color for the selected items
+                        color: 'var(--text)',
                     }),
                     multiValueRemove: (provided) => ({
                         ...provided,
                         color: 'var(--color-text)',
                         ':hover': {
-                            backgroundColor: 'var(--color-primary)', // Hover background color
+                            backgroundColor: 'var(--color-primary)',
                             color: 'var(--color-text)',
                         },
                         cursor: 'pointer',

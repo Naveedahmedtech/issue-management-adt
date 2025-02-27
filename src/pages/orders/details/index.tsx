@@ -14,6 +14,10 @@ import { useAuth } from "../../../hooks/useAuth.ts";
 import { toast } from "react-toastify";
 import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import { DocumentDataRow } from "../../../types/types.ts";
+import LargeModal from "../../../components/modal/LargeModal.tsx";
+import SignatureIframe from "../../../components/iframe/SignatureIframe.tsx";
+import { BASE_URL } from "../../../constant/BASE_URL.ts";
+import { FiRefreshCw } from "react-icons/fi";
 
 const OrderDetails = () => {
     const [activeTab, setActiveTab] = useState("info");
@@ -21,6 +25,11 @@ const OrderDetails = () => {
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
     const [isUnArchiveModalOpen, setIsUnArchiveModalOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isFileViewModalOpen, setIsFileViewModalOpen] = useState(false)
+    const [signatureModalOpen, setSignatureModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<DocumentDataRow | null>();
+    const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>('');
+
     const [files, setFiles] = useState<File[]>([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -31,11 +40,11 @@ const OrderDetails = () => {
     const navigate = useNavigate();
 
 
-    const { userData: { role } } = userData;
+    const { userData: { id: userId, role } } = userData;
     const { orderId: orderId } = params;
     const isArchived = location.state?.archive;
 
-    const { data: orderData, isLoading: isOrderDataLoading, refetch: refetchOrders } = useGetOrderByIdQuery(orderId);
+    const { data: orderData, isLoading: isOrderDataLoading, isFetching: isOrderDataRefetching, refetch: refetchOrders } = useGetOrderByIdQuery(orderId);
 
     const [uploadFilesToOrder, { isLoading: isUploadingOrderFile }] = useUploadFilesToOrderMutation();
     const [deleteOrder, { isLoading: isDeletingOrder }] = useDeleteOrderMutation();
@@ -44,24 +53,42 @@ const OrderDetails = () => {
 
 
     const handleSignFile = (file: DocumentDataRow) => {
-        console.log("Signing file:", file);
-        toast.info("We are working hard to bring this feature!")
+        setSelectedFile(file)
+        // toast.info("We are working hard to bring this feature!")
+        setSignatureModalOpen(true);
         // Add logic for file signing
     };
 
     const transformFilesData = (files: any[]) => {
-        return files.map((file, index) => ({
-            id: index + 1,
-            fileName: file.filePath.split("/").pop(), // Extract file name from filePath
-            date: new Date(file.updatedAt).toLocaleDateString(),
-            type: file.filePath.split(".").pop()?.toUpperCase() || "Unknown", // Extract file type
-            location: "", // Ignored as per the requirement
-            status: "Pending", // Default status
-        }));
+        return files.map((file) => {
+            // ✅ Clone the array before sorting (fixes read-only issue)
+            const signatures = [...file.OrderSignatures].sort((a: any, b: any) =>
+                new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
+            const signatureEntry = signatures.find(sig => sig.filename.startsWith("signature-"));
+            const initialEntry = signatures.find(sig => sig.filename.startsWith("initial-"));
+
+            return {
+                id: file.id,
+                fileName: file.filePath.split("/").pop(),
+                date: new Date(file.createdAt).toLocaleDateString(),
+                type: file.filePath.split(".").pop()?.toUpperCase() || "Unknown",
+                location: "",
+                status: "Pending",
+                filePath: file.filePath,
+                signaturePath: signatureEntry ? `${signatureEntry.path.replace(/\\/g, "/")}` : null,
+                initialPath: initialEntry ? `${initialEntry.path.replace(/\\/g, "/")}` : null,
+            };
+        });
     };
 
+    const handleFileView = (filePath: string | undefined) => {
+        setSelectedFilePath(filePath);
+        setIsFileViewModalOpen(true)
+    }
 
-    const documentColumns = orderDocumentColumns(handleSignFile, isArchived);
+
+    const documentColumns = orderDocumentColumns(handleSignFile, isArchived, handleFileView);
 
     const tabs = [
         { id: "info", label: "Order Info" },
@@ -85,7 +112,7 @@ const OrderDetails = () => {
         );
 
         if (excludedFiles.length > 0) {
-            alert(
+            toast.error(
                 `The following files were not allowed and excluded:\n${excludedFiles
                     .map((file) => file.name)
                     .join(", ")}`
@@ -137,11 +164,11 @@ const OrderDetails = () => {
                         columns={documentColumns}
                         data={transformFilesData(orderData?.data?.files || [])}
                         setIsUploadModalOpen={setIsUploadModalOpen}
-                        isLoading={isOrderDataLoading}
+                        isLoading={isOrderDataLoading || isOrderDataRefetching}
                     />
                 );
             case "info":
-                return <OrderInfo data={orderData?.data} isLoading={isOrderDataLoading} />;
+                return <OrderInfo data={orderData?.data} isLoading={isOrderDataLoading || isOrderDataRefetching} />;
             default:
                 return null;
         }
@@ -174,6 +201,12 @@ const OrderDetails = () => {
         }
     };
 
+    const refetchData = () => {
+        console.log("🔄 Refetching data...");
+        // Call API or state update logic here
+        refetchOrders();
+    };
+
     return (
         <main className="p-6">
             <div className="flex justify-between items-center mb-4">
@@ -181,17 +214,26 @@ const OrderDetails = () => {
                 <div ref={dropdownRef} className="relative">
                     {
                         !isArchived ?
-                        <button
-                            onClick={() => setDropdownOpen((prev) => !prev)}
-                            className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
-                        >
-                            <BsThreeDotsVertical className="text-xl" />
-                        </button>
-                        :
-                        <Button
-                        text="Unarchive"
-                        onClick={() => setIsUnArchiveModalOpen(true)}
-                    />
+                            <div className="flex gap-x-2">
+                                <button
+                                    onClick={refetchData} // Function to refetch data
+                                    className="inline-flex justify-center items-center rounded-md border border-border bg-background py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                                    title="Refresh"
+                                >
+                                    <FiRefreshCw className="text-xl" />
+                                </button>
+                                <button
+                                    onClick={() => setDropdownOpen((prev) => !prev)}
+                                    className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                                >
+                                    <BsThreeDotsVertical className="text-xl" />
+                                </button>
+                            </div>
+                            :
+                            <Button
+                                text="Unarchive"
+                                onClick={() => setIsUnArchiveModalOpen(true)}
+                            />
                     }
                     {dropdownOpen && (
                         <OrderDropDown
@@ -279,6 +321,44 @@ const OrderDetails = () => {
                     />
                 </div>
             </ModalContainer>
+            <LargeModal
+                isOpen={signatureModalOpen}
+                onClose={() => setSignatureModalOpen(false)}
+                title="Webview"
+            >
+                <div className="relative h-full">
+                    <SignatureIframe userId={userId} selectedFile={selectedFile} orderId={orderId} />
+                </div>
+            </LargeModal>
+            <LargeModal
+                isOpen={isFileViewModalOpen}
+                onClose={() => setIsFileViewModalOpen(false)}
+                title="File Details"
+            >
+                <div className="relative flex justify-center items-center bg-white p-4 rounded-lg">
+                    {selectedFilePath?.toLowerCase().endsWith(".png") ? (
+                        <img
+                            src={`${BASE_URL}/${selectedFilePath}`}
+                            alt="Image Preview"
+                            className="w-auto h-auto max-w-[95%] max-h-[80vh] object-contain"
+                            style={{ minHeight: "150px", backgroundColor: "white", padding: "10px" }}
+                        />
+                    ) : (
+                        <iframe
+                            src={`${BASE_URL}/${selectedFilePath}`}
+                            width="100%"
+                            height="500px"
+                            className="bg-white p-4 rounded-lg"
+                        />
+                    )}
+                </div>
+            </LargeModal>
+
+
+
+
+
+
         </main>
     );
 };

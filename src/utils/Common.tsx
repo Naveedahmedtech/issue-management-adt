@@ -1,4 +1,4 @@
-import { APP_NAME } from "../constant/BASE_URL";
+import { APP_NAME, BASE_URL } from "../constant/BASE_URL";
 import Text from "../components/Text";
 import { DocumentDataRow, FileType, ITitleText, User, } from "../types/types";
 import {
@@ -64,7 +64,7 @@ export const projectDocumentColumns = (
                 >
                   {(row.extension && row.extension.toLowerCase() === "pdf") ? "View" : (row.extension && row.extension.toLowerCase() == "xlsx") ? "View" : ""}
                 </button>
-                {
+                {/* {
                   (row.extension && row.extension.toLowerCase() != "xlsx") && (
                     <button
                       className="text-primary hover:underline"
@@ -73,7 +73,7 @@ export const projectDocumentColumns = (
                       Signing
                     </button>
                   )
-                }
+                } */}
                 <button
                   className="text-primary hover:underline"
                   onClick={() => handleDownloadFile(row)}
@@ -89,36 +89,80 @@ export const projectDocumentColumns = (
   ];
 
 export const orderDocumentColumns = (
-  handleSignFile: (user: DocumentDataRow) => void,
-  isArchived: boolean
+  handleSignFile: (file: DocumentDataRow) => void,
+  isArchived: boolean,
+  handleViewFile: (file: string | undefined) => void,
 ) => [
-    { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
     { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
-    { id: "date", label: "Last Modified", render: (row: DocumentDataRow) => row.date },
+    { id: "date", label: "Created At", render: (row: DocumentDataRow) => row.date },
     { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
+    {
+      id: "signature",
+      label: "Signature",
+      render: (row: DocumentDataRow) =>
+        row.signaturePath ? (
+          <div style={{
+            display: "inline-block",
+            padding: "5px",
+            backgroundColor: "#f8f8f8", // ✅ Light gray background for contrast
+            borderRadius: "5px",
+            border: "1px solid #ccc", // ✅ Border for clarity
+            cursor: "pointer"
+          }}
+            onClick={() => handleViewFile(row.signaturePath)}
+          >
+            <img src={`${BASE_URL}/${row.signaturePath}`} alt="Signature" width="50" height="50" />
+          </div>
+        ) : "No Signature"
+    },
+    {
+      id: "initial",
+      label: "Initial",
+      render: (row: DocumentDataRow) =>
+        row.initialPath ? (
+          <div style={{
+            display: "inline-block",
+            padding: "5px",
+            backgroundColor: "#f8f8f8", // ✅ Light gray background for contrast
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            cursor: "pointer"
+          }}
+            onClick={() => handleViewFile(row.initialPath)}
+          >
+            <img src={`${BASE_URL}/${row.initialPath}`} alt="Initial" />
+          </div>
+        ) : "No Initial"
+    },
     {
       id: "actions",
       label: "Actions",
-      render: (row: DocumentDataRow) => {
-
-        return (
-          <>
-            {
-              !isArchived &&
-              <div className="flex space-x-2">
-                <button
+      render: (row: DocumentDataRow) => (
+        <>
+          {!isArchived && (
+            <div className="flex space-x-2">
+              {
+                row.initialPath ? <button
+                  className="text-primary hover:underline"
+                  onClick={() => handleViewFile(row?.filePath)}
+                >
+                  View
+                </button> : <button
                   className="text-primary hover:underline"
                   onClick={() => handleSignFile(row)}
                 >
                   Signing
                 </button>
-              </div>
-            }
-          </>
-        )
-      }
+              }
+
+            </div>
+          )}
+        </>
+      )
     },
   ];
+
+
 
 
 export const getUserManagementColumns = (

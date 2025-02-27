@@ -51,8 +51,8 @@ const Activity = ({ projectId, issues, issueId }: any) => {
     const { history, page: currentPage, totalPages } = data.data;
 
     return (
-        <div className="p-6 bg-background rounded-lg shadow-md">
-            <h3 className="text-lg font-bold text-primary mb-4">Activity Logs</h3>
+        <div className=" rounded-lg shadow-md">
+            {/* <h3 className="text-lg font-bold text-primary mb-4">Activity Logs</h3> */}
 
             {/* Dropdown to select issue */}
             <div className="mb-4">
@@ -135,7 +135,7 @@ const Activity = ({ projectId, issues, issueId }: any) => {
             )}
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="flex justify-between items-center mt-4">
+                <div className="flex flex-wrap justify-between items-center mt-4">
                     <button
                         onClick={handlePreviousPage}
                         disabled={page === 1}

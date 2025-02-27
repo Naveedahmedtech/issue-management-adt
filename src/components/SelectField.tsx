@@ -8,29 +8,36 @@ interface Option {
 
 interface ISelectFieldProps {
     label: string;
-    options: Option[];
     name: string;
     value: Option | null;
+    options: Option[];  // Initial and dynamically loaded options
+    loadOptions?: (inputValue: string, callback: (options: Option[]) => void) => void;
     onChange: (option: Option | null) => void;
 }
 
-const SelectField: React.FC<ISelectFieldProps> = ({ label, options, name, value, onChange }) => {
+const SelectField: React.FC<ISelectFieldProps> = ({ label, name, value, options, loadOptions, onChange }) => {
     const handleChange = (selectedOption: Option | null) => {
         onChange(selectedOption);
     };
 
+    // Handle infinite scroll
+    const handleMenuScrollToBottom = () => {
+        // loadOptions('', () => {});  // Trigger loading more users when scrolled to bottom
+    };
+
     return (
-        <div className="">
+        <div>
             <label htmlFor={name} className="block text-sm font-medium text-text mb-1">
                 {label}
             </label>
             <Select
                 id={name}
                 name={name}
-                value={value || null} // Ensure value defaults to null if undefined
+                value={value || null}
                 options={options}
                 onChange={handleChange}
-                menuPortalTarget={document.body} // Render dropdown outside parent container
+                onMenuScrollToBottom={handleMenuScrollToBottom}  // Trigger when scroll reaches bottom
+                menuPortalTarget={document.body}
                 classNamePrefix="react-select"
                 className="react-select-container"
                 styles={{
@@ -42,23 +49,12 @@ const SelectField: React.FC<ISelectFieldProps> = ({ label, options, name, value,
                         '&:hover': { borderColor: 'var(--color-primary)' },
                         minWidth: "150px"
                     }),
-                    singleValue: (base) => ({
-                        ...base,
-                        color: 'var(--color-text)',
-                    }),
                     menu: (base) => ({
                         ...base,
-                        zIndex: 9999, // Ensure dropdown is above other elements
+                        zIndex: 9999,
                         backgroundColor: 'var(--color-background)',
-                    }),
-                    menuPortal: (base) => ({
-                        ...base,
-                        zIndex: 9999, // Ensure the portal has the highest z-index
-                    }),
-                    option: (base, state) => ({
-                        ...base,
-                        color: state.isSelected ? 'var(--color-text-primary)' : 'var(--color-text)',
-                        backgroundColor: state.isFocused ? 'var(--color-primary)' : 'var(--color-background)',
+                        maxHeight: 200,
+                        overflowY: 'auto'
                     }),
                 }}
             />

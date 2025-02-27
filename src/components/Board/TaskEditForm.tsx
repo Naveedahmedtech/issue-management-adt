@@ -3,17 +3,18 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Button from "../buttons/Button";
 import InputField from "../form/InputField";
-import DateField from "../form/DateField";
+// import DateField from "../form/DateField";
 import SelectField from "../form/SelectField";
 import FileUpload from "../form/FileUpload";
 import { useUpdateIssueMutation } from "../../redux/features/issueApi";
 import { toast } from "react-toastify";
 import { useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi";
+import {PROJECT_STATUS} from "../../constant";
 
 const statusOptions = [
-    { label: "To Do", value: "TO DO" },
-    { label: "In Progress", value: "IN PROGRESS" },
-    { label: "Completed", value: "COMPLETED" },
+    { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
+    { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
+    { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
 ];
 
 const TaskEditForm: React.FC<{
@@ -102,16 +103,24 @@ const TaskEditForm: React.FC<{
                     // Update the issue
                     await updateIssue({ issueId: initialTask.id, formData }).unwrap();
                     refetch();
-                    refetchFiles();
+                    if(refetchFiles) {
+                        refetchFiles();
+                    }
                     toast.success("Issue updated successfully");
 
+
+                } catch (error: any) {
+                    toast.error(error?.data?.error?.message || "Unable to update issue, please try again!");
+                    console.error("Error updating issue or log history:", error);
+                }
+                try {
                     // Log history if there are changes
                     if (logBody.length > 0) {
                         await updateIssueLogHistory({ issueId: initialTask.id, body: logBody }).unwrap();
                     }
-                } catch (error: any) {
-                    toast.error(error?.data?.error?.message || "Unable to update issue, please try again!");
-                    console.error("Error updating issue or log history:", error);
+                }
+                catch (e) {
+                    console.error("Error updating issue or log history:", e);
                 }
 
                 onSave(values);
@@ -140,7 +149,7 @@ const TaskEditForm: React.FC<{
                             value={statusOptions.find((option) => option.value === values.status) || null}
                             onChange={(option) => setFieldValue("status", option?.value || "")}
                         />
-                        <DateField
+                        {/* <DateField
                             label="Start Date"
                             selected={values.startDate}
                             onChange={(date) => setFieldValue("startDate", date)}
@@ -149,7 +158,7 @@ const TaskEditForm: React.FC<{
                             label="End Date"
                             selected={values.endDate}
                             onChange={(date) => setFieldValue("endDate", date)}
-                        />
+                        /> */}
                     </div>
                     <FileUpload
                         label="Attachments"

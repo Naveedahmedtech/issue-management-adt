@@ -6,6 +6,7 @@ import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
 import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
 import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
+import { PROJECT_STATUS } from "../../../constant/index.ts";
 
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
@@ -14,7 +15,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         startDate: null,
         endDate: null,
         companyName: "",
-        status: { label: "Pending", value: "Pending" },
+        status: { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
         files: [],
         ...initialData, // initial data if provided
     });
@@ -152,9 +153,9 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 <SelectField
                     label="Status"
                     options={[
-                        { label: "Pending", value: "Pending" },
-                        { label: "In Progress", value: "In Progress" },
-                        { label: "Completed", value: "Completed" },
+                        { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
+                        { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
+                        { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
                     ]}
                     value={formData.status}
                     onChange={handleSelectChange}

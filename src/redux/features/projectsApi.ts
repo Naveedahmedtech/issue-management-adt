@@ -14,7 +14,14 @@ export const projectApi = createApi({
     },
   }),
   // ✅ Enable tagTypes
-  tagTypes: ["Project", "RecentProjects", "ActivityLogs", "Stats", "IssueFiles", "Issues"],
+  tagTypes: [
+    "Project",
+    "RecentProjects",
+    "ActivityLogs",
+    "Stats",
+    "IssueFiles",
+    "Issues",
+  ],
 
   endpoints: (builder) => ({
     // ✅ Assign tag to getProjectList query
@@ -89,6 +96,17 @@ export const projectApi = createApi({
     getProjectIssues: builder.query({
       query: (projectId) =>
         `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.ISSUES}`,
+      providesTags: ["Project"],
+    }),
+
+    getAllProjectIssues: builder.query({
+      query: ({ userId }) => {
+        const params = new URLSearchParams();
+        if (userId) params.append("userId", userId);
+        return `${API_ROUTES.PROJECT.ROOT}/${
+          API_ROUTES.PROJECT.ALL_ISSUES
+        }?${params.toString()}`;
+      },
       providesTags: ["Project"],
     }),
 
@@ -177,4 +195,5 @@ export const {
   useToggleArchiveMutation,
   useUpdateIssueLogHistoryMutation,
   useGetProjectActiveLogsQuery,
+  useGetAllProjectIssuesQuery,
 } = projectApi;

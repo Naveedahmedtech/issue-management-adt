@@ -27,8 +27,8 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
     }, [projectIssues]);
 
     const statusMapping: Record<string, string> = {
-        "To Do": "TO DO",
-        "In Progress": "IN PROGRESS",
+        "Active": "ACTIVE",
+        "On Going": "ON GOING",
         "Completed": "COMPLETED",
     };
 

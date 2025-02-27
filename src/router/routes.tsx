@@ -4,6 +4,7 @@ import PublicRouteWrapper from './components/PublicRouteWrapper';
 import { Header } from '../pages/layout';
 import { ForgotPassword, SignIn } from '../pages/auth';
 import {
+    AllIssues,
     AllOrders,
     AllProjects,
     ArchivedOrders,
@@ -19,7 +20,7 @@ import {
 } from '../pages';
 import { APP_ROUTES } from '../constant/APP_ROUTES';
 import ErrorBoundary from "../ErrorBoundry.tsx";
-import AnnotationIframe from '../mock/AnnotationIframe.tsx';
+import AnnotationIframe from '../components/iframe/AnnotationIframe.tsx';
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -33,6 +34,7 @@ export const router = createBrowserRouter(
                     <Route path={APP_ROUTES.APP.PROJECTS.CREATE} element={<CreateProject />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.EXCEL_VIEWER}`} element={<ExcelViewer />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}`} element={<PdfViewer />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.PROJECTS.ALL_ISSUES}`} element={<AllIssues />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.EDIT}/:projectId`} element={<EditProject />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT}`} element={<UserManagement />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.SUPERADMIN.USERS.CREATE}`} element={<CreateUser />} errorElement={<ErrorBoundary />} />
