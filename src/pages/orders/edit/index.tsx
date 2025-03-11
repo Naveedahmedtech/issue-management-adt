@@ -5,6 +5,7 @@ import { useGetOrderByIdQuery, useUpdateOrderMutation } from "../../../redux/fea
 import { toast } from "react-toastify";
 import { OrderFormData } from "../../../types/types.ts";
 import { format } from "date-fns";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 
 
 const EditOrder: React.FC = () => {
@@ -51,8 +52,9 @@ const EditOrder: React.FC = () => {
     try {
       // ✅ Call the updateProject mutation
       await updateProject({ orderId, formData: formDataToSend }).unwrap();
-      toast.success("Order updated successfully!");
-      navigate(`/orders/${orderId}`);
+      if(orderId) {
+        navigate(APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", orderId));
+      }      
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update order. Please try again.");
     }

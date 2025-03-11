@@ -9,6 +9,7 @@ import {
     AllProjects,
     ArchivedOrders,
     ArchivedProjects,
+    Company,
     CreateOrder,
     CreateProject, CreateUser, EditOrder,
     EditProject,
@@ -46,6 +47,7 @@ export const router = createBrowserRouter(
                     <Route path={`${APP_ROUTES.APP.PROJECTS.ARCHIVED}`} element={<ArchivedProjects />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.ORDERS.ARCHIVED}`} element={<ArchivedOrders />} errorElement={<ErrorBoundary />} />
                     <Route path={`test`} element={<AnnotationIframe />} errorElement={<ErrorBoundary />} />
+                    <Route path={`${APP_ROUTES.APP.COMPANY}`} element={<Company />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>
             <Route element={<PublicRouteWrapper />} errorElement={<ErrorBoundary />}>

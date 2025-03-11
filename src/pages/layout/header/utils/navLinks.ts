@@ -53,6 +53,12 @@ export const links = [
       "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
   },
   {
+    url: APP_ROUTES.APP.COMPANY,
+    Icon: TbBuildingSkyscraper,
+    text: "Company",
+    roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
+  },
+  {
     url: APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT,
     Icon: FaUsersCog, // User management icon
     text: "User Management",
@@ -83,5 +89,5 @@ export const links = [
     roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
     className:
       "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
-  },
+  },  
 ];

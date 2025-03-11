@@ -21,6 +21,6 @@
     // "noEmitOnError": false,
     "noEmit": true
   },
-  "include": ["src"],
+  "include": ["src", "public/assets/scripts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

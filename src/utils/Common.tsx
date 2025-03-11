@@ -1,6 +1,6 @@
 import { APP_NAME, BASE_URL } from "../constant/BASE_URL";
 import Text from "../components/Text";
-import { DocumentDataRow, FileType, ITitleText, User, } from "../types/types";
+import { Company, DocumentDataRow, FileType, ITitleText, User, } from "../types/types";
 import {
   FaFileAlt,
   FaFileExcel,
@@ -48,6 +48,7 @@ export const projectDocumentColumns = (
     // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
     { id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName },
     { id: "date", label: "Date", render: (row: DocumentDataRow) => row.date },
+    { id: "time", label: "Time", render: (row: DocumentDataRow) => row.time },
     { id: "type", label: "Type", render: (row: DocumentDataRow) => row.type },
     {
       id: "actions",
@@ -200,6 +201,28 @@ export const getUserManagementColumns = (
           <button className="text-error" onClick={() => handleDeleteUser(row.id)}>
             Delete
           </button>
+        </div>
+      ),
+    },
+  ];
+
+
+  export const getCompanyColumns = (
+    handleEditCompany: (company: Company) => void,
+    handleDeleteCompany: (companyId: string) => void
+  ) => [
+    {
+      id: "name",
+      label: "Name",
+      render: (row: Company) => <span>{row.name}</span>,
+    },
+    {
+      id: "actions",
+      label: "Actions",
+      render: (row: Company) => (
+        <div className="flex space-x-2">
+          <button className="text-primary" onClick={() => handleEditCompany(row)}>Edit</button>
+          <button className="text-error" onClick={() => handleDeleteCompany(row.id)}>Delete</button>
         </div>
       ),
     },

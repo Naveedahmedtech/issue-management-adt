@@ -1,11 +1,11 @@
 import React from 'react';
 import StatCard from "../../../components/cards/StatCard.tsx";
 import { useGetProjectStatsQuery, useGetRecentProjectsQuery } from '../../../redux/features/projectsApi.ts';
-import RecentProjects from '../components/RecentProjects.tsx';
+import AllProjectsCards from '../components/AllProjects.tsx';
 
 const Index: React.FC = () => {
     const { data, error, isLoading } = useGetProjectStatsQuery({});
-    const { data: recentProjects, error: recentProjectError, isLoading: isRecentProjectLoading } = useGetRecentProjectsQuery({});
+    const { data: recentProjects, error: recentProjectError, isLoading: isRecentProjectLoading } = useGetRecentProjectsQuery({limit: 5});
 
 
     return (
@@ -58,11 +58,14 @@ const Index: React.FC = () => {
 
 
                 <section className='mb-6'>
-                    <RecentProjects 
-                    recentProjects={recentProjects} 
-                    error={recentProjectError} 
-                    isLoading={isRecentProjectLoading}
-                     />
+                <h3 className="text-xl font-semibold text-text mb-4">Recent Projects</h3>
+                    <AllProjectsCards
+                        projects={recentProjects?.data?.projects}
+                        error={recentProjectError}
+                        isLoading={isRecentProjectLoading}
+                        totalPages={1}
+                        currentPage={1}
+                    />
                 </section>
             </main>
         </div>

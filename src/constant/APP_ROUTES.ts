@@ -35,6 +35,7 @@ export const APP_ROUTES = {
       ALL: `${BASE_ROUTES.ORDERS}/all`,
     },
     PROFILE: "/profile", // Common for all roles
+    COMPANY: "/company",
   },
   AUTH: {
     SIGN_IN: "/auth/sign-in", // Login route

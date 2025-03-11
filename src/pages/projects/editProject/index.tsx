@@ -5,6 +5,7 @@ import { useGetProjectByIdQuery, useUpdateProjectMutation } from "../../../redux
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { ProjectFormData } from "../../../types/types.ts";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 
 const EditProject: React.FC = () => {
   const params = useParams();
@@ -21,7 +22,7 @@ const EditProject: React.FC = () => {
   // ✅ Handle form submission for updating the project
   const handleSubmit = async (formData: ProjectFormData) => {
     const formDataToSend = new FormData();
-  
+
     // Append form fields
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
@@ -35,7 +36,7 @@ const EditProject: React.FC = () => {
       formData.endDate ? format(formData.endDate, "yyyy-MM-dd") : ""
     );
     formDataToSend.append("status", formData.status?.value || "");
-  
+
     // ✅ Check if new files are uploaded
     if (formData.files && formData.files.length > 0) {
       const hasNewFiles = formData.files.some((file) => file instanceof File);
@@ -45,18 +46,19 @@ const EditProject: React.FC = () => {
         });
       }
     }
-  
+
     try {
       // ✅ Call the updateProject mutation
       await updateProject({ projectId, formData: formDataToSend }).unwrap();
-      toast.success("Project updated successfully!");
-      navigate(`/projects/${projectId}`);
+      if(projectId) {
+        navigate(APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", projectId));
+      }
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update project. Please try again.");
     }
   };
-  
-  
+
+
 
   // ✅ Show loading state while fetching project data
   if (isLoadingProject) {

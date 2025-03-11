@@ -91,6 +91,7 @@ export interface ITask {
     displayName: string;
   }
   assignedUsers: any[];
+  createdAt: string;
 }
 
 export interface TaskProps {
@@ -119,6 +120,7 @@ export interface DocumentDataRow {
   }
   signaturePath?: string;
   initialPath?: string;
+  time?: string;
 }
 
 export interface UploadedFile {
@@ -193,4 +195,9 @@ export interface ColumnType {
     id: string;
     name: string;
     tasks: Task[];
+}
+
+export interface Company {
+  id: string;
+  name: string;
 }

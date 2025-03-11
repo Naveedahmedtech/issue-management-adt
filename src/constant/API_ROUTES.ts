@@ -9,6 +9,7 @@ const PERMISSION_BASE = `${API_BASE}/permission`;
 const PROJECT_BASE = `${API_BASE}/project`;
 const ISSUE_BASE = `${API_BASE}/issue`;
 const ORDER_BASE = `${API_BASE}/order`;
+const COMPANY_BASE = `${API_BASE}/company`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -75,7 +76,10 @@ export const API_ROUTES = {
     ROOT: `${ISSUE_BASE}`,
     ASSIGN_TO_USER: `assign-to-user`,
     REMOVE_USER: `remove-user`
-  }
+  },
+  COMPANY: {
+    ROOT: `${COMPANY_BASE}`,
+  } 
 };
 
 

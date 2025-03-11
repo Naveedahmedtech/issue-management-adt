@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGetRecentProjectsQuery } from "../../../redux/features/projectsApi";
-import AllProjectsTable from "../components/AllProjects";
+import AllProjectsCards from "../components/AllProjects";
 import InputField from "../../../components/form/InputField";
 import SelectField from "../../../components/form/SelectField";
 import DateField from "../../../components/form/DateField";
@@ -18,7 +18,7 @@ const AllProjects = () => {
 
   const { data, error, isLoading } = useGetRecentProjectsQuery({
     page: currentPage,
-    limit: 15,
+    limit: 20,
     search,
     status,
     startDate: startDate ? startDate.toISOString() : "",
@@ -105,7 +105,7 @@ const AllProjects = () => {
       </div>
 
       {/* Projects Table */}
-      <AllProjectsTable
+      <AllProjectsCards
         projects={projects}
         error={error}
         isLoading={isLoading}

@@ -3,3 +3,8 @@ export const PROJECT_STATUS = {
     ON_GOING: 'On Going',
     COMPLETED: 'Completed',
 }
+export const ORDER_STATUS = {
+    PENDING: 'PENDING',
+    IN_PROGRESS: 'IN PROGRESS',
+    COMPLETED: 'COMPLETED',
+}

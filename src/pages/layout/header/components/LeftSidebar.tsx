@@ -10,6 +10,7 @@ import Button from "../../../../components/buttons/Button.tsx";
 import { updateUserData } from "../../../../redux/features/authSlice.ts";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../../../../hooks/useAuth.ts";
+import { useLogoutMutation } from "../../../../redux/features/authApi.ts";
 
 interface LeftSidebarProps {
   toggleSidebar: () => void;
@@ -22,6 +23,8 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   const [isLargeScreen, setIsLargeScreen] = useState<boolean>(true);
   const dispatch = useDispatch();
   const { userData } = useAuth();
+
+  const [logout, {isLoading}] = useLogoutMutation()
 
 
   // Filter links based on role
@@ -45,6 +48,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
 
   const handleLogout = async () => {
     try {
+      await logout({}).unwrap();
       dispatch(updateUserData({ isLoggedIn: false }));
       navigate(APP_ROUTES.AUTH.SIGN_IN);
     } catch (error) {
@@ -151,6 +155,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
             onClick={handleLogout}
             preview={"danger"}
             fullWidth={false}
+            isSubmitting={isLoading}
           />
         </div>
       </ModalContainer>

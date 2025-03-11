@@ -26,25 +26,30 @@ const AllIssues = () => {
     // Fetch users dynamically for pagination
     const fetchUsers = async (page: number) => {
         try {
-            const response = await triggerGetUsers({ page, limit: 2 }).unwrap();
-            console.log("API Response:", response); // Debugging output
-
-            // Ensure response structure is correct
+            const response = await triggerGetUsers({ page, limit: 10 }).unwrap();
             const users = response?.data?.users ?? [];
             const pagination = response?.data?.pagination ?? {};
 
+            // Map users to dropdown format
+            const userOptions = users.map((user: any) => ({
+                value: user.id,
+                label: user.displayName || user.email,
+            }));
+
+            // Always include "All" option at the top
+            const allOption = { value: "", label: "All" };
+            const finalOptions = page === 1 ? [allOption, ...userOptions] : userOptions;
+
             return {
-                data: users.map((user: any) => ({
-                    value: user.id,
-                    label: user.displayName || user.email, 
-                })),
-                hasMore: (pagination.page * pagination.limit) < pagination.total, 
+                data: finalOptions,
+                hasMore: (pagination.page * pagination.limit) < pagination.total,
             };
         } catch (error) {
             console.error("Error fetching users:", error);
-            return { data: [], hasMore: false };
+            return { data: [{ value: "all", label: "All" }], hasMore: false };
         }
     };
+
 
 
     return (

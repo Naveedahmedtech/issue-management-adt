@@ -17,3 +17,4 @@ export { default as CreateOrder } from "./orders/create/";
 export { default as EditOrder } from "./orders/edit/";
 export { default as ArchivedProjects } from "./projects/archived/";
 export { default as ArchivedOrders } from "./orders/archived/";
+export { default as Company } from "./company/";

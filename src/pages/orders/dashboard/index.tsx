@@ -1,11 +1,11 @@
 import React from 'react';
 import StatCard from "../../../components/cards/StatCard.tsx";
-import RecentOrders from '../components/RecentOrders.tsx';
 import { useGetOrderStatsQuery, useGetRecentOrdersQuery } from '../../../redux/features/orderApi.ts';
+import AllOrdersCards from '../components/AllOrders.tsx';
 
 const Index: React.FC = () => {
     const { data, error, isLoading } = useGetOrderStatsQuery({});
-    const { data: recentOrders, error: recentOrderError, isLoading: isRecentOrderLoading } = useGetRecentOrdersQuery({});
+    const { data: recentOrders, error: recentOrderError, isLoading: recentOrderLoading } = useGetRecentOrdersQuery({});
 
 
     return (
@@ -58,10 +58,13 @@ const Index: React.FC = () => {
 
 
                 <section className='mb-6'>
-                    <RecentOrders
-                        recentOrders={recentOrders}
+                    <h3 className="text-xl font-semibold text-text mb-4">Recent Orders</h3>
+                    <AllOrdersCards
+                        orders={recentOrders?.data?.orders}
                         error={recentOrderError}
-                        isLoading={isRecentOrderLoading}
+                        isLoading={recentOrderLoading}
+                        totalPages={1}
+                        currentPage={1}
                     />
                 </section>
             </main>

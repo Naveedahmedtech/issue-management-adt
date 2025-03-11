@@ -174,9 +174,8 @@ const UserManagement: React.FC = () => {
                 <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit User">
                     <Formik
                         initialValues={{
-                            email: selectedUser.email,
                             displayName: selectedUser.displayName,
-                            role: rolesOptions.find((role: any) => role.label === selectedUser.role)?.value || "",
+                            role: rolesOptions.find((role: any) => role.label === selectedUser.role?.replace(/_/g, " "))?.value || "",
                             permissions: selectedUser.permissions
                                 .map((permission) =>
                                     permissionsOptions.find(
@@ -194,7 +193,7 @@ const UserManagement: React.FC = () => {
                         onSubmit={handleModalSubmit}
                     >
                         <Form>
-                            <InputField label="Email" name="email" type="email" disabled />
+                            <InputField label="Email" name="email" type="email" disabled readonly={true} />
                             <InputField label="Display Name" name="displayName" type="text" />
                             <FormikSelect
                                 name="role"

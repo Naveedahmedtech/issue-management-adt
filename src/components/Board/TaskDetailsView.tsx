@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "../buttons/Button.tsx";
 import ModalContainer from "../modal/ModalContainer.tsx";
-import { renderFileIcon } from "../../utils/TaskUtils.tsx";
+import {formatDate, renderFileIcon} from "../../utils/TaskUtils.tsx";
 import { useDeleteIssueMutation, useUpdateIssueMutation } from "../../redux/features/issueApi.ts";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth.ts";
@@ -40,6 +40,7 @@ const TaskDetailsView: React.FC<{
   setIssueId: (id: string) => void;
   refetchFiles: () => void;
 }> = ({ task, onEdit, onDelete, component, refetch, isArchived, projectId, refetchFiles, onClose }) => {
+  console.log("task:", task);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { data: latestActivity, isLoading: isActivityLoading } = useGetProjectActiveLogsQuery({
     projectId,
@@ -56,8 +57,6 @@ const TaskDetailsView: React.FC<{
   const [deleteIssue, { isLoading: isDeleting }] = useDeleteIssueMutation();
   const [updateIssue, { isLoading: isMovingStatus }] = useUpdateIssueMutation();
   const [updateIssueLogHistory] = useUpdateIssueLogHistoryMutation();
-
-
   const handleDelete = async () => {
     try {
       await deleteIssue(task.id).unwrap();
@@ -115,6 +114,9 @@ const TaskDetailsView: React.FC<{
     }
   };
 
+  const filteroutWhoCreatedIssue = latestActivity?.data?.history?.find((activity:any) => activity?.fieldName === "Issue Created");
+  console.log("filteroutWhoCreatedIssue", filteroutWhoCreatedIssue)
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Main Task Details */}
@@ -146,7 +148,7 @@ const TaskDetailsView: React.FC<{
                         disabled={isMovingStatus}
                         aria-label="Move task to the previous status"
                     >
-                     Move Back
+                      Move Back
                     </button>
 
                     <button
@@ -160,121 +162,128 @@ const TaskDetailsView: React.FC<{
                   </>
               )}
             </div>
-
           </div>
-          {/* <div>
+          <div>
             <h4 className="text-lg font-bold text-primary mb-2">Dates</h4>
             <p>
-              <strong>Start:</strong> {formatDate(task.startDate)}
+              {task?.createdAt ? formatDate(task?.createdAt) : "--"}
             </p>
-            <p>
-              <strong>End:</strong> {formatDate(task.endDate)}
-            </p>
-          </div> */}
-        </div>
-        <div>
-          <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
-          <ul className="space-y-2">
-            {task.files?.map((file: { name: string; type: string; url: string }, index: number) => (
-                <li key={index} className="flex items-center space-x-2">
-                  {renderFileIcon(file.type)}
-                  <a
-                      className="text-text hover:underline"
-                      href={`${BASE_URL}/${file?.url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                  >
-                    {file.name}
-                  </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="flex justify-end space-x-4 mt-6">
-          {!isArchived && (
-            <Button
-              text="Edit"
-              onClick={onEdit}
-              fullWidth={false}
-              className="bg-primary text-white"
-            />
-          )}
-          {role !== ROLES.WORKER && !isArchived && (
-            <Button
-              text="Delete"
-              onClick={() => setIsDeleteModalOpen(true)}
-              fullWidth={false}
-              preview={"danger"}
-            />
-          )}
-        </div>
-
-        {isDeleteModalOpen && (
-          <ModalContainer
-            isOpen={isDeleteModalOpen}
-            onClose={() => setIsDeleteModalOpen(false)}
-            title={`Delete ${component === "order" ? "Order" : "Issue"} Confirmation`}
-          >
-            <p className="text-text">
-              Are you sure you want to delete this {component === "order" ? "Order" : "Issue"}? This
-              action cannot be undone.
-            </p>
-            <div className="flex justify-end mt-6 space-x-4">
-              <Button
-                text={"Delete"}
-                onClick={handleDelete}
-                fullWidth={false}
-                preview={"danger"}
-                isSubmitting={isDeleting}
-              />
-            </div>
-          </ModalContainer>
-        )}
-      </div>
-
-      {/* Compact Latest Activity */}
-      <div className="col-span-1">
-        <h4 className="text-lg font-bold text-primary mb-4">Latest Activity</h4>
-        {isActivityLoading ? (
-          <p className="text-text">Loading latest activity...</p>
-        ) : latestActivity?.data?.history?.length > 0 ? (
-          <div className="space-y-2 max-h-64 overflow-auto">
-            {latestActivity.data.history.map((activity: any) => (
-              <div key={activity.id} className="bg-backgroundShade1 p-2 rounded-md">
-                <p className="text-xs text-text font-semibold truncate">
-                  {activity.user.displayName}
-                </p>
-                <p className="text-xs text-text truncate">
-                  {activity.fieldName === "Issue Created"
-                    ? "Created this issue"
-                    : `Updated ${activity.fieldName}`}
-                </p>
-                {activity.fieldName !== "Issue Created" && (
-                  <p className="text-xs text-text truncate">
-                    From: {activity.oldValue || "N/A"} → To: {activity.newValue || "N/A"}
-                  </p>
-                )}
-                <p className="text-xs text-textHover truncate">
-                  {new Date(activity.createdAt).toLocaleString()}
-                </p>
-              </div>
-            ))}
           </div>
-        ) : (
-          <p className="text-text">No recent activity.</p>
-        )}
-        {/*<div className="mt-4">*/}
-        {/*  <span className="underline cursor-pointer" onClick={() => {*/}
-        {/*    if(setActiveTab && setIssueId) {*/}
-        {/*    setActiveTab('activity');*/}
-        {/*    setIssueId(task.id);*/}
-        {/*    }*/}
+        </div>
 
-        {/*  }}>See all</span>*/}
-        {/*</div>*/}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
+            <ul className="space-y-2">
+              {task.files?.map((file: { name: string; type: string; url: string }, index: number) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    {renderFileIcon(file.type)}
+                    <a
+                        className="text-text hover:underline"
+                        href={`${BASE_URL}/${file?.url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                      {file.name}
+                    </a>
+                  </li>
+              ))}
+            </ul>
+          </div>
+          {
+              filteroutWhoCreatedIssue && (
+                  <div>
+                    <h4 className="text-lg font-bold text-primary mb-2">Created By</h4>
+                    <p>{filteroutWhoCreatedIssue?.user?.displayName}</p>
+                  </div>
+              )
+          }
+        </div>
+          <div className="flex justify-end space-x-4 mt-6">
+            {!isArchived && (
+                <Button
+                    text="Edit"
+                    onClick={onEdit}
+                    fullWidth={false}
+                    className="bg-primary text-white"
+                />
+            )}
+            {role !== ROLES.WORKER && !isArchived && (
+                <Button
+                    text="Delete"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    fullWidth={false}
+                    preview={"danger"}
+                />
+            )}
+          </div>
+
+          {isDeleteModalOpen && (
+              <ModalContainer
+                  isOpen={isDeleteModalOpen}
+                  onClose={() => setIsDeleteModalOpen(false)}
+                  title={`Delete ${component === "order" ? "Order" : "Issue"} Confirmation`}
+              >
+                <p className="text-text">
+                  Are you sure you want to delete this {component === "order" ? "Order" : "Issue"}? This
+                  action cannot be undone.
+                </p>
+                <div className="flex justify-end mt-6 space-x-4">
+                  <Button
+                      text={"Delete"}
+                      onClick={handleDelete}
+                      fullWidth={false}
+                      preview={"danger"}
+                      isSubmitting={isDeleting}
+                  />
+                </div>
+              </ModalContainer>
+          )}
+        </div>
+
+        {/* Compact Latest Activity */}
+        <div className="col-span-1">
+          <h4 className="text-lg font-bold text-primary mb-4">Latest Activity</h4>
+          {isActivityLoading ? (
+              <p className="text-text">Loading latest activity...</p>
+          ) : latestActivity?.data?.history?.length > 0 ? (
+              <div className="space-y-2 max-h-64 overflow-auto">
+                {latestActivity.data.history.map((activity: any) => (
+                    <div key={activity.id} className="bg-backgroundShade1 p-2 rounded-md">
+                      <p className="text-xs text-text font-semibold truncate">
+                        {activity.user.displayName}
+                      </p>
+                      <p className="text-xs text-text truncate">
+                        {activity.fieldName === "Issue Created"
+                            ? "Created this issue"
+                            : `Updated ${activity.fieldName}`}
+                      </p>
+                      {activity.fieldName !== "Issue Created" && (
+                          <p className="text-xs text-text truncate">
+                            From: {activity.oldValue || "N/A"} → To: {activity.newValue || "N/A"}
+                          </p>
+                      )}
+                      <p className="text-xs text-textHover truncate">
+                        {new Date(activity.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                ))}
+              </div>
+          ) : (
+              <p className="text-text">No recent activity.</p>
+          )}
+          {/*<div className="mt-4">*/}
+          {/*  <span className="underline cursor-pointer" onClick={() => {*/}
+          {/*    if(setActiveTab && setIssueId) {*/}
+          {/*    setActiveTab('activity');*/}
+          {/*    setIssueId(task.id);*/}
+          {/*    }*/}
+
+          {/*  }}>See all</span>*/}
+          {/*</div>*/}
+        </div>
       </div>
-    </div>
-  );
-};
+      );
+      };
 
-export default TaskDetailsView;
+      export default TaskDetailsView;

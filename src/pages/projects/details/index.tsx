@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
@@ -24,6 +24,8 @@ import LargeModal from "../../../components/modal/LargeModal.tsx";
 import AnnotationIframe from "../../../components/iframe/AnnotationIframe.tsx";
 import { FiRefreshCw } from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
+import { format } from "date-fns";
+
 
 const useWindowSize = () => {
     const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
@@ -76,24 +78,27 @@ const ProjectDetails = () => {
 
     const { data: projectData } = useGetProjectByIdQuery(projectId);
     const { data: projectIssues, isLoading: isLoadingIssues, isFetching: isIssueFetching, refetch: refetchIssues } = useGetProjectIssuesQuery(projectId);
-    const { data: projectFiles, isLoading: isLoadingProjectFiles, refetch: refetchProjectFiles } = useGetProjectFilesQuery(projectId);
+    const { data: projectFiles, isLoading: isLoadingProjectFiles, isFetching: isFileFetching, refetch: refetchProjectFiles } = useGetProjectFilesQuery(projectId);
     const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
     // ✅ Use the deleteProject mutation
     const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
     const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
 
-console.log("FILES: ", projectFiles?.data?.files)
     useEffect(() => {
         if (projectFiles?.data?.files) {
-            const formattedProjectFiles = projectFiles.data.files.map((file: DocumentDataRow) => ({
-                id: file.type === "issueFile" ? file.fileId : file.id,
-                fileName: file.filePath.split("/").pop(),
-                extension: file.filePath.split(".").pop(),
-                filePath: file.filePath,
-                date: new Date(file.updatedAt).toLocaleDateString("en-GB"),
-                // type: file.filePath.split(".").pop()?.toUpperCase() || "UNKNOWN",
-                type: `${file.type === "issueFile" ? `${file.type} (${file?.issue && file?.issue.title})` : file.type}` || "UNKNOWN",
-            }));
+            const formattedProjectFiles = projectFiles.data.files.map((file: DocumentDataRow) => {
+                const dateObj = new Date(file.updatedAt);
+
+                return {
+                    id: file.type === "issueFile" ? file.fileId : file.id,
+                    fileName: file.filePath.split("/").pop(),
+                    extension: file.filePath.split(".").pop(),
+                    filePath: file.filePath,
+                    date: format(dateObj, "EEEE, MMMM do yyyy"),
+                    time: format(dateObj, "hh:mm a"),
+                    type: `${file.type === "issueFile" ? `${file.type} (${file?.issue?.title})` : file.type}` || "UNKNOWN",
+                };
+            });
 
             // ✅ Replace the document data instead of merging
             setDocumentData(formattedProjectFiles);
@@ -124,18 +129,22 @@ console.log("FILES: ", projectFiles?.data?.files)
         setIsModalOpen(true);
     };
 
-    const handleAnnotateFile = (file: DocumentDataRow) => {
-        if (file.fileName.endsWith('.xlsx')) {
-            setSelectedFile(null); // Temporarily reset the selected file
-            setTimeout(() => {
-                setSelectedFile(file); // Re-select the file to trigger useEffect
-            }, 0);
-        } else {
-            // toast.info("We are working on PDF annotation for you!");
-            setSelectedFile(file);
-            setIsAnnotationModal(true);
-        }
-    }
+    const handleAnnotateFile = useCallback(
+        (file: DocumentDataRow) => {
+            if (file.fileName.endsWith(".xlsx")) {
+                setSelectedFile(null); // Temporarily reset the selected file
+
+                setTimeout(() => {
+                    setSelectedFile(file); // Re-select the file to trigger useEffect
+                }, 0);
+            } else {
+                // toast.info("We are working on PDF annotation for you!");
+                setSelectedFile(file);
+                setIsAnnotationModal(true);
+            }
+        },
+        [setSelectedFile, setIsAnnotationModal] // Dependencies
+    );
 
     const handleSignFile = (file: any) => {
         console.log("Signing file:", file);
@@ -205,8 +214,10 @@ console.log("FILES: ", projectFiles?.data?.files)
     ];
 
     const handleOutsideClick = (event: MouseEvent) => {
+        setSelectedFile(null)
         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
             setDropdownOpen(false);
+            setIsAnnotationModal(false)
         }
     };
 
@@ -321,7 +332,7 @@ console.log("FILES: ", projectFiles?.data?.files)
                     columns={documentColumns}
                     data={documentData}
                     setIsUploadModalOpen={setIsUploadModalOpen}
-                    isLoading={isLoadingProjectFiles}
+                    isLoading={isLoadingProjectFiles || isFileFetching}
                     selectedFile={selectedFile}
                     projectIdForNow={projectId}
                     refetch={refetchProjectFiles}
@@ -496,7 +507,10 @@ console.log("FILES: ", projectFiles?.data?.files)
 
             <LargeModal
                 isOpen={isAnnotationModal}
-                onClose={() => setIsAnnotationModal(false)}
+                onClose={() => {
+                    setSelectedFile(null)
+                    setIsAnnotationModal(false)
+                }}
                 title="Webview"
             >
                 <div className="relative h-full">
