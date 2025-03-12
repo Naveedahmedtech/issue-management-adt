@@ -19,7 +19,7 @@ const CreateProject: React.FC = () => {
     // Append the fields
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("companyName", formData.companyName || "");
+    formDataToSend.append("companyId", formData.companyId || "");
     formDataToSend.append("status", formData.status?.value || "");
 
     // Format and append dates

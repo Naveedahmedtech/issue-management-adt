@@ -7,6 +7,8 @@ import Button from "../../../components/buttons/Button.tsx";
 import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
 import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
 import { PROJECT_STATUS } from "../../../constant/index.ts";
+import { useLazyGetAllCompaniesQuery } from "../../../redux/features/companyApi.ts";
+import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown.tsx";
 
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
@@ -14,7 +16,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         description: "",
         startDate: null,
         endDate: null,
-        companyName: "",
+        companyId: "",
         status: { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
         files: [],
         ...initialData, // initial data if provided
@@ -22,6 +24,28 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
     const [errors, setErrors] = useState<ValidationError[]>([]);
 
+    const [triggerAllCompanies] = useLazyGetAllCompaniesQuery();
+    const fetchAllCompanies = async (page: number) => {
+        try {
+            const response = await triggerAllCompanies({ page, limit: 20 }).unwrap();
+            const companies = response?.data?.companies ?? [];
+            const pagination = response?.data ?? {};
+
+            // Map users to dropdown format
+            const companyOptions = companies.map((company: any) => ({
+                value: company.id,
+                label: company.name,
+            }));
+
+            return {
+                data: companyOptions,
+                hasMore: (pagination.page * pagination.limit) < pagination.total,
+            };
+        } catch (error) {
+            console.error("Error fetching companies:", error);
+            return { data: [{ value: "all", label: "All" }], hasMore: false };
+        }
+    };
     useEffect(() => {
         if (initialData) {
             setFormData(initialData); // Prefill data for edit mode
@@ -59,8 +83,8 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             startDate: null,
             endDate: null,
             files: [],
-            companyName: "",
-          });
+            companyId: "",
+        });
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -116,15 +140,13 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
 
             <div>
-                <InputField
-                    label="Company Name"
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    className="w-full"
+                <PaginatedDropdown
+                    fetchData={fetchAllCompanies}
+                    renderItem={(item: any) => <span>{item.label}</span>}
+                    onSelect={(item: any) => setFormData({ ...formData, companyId: item.value })}
+                    placeholder="Select a company"
                 />
-                {getError("companyName") && <p className="text-red-500 text-sm mt-1">{getError("companyName")}</p>}
+                {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -170,7 +192,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     onChange={handleFileUpload}
                     accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     className="w-full"
-                    
+
                 />
                 {getError("files") && <p className="text-red-500 text-sm mt-1">{getError("files")}</p>}
             </div>

@@ -26,7 +26,7 @@ const EditProject: React.FC = () => {
     // Append form fields
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("companyName", formData.companyName || "");
+    formDataToSend.append("companyId", formData.companyId || "");
     formDataToSend.append(
       "startDate",
       formData.startDate ? format(formData.startDate, "yyyy-MM-dd") : ""
@@ -73,7 +73,7 @@ const EditProject: React.FC = () => {
         description: projectData?.data?.description,
         startDate: projectData?.data?.startDate,
         endDate: projectData?.data?.endDate,
-        companyName: projectData?.data?.companyName || "",
+        companyId: projectData?.data?.company?.id || "",
         status: { label: projectData?.data?.status, value: projectData?.data?.status },
         files: projectData?.data?.files || [],
       }}

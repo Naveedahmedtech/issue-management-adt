@@ -135,7 +135,7 @@ export interface ProjectFormData {
   endDate: Date | null;
   status: { label: string; value: string } | null;
   files: File[];
-  companyName: string | null;
+  companyId: string | null;
 }
 export interface OrderFormData {
   name: string;

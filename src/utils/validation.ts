@@ -12,9 +12,9 @@ export const validateProjectForm = (formData: ProjectFormData): ValidationError[
         errors.push({ field: "title", message: "Project Name is required." });
     }
 
-    if (!formData.description.trim()) {
-        errors.push({ field: "description", message: "Description is required." });
-    }
+    // if (!formData.description.trim()) {
+    //     errors.push({ field: "description", message: "Description is required." });
+    // }
 
     // if (!formData.startDate) {
     //     errors.push({ field: "startDate", message: "Start Date is required." });

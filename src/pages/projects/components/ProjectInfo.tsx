@@ -14,6 +14,10 @@ interface ProjectInfoProps {
     user: {
       displayName: string;
     };
+    company: {
+      id: string;
+      name: string;
+    }
   };
 }
 
@@ -85,7 +89,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
           <FaBuilding className="text-primary text-sm" />
           <div className="flex flex-col">
             <span className="text-xs text-textLight">Company</span>
-            <span>{projectData?.companyName || "N/A"}</span>
+            <span>{projectData?.company?.name || "N/A"}</span>
           </div>
         </div>
 

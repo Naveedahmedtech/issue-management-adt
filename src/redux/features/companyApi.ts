@@ -48,4 +48,4 @@ export const companyApi = createApi({
   }),
 });
 
-export const { useCreateCompanyMutation, useUpdateCompanyMutation, useGetCompanyByIdQuery, useGetAllCompaniesQuery, useDeleteCompanyMutation } = companyApi;
+export const { useCreateCompanyMutation, useUpdateCompanyMutation, useGetCompanyByIdQuery, useGetAllCompaniesQuery, useDeleteCompanyMutation, useLazyGetAllCompaniesQuery } = companyApi;
