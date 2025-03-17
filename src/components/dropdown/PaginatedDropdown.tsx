@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { AiOutlineDown, AiOutlineReload } from "react-icons/ai"; // Reload icon for spinning effect
+import { AiOutlineDown, AiOutlineReload } from "react-icons/ai";
 
 interface PaginatedDropdownProps<T> {
     fetchData: (page: number) => Promise<{ data: T[]; hasMore: boolean }>;
     renderItem: (item: T) => React.ReactNode;
     onSelect: (item: T) => void;
     placeholder?: string;
+    selectedItem?: T | null;  // Accept selected item from parent
 }
 
 export default function PaginatedDropdown<T>({
@@ -13,13 +14,13 @@ export default function PaginatedDropdown<T>({
     renderItem,
     onSelect,
     placeholder = "Select an item",
+    selectedItem, // Use this to preselect an item
 }: PaginatedDropdownProps<T>) {
     const [items, setItems] = useState<T[]>([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [open, setOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<T | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // **Close dropdown when clicking outside**
@@ -82,8 +83,7 @@ export default function PaginatedDropdown<T>({
 
     const handleSelect = (e: React.MouseEvent, item: T) => {
         e.stopPropagation();
-        setSelectedItem(item);
-        onSelect(item);
+        onSelect(item); // Let parent component handle selected item
         setOpen(false);
     };
 
@@ -91,9 +91,10 @@ export default function PaginatedDropdown<T>({
         <div className="relative w-64" ref={dropdownRef}>
             <button
                 className="w-full flex justify-between items-center border border-border p-3 rounded-lg bg-background shadow-md text-text transition-all"
+                type="button"
                 onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
-                    setOpen(!open)
+                    setOpen(!open);
                 }}
             >
                 {selectedItem ? renderItem(selectedItem) : placeholder}
@@ -105,9 +106,7 @@ export default function PaginatedDropdown<T>({
             </button>
 
             {open && (
-                <div
-                    className="absolute mt-2 w-full max-h-60 overflow-auto border border-border rounded-lg shadow-lg bg-backgroundShade1 text-textSecondary transition-all animate-fadeIn z-50"
-                >
+                <div className="absolute mt-2 w-full max-h-60 overflow-auto border border-border rounded-lg shadow-lg bg-backgroundShade1 text-textSecondary transition-all animate-fadeIn z-50">
                     <ul>
                         {loading && items.length === 0 ? (
                             <div className="p-3 space-y-2">
@@ -135,9 +134,10 @@ export default function PaginatedDropdown<T>({
                     {!loading && hasMore && (
                         <button
                             className="w-full text-textHover p-3 border-t border-border bg-backgroundShade2 hover:bg-primary transition-all flex justify-center items-center gap-2"
+                            type="button"
                             onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();
-                                setPage((prev) => prev + 1)
+                                setPage((prev) => prev + 1);
                             }}
                         >
                             <AiOutlineReload className="animate-spin" /> Load More

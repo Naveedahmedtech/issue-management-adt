@@ -76,7 +76,7 @@ const ProjectDetails = () => {
     const isArchived = location.state?.archive;
     const { projectId } = params;
 
-    const { data: projectData } = useGetProjectByIdQuery(projectId);
+    const { data: projectData, refetch: refetchProjectData } = useGetProjectByIdQuery(projectId);
     const { data: projectIssues, isLoading: isLoadingIssues, isFetching: isIssueFetching, refetch: refetchIssues } = useGetProjectIssuesQuery(projectId);
     const { data: projectFiles, isLoading: isLoadingProjectFiles, isFetching: isFileFetching, refetch: refetchProjectFiles } = useGetProjectFilesQuery(projectId);
     const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
@@ -338,7 +338,7 @@ const ProjectDetails = () => {
                     refetch={refetchProjectFiles}
                 />;
             case "info":
-                return <ProjectInfo projectData={projectData?.data} />;
+                return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />;
             case "activity":
                 return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />;
             default:
@@ -374,7 +374,7 @@ const ProjectDetails = () => {
 
     return (
         <main className="p-6">
-            <ProjectInfo projectData={projectData?.data} />
+            <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />
             <div className="flex flex-wrap justify-between items-center mb-4">
                 {/* Tabs Component */}
 
