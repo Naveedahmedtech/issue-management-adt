@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldHookConfig } from "formik";
+import {FieldHookConfig} from "formik";
 
 export interface IClassNameProps {
   className?: string;
@@ -130,6 +130,7 @@ export interface DocumentDataRow {
   signaturePath?: string;
   initialPath?: string;
   time?: string;
+  isSigned?: boolean;
 }
 
 export interface UploadedFile {
@@ -225,4 +226,22 @@ export interface ProjectInfoProps {
     assignedUsers: [{ user: { id: string; displayName: string } }];
   };
   refetch: () => void;
+}
+
+
+export interface Metadata  {
+  username: string;
+  userId: string;
+  projectId?: string;
+  orderId?: string;
+  mode?: 'annotation' | 'signature';
+  isSigned?: boolean;
+}
+
+export interface IAnnotationProps {
+  userId: string;
+  selectedFile: any;
+  projectId?: string;
+  orderId?: string;
+  username: string
 }

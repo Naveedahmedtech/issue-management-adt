@@ -1,8 +1,8 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import {createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom';
 import PrivateRouteWrapper from './components/PrivateRouteWrapper';
 import PublicRouteWrapper from './components/PublicRouteWrapper';
-import { Header } from '../pages/layout';
-import { ForgotPassword, SignIn } from '../pages/auth';
+import {Header} from '../pages/layout';
+import {ForgotPassword, SignIn} from '../pages/auth';
 import {
     AllIssues,
     AllOrders,
@@ -11,17 +11,22 @@ import {
     ArchivedProjects,
     Company,
     CreateOrder,
-    CreateProject, CreateUser, EditOrder,
+    CreateProject,
+    CreateUser,
+    EditOrder,
     EditProject,
     ExcelViewer,
-    NotFound, OrderDashboard, OrderDetails,
+    NotFound,
+    OrderDashboard,
+    OrderDetails,
     PdfViewer,
     ProjectDashboard,
-    ProjectDetails, UserManagement
+    ProjectDetails,
+    UserManagement
 } from '../pages';
-import { APP_ROUTES } from '../constant/APP_ROUTES';
+import {APP_ROUTES} from '../constant/APP_ROUTES';
 import ErrorBoundary from "../ErrorBoundry.tsx";
-import AnnotationIframe from '../components/iframe/AnnotationIframe.tsx';
+// import AnnotationIframe from '../components/iframe/AnnotationIframe.tsx';
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -46,7 +51,7 @@ export const router = createBrowserRouter(
                     <Route path={`${APP_ROUTES.APP.ORDERS.EDIT}/:orderId`} element={<EditOrder />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.PROJECTS.ARCHIVED}`} element={<ArchivedProjects />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.ORDERS.ARCHIVED}`} element={<ArchivedOrders />} errorElement={<ErrorBoundary />} />
-                    <Route path={`test`} element={<AnnotationIframe />} errorElement={<ErrorBoundary />} />
+                    {/*<Route path={`test`} element={<AnnotationIframe />} errorElement={<ErrorBoundary />} />*/}
                     <Route path={`${APP_ROUTES.APP.COMPANY}`} element={<Company />} errorElement={<ErrorBoundary />} />
                 </Route>
             </Route>

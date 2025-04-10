@@ -24,7 +24,7 @@ import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
 import {useAuth} from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import {DocumentDataRow} from "../../../types/types.ts";
-import {BASE_URL} from "../../../constant/BASE_URL.ts";
+import {ANGULAR_URL, BASE_URL} from "../../../constant/BASE_URL.ts";
 import {API_ROUTES} from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
 import LargeModal from "../../../components/modal/LargeModal.tsx";
@@ -89,6 +89,21 @@ const ProjectDetails = () => {
     // ✅ Use the deleteProject mutation
     const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
     const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
+
+
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== ANGULAR_URL) return;
+
+            if (event.data?.type === 'ISSUE_SAVE') {
+                refetchIssues();
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
 
     useEffect(() => {
         if (projectFiles?.data?.files) {
@@ -527,7 +542,7 @@ const ProjectDetails = () => {
                                 pathname: APP_ROUTES.APP.PROJECTS.PDF_VIEWER,
                             }}
                             state={{
-                                userId: userId, selectedFile: selectedFile, projectId: projectId
+                                userId: userId, selectedFile: selectedFile, projectId: projectId, username
                             }}
                             className="underline text-textSecondary"
                         >

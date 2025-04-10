@@ -1,9 +1,9 @@
 import AnnotationIframe from '../../../components/iframe/AnnotationIframe';
-import { useLocation } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 
 const PdfViewer = () => {
   const location = useLocation();
-  const { userId, selectedFile, projectId } = location.state || {};
+  const { userId, selectedFile, projectId, username } = location.state || {};
 
   if (!userId || !selectedFile || !projectId) {
     return (
@@ -19,6 +19,7 @@ const PdfViewer = () => {
       userId={userId}
       selectedFile={selectedFile}
       projectId={projectId}
+      username={username}
     />
   );
 };

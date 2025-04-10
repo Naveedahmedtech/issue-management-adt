@@ -1,16 +1,18 @@
 import React, {useEffect, useRef} from 'react';
-import {ANGULAR_URL, BASE_URL} from '../../constant/BASE_URL.ts';
+import {ANGULAR_URL} from '../../constant/BASE_URL.ts';
+import {IAnnotationProps, Metadata} from "../../types/types.ts";
 
-const AnnotationIframe = ({ userId, selectedFile, projectId, username }: any) => {
+const AnnotationIframe = ({userId, selectedFile, projectId, username, orderId}: IAnnotationProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const fileId = selectedFile?.id;
     const filePath = selectedFile?.filePath;
-    const isInvalidParams = !fileId || !filePath || !projectId || !userId;
+    const isSigned = selectedFile?.isSigned;
+    const isInvalidParams = !fileId || !filePath || !userId;
 
-    // const fullFileUrl = `https://backend.viewsoft.com/uploads/projects/Small-Handwriting-set.pdf`;
+    const fullFileUrl = `https://backend.viewsoft.com/uploads/projects/Small-Handwriting-set.pdf`;
 
-    const fullFileUrl = `${BASE_URL}/${filePath}`;
+    // const fullFileUrl = `${BASE_URL}/${filePath}`;
     const sendFileToIframe = () => {
         if (typeof window !== 'undefined' && iframeRef.current?.contentWindow) {
             const fileObj = {
@@ -20,20 +22,24 @@ const AnnotationIframe = ({ userId, selectedFile, projectId, username }: any) =>
                 mime: 'application/pdf'
             };
 
+            const metadata: Metadata = {
+                username,
+                userId
+            };
+            if (projectId) {
+                metadata.projectId = projectId;
+                metadata.mode = 'annotation'
+            }
+            if (orderId) {
+                metadata.orderId = fileId;
+                metadata.mode = 'signature',
+                    metadata.isSigned = isSigned
+            }
+
             iframeRef.current.contentWindow.postMessage(
-                { type: 'view', payload: fileObj, metadata: { username, projectId, userId } },
+                {type: 'view', payload: fileObj, metadata},
                 ANGULAR_URL
             );
-            // iframeRef.current?.contentWindow.postMessage(
-            //     {
-            //         type: "guiMode",
-            //         payload: {
-            //             mode: "annotation" // or "annotation"
-            //         }
-            //     },
-            //     ANGULAR_URL
-            // );
-
 
             console.log("Sent file object via postMessage:", fileObj);
         }
@@ -61,7 +67,7 @@ const AnnotationIframe = ({ userId, selectedFile, projectId, username }: any) =>
 
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+        <div style={{position: 'relative', width: '100%', height: '100vh'}}>
             {isInvalidParams ? (
                 <div className="flex justify-center items-center min-h-[200px] text-red-500 font-semibold">
                     Missing required parameters. Please select a valid file.
@@ -70,7 +76,7 @@ const AnnotationIframe = ({ userId, selectedFile, projectId, username }: any) =>
                 <iframe
                     ref={iframeRef}
                     src={`${ANGULAR_URL}`}
-                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    style={{width: '100%', height: '100%', border: 'none'}}
                     title="Rasterex Viewer"
                     onLoad={handleIframeLoad}
                     onError={handleIframeError}

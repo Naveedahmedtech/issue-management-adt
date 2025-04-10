@@ -1,23 +1,28 @@
-import { useState, useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 import Tabs from "../../../components/Tabs";
 import Documents from "../../../components/Board/Documents";
 import OrderInfo from "../components/OrderInfo.tsx";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
-import { orderDocumentColumns } from "../../../utils/Common.tsx";
+import {orderDocumentColumns} from "../../../utils/Common.tsx";
 import FileUpload from "../../../components/form/FileUpload";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import {BsThreeDotsVertical} from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
-import { useDeleteOrderMutation, useGetOrderByIdQuery, useToggleArchiveMutation, useUploadFilesToOrderMutation } from "../../../redux/features/orderApi.ts";
+import {
+    useDeleteOrderMutation,
+    useGetOrderByIdQuery,
+    useToggleArchiveMutation,
+    useUploadFilesToOrderMutation
+} from "../../../redux/features/orderApi.ts";
 import OrderDropDown from "../components/OrderDropDown.tsx";
-import { useAuth } from "../../../hooks/useAuth.ts";
-import { toast } from "react-toastify";
-import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
-import { DocumentDataRow } from "../../../types/types.ts";
+import {useAuth} from "../../../hooks/useAuth.ts";
+import {toast} from "react-toastify";
+import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
+import {DocumentDataRow} from "../../../types/types.ts";
 import LargeModal from "../../../components/modal/LargeModal.tsx";
-import SignatureIframe from "../../../components/iframe/SignatureIframe.tsx";
-import { BASE_URL } from "../../../constant/BASE_URL.ts";
-import { FiRefreshCw } from "react-icons/fi";
+import {ANGULAR_URL, BASE_URL} from "../../../constant/BASE_URL.ts";
+import {FiRefreshCw} from "react-icons/fi";
+import AnnotationIframe from "../../../components/iframe/AnnotationIframe.tsx";
 
 const OrderDetails = () => {
     const [activeTab, setActiveTab] = useState("info");
@@ -40,7 +45,7 @@ const OrderDetails = () => {
     const navigate = useNavigate();
 
 
-    const { userData: { id: userId, role } } = userData;
+    const { userData: { id: userId, role, displayName: username } } = userData;
     const { orderId: orderId } = params;
     const isArchived = location.state?.archive;
 
@@ -58,6 +63,20 @@ const OrderDetails = () => {
         setSignatureModalOpen(true);
         // Add logic for file signing
     };
+
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== ANGULAR_URL) return;
+
+            if (event.data?.type === 'SIGNATURE_SAVE') {
+                refetchOrders()
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
 
     const transformFilesData = (files: any[]) => {
         return files.map((file) => {
@@ -78,6 +97,7 @@ const OrderDetails = () => {
                 filePath: file.filePath,
                 signaturePath: signatureEntry ? `${signatureEntry.path.replace(/\\/g, "/")}` : null,
                 initialPath: initialEntry ? `${initialEntry.path.replace(/\\/g, "/")}` : null,
+                isSigned: file.isSigned
             };
         });
     };
@@ -327,7 +347,7 @@ const OrderDetails = () => {
                 title="Webview"
             >
                 <div className="relative h-full">
-                    <SignatureIframe userId={userId} selectedFile={selectedFile} orderId={orderId} />
+                    <AnnotationIframe userId={userId} selectedFile={selectedFile} orderId={orderId} username={username} />
                 </div>
             </LargeModal>
             <LargeModal
