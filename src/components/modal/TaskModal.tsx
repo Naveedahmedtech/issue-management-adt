@@ -47,7 +47,7 @@ const TaskModal: React.FC<{
                     onDelete={onClose}
                     component={component}
                     refetch={refetch}
-                    isArchived={isArchived || task.project?.archived}
+                    isArchived={isArchived || task.project.archived}
                     projectId={projectId || task.project.id}
                     setActiveTab={setActiveTab}
                     setIssueId={setIssueId}

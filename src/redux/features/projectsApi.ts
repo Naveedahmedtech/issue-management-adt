@@ -175,6 +175,21 @@ export const projectApi = createApi({
       },
       providesTags: ["ActivityLogs"],
     }),
+
+    assignProject: builder.mutation({
+      query: (body) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ASSIGN_TO_USERS}`,
+        method: "POST",
+        body,
+      })
+    }),
+    UnassignProject: builder.mutation({
+      query: (body) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.UNASSIGN_TO_USERS}`,
+        method: "POST",
+        body,
+      })
+    })
   }),
 });
 
@@ -196,4 +211,6 @@ export const {
   useUpdateIssueLogHistoryMutation,
   useGetProjectActiveLogsQuery,
   useGetAllProjectIssuesQuery,
+  useAssignProjectMutation,
+  useUnassignProjectMutation
 } = projectApi;

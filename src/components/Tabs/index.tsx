@@ -8,7 +8,7 @@ interface TabsProps {
 
 const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange }) => {
     return (
-        <div className="flex  gap-4 mb-6 overflow-x-auto overflow-y-hidden mr-5">
+        <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-6">
             {tabs.map((tab) => (
                 <button
                     key={tab.id}

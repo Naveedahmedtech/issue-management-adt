@@ -61,7 +61,9 @@ export const API_ROUTES = {
     TOGGLE_ARCHIVED: `toggle-archive`,
     ISSUE_LOG_HISTORY: 'update-log-history',
     ACTIVITY_LOGS: 'activity-logs',
-    ALL_ISSUES: 'all-issues'
+    ALL_ISSUES: 'all-issues',
+    ASSIGN_TO_USERS: 'assign-to-users',
+    UNASSIGN_TO_USERS: 'unassign-to-users',
   },
   ORDER: {
     ROOT: `${ORDER_BASE}`,

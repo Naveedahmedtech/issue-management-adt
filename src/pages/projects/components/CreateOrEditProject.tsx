@@ -22,9 +22,32 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         ...initialData, // initial data if provided
     });
 
+
     const [errors, setErrors] = useState<ValidationError[]>([]);
 
+    const [selectedCompany, setSelectedCompany] = useState<{ label: string; value: string } | null>(null);
+
+    
+    
     const [triggerAllCompanies] = useLazyGetAllCompaniesQuery();
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData); // Prefill form data for edit mode
+
+            if (initialData.companyId) {
+                // Fetch companies and set the selected company
+                (async () => {
+                    const response = await triggerAllCompanies({ page: 1, limit: 20 }).unwrap();
+                    const companies = response?.data?.companies ?? [];
+
+                    const matchedCompany = companies.find((company: any) => company.id === initialData.companyId);
+                    if (matchedCompany) {
+                        setSelectedCompany({ label: matchedCompany.name, value: matchedCompany.id });
+                    }
+                })();
+            }
+        }
+    }, [initialData, triggerAllCompanies]);
     const fetchAllCompanies = async (page: number) => {
         try {
             const response = await triggerAllCompanies({ page, limit: 20 }).unwrap();
@@ -143,7 +166,11 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 <PaginatedDropdown
                     fetchData={fetchAllCompanies}
                     renderItem={(item: any) => <span>{item.label}</span>}
-                    onSelect={(item: any) => setFormData({ ...formData, companyId: item.value })}
+                    onSelect={(item: any) => {
+                        setFormData({ ...formData, companyId: item.value });
+                        setSelectedCompany(item);
+                    }}
+                    selectedItem={selectedCompany}
                     placeholder="Select a company"
                 />
                 {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}

@@ -116,25 +116,25 @@ export const orderDocumentColumns = (
           </div>
         ) : "No Signature"
     },
-    {
-      id: "initial",
-      label: "Initial",
-      render: (row: DocumentDataRow) =>
-        row.initialPath ? (
-          <div style={{
-            display: "inline-block",
-            padding: "5px",
-            backgroundColor: "#f8f8f8", // ✅ Light gray background for contrast
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-            cursor: "pointer"
-          }}
-            onClick={() => handleViewFile(row.initialPath)}
-          >
-            <img src={`${BASE_URL}/${row.initialPath}`} alt="Initial" />
-          </div>
-        ) : "No Initial"
-    },
+    // {
+    //   id: "initial",
+    //   label: "Initial",
+    //   render: (row: DocumentDataRow) =>
+    //     row.initialPath ? (
+    //       <div style={{
+    //         display: "inline-block",
+    //         padding: "5px",
+    //         backgroundColor: "#f8f8f8", // ✅ Light gray background for contrast
+    //         borderRadius: "5px",
+    //         border: "1px solid #ccc",
+    //         cursor: "pointer"
+    //       }}
+    //         onClick={() => handleViewFile(row.initialPath)}
+    //       >
+    //         <img src={`${BASE_URL}/${row.initialPath}`} alt="Initial" />
+    //       </div>
+    //     ) : "No Initial"
+    // },
     {
       id: "actions",
       label: "Actions",
@@ -207,10 +207,10 @@ export const getUserManagementColumns = (
   ];
 
 
-  export const getCompanyColumns = (
-    handleEditCompany: (company: Company) => void,
-    handleDeleteCompany: (companyId: string) => void
-  ) => [
+export const getCompanyColumns = (
+  handleEditCompany: (company: Company) => void,
+  handleDeleteCompany: (companyId: string) => void
+) => [
     {
       id: "name",
       label: "Name",
@@ -241,3 +241,21 @@ export const permissionsOptions = Object.values(PERMISSIONS).map((permission) =>
     .replace(/\b\w/g, (char) => char.toUpperCase()), // Capitalizes each word
   value: permission,
 }));
+
+
+export const getStatusBadge = (status: string) => {
+  const badgeColor =
+    {
+      completed: "bg-success",
+      "in progress": "bg-todo",
+      pending: "bg-pending",
+    }[status?.toLowerCase()] || "bg-yellow-500";
+
+  return (
+    <span
+      className={`px-3 py-1 text-xs font-semibold text-text rounded-full ${badgeColor}`}
+    >
+      {status}
+    </span>
+  );
+};
