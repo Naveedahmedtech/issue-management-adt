@@ -1,84 +1,84 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { ANGULAR_URL } from "../../constant/BASE_URL.ts";
+import React, {useEffect, useRef} from 'react';
+import {ANGULAR_URL, BASE_URL} from '../../constant/BASE_URL.ts';
 
-const AnnotationIframe = ({ userId, selectedFile, projectId }: any) => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+const AnnotationIframe = ({ userId, selectedFile, projectId, username }: any) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Ensure selectedFile is valid
-  const fileId = selectedFile?.id;
-  const filePath = selectedFile?.filePath;
+    const fileId = selectedFile?.id;
+    const filePath = selectedFile?.filePath;
+    const isInvalidParams = !fileId || !filePath || !projectId || !userId;
 
-  // Check for missing parameters
-  const isInvalidParams = !fileId || !filePath || !projectId || !userId;
+    // const fullFileUrl = `https://backend.viewsoft.com/uploads/projects/Small-Handwriting-set.pdf`;
 
-  // Function to handle messages from the iframe
-  const handleMessage = (event: MessageEvent) => {
-    if (event.origin !== ANGULAR_URL) return; // Ensure it matches only the base URL
+    const fullFileUrl = `${BASE_URL}/${filePath}`;
+    const sendFileToIframe = () => {
+        if (typeof window !== 'undefined' && iframeRef.current?.contentWindow) {
+            const fileObj = {
+                filepath: fullFileUrl,
+                cacheid: fileId,
+                // displayname: 'Sample Document',
+                mime: 'application/pdf'
+            };
 
-    if (event.data?.type === 'ANNOTATION_SAVE') {
-      console.log('Annotation Data:', event.data.payload);
-    }
-  };
+            iframeRef.current.contentWindow.postMessage(
+                { type: 'view', payload: fileObj, metadata: { username, projectId, userId } },
+                ANGULAR_URL
+            );
+            // iframeRef.current?.contentWindow.postMessage(
+            //     {
+            //         type: "guiMode",
+            //         payload: {
+            //             mode: "annotation" // or "annotation"
+            //         }
+            //     },
+            //     ANGULAR_URL
+            // );
 
-  useEffect(() => {
-    window.addEventListener('message', handleMessage);
 
-    // Clean up on component unmount
-    return () => {
-      window.removeEventListener('message', handleMessage);
+            console.log("Sent file object via postMessage:", fileObj);
+        }
     };
-  }, []);
 
-  // Handle iframe load completion
-  const handleIframeLoad = () => {
-    setLoading(false);
-    setError(null); // Reset any previous errors
-  };
+    const handleIframeLoad = () => {
+        sendFileToIframe();
+    };
 
-  // Handle iframe loading errors
-  const handleIframeError = () => {
-    setLoading(false);
-    setError("Failed to load the annotation tool. Please try again.");
-  };
+    const handleIframeError = () => {
+    };
 
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
-      {/* Edge Case: Show Error if Parameters are Missing */}
-      {isInvalidParams && (
-        <div className="flex justify-center items-center min-h-[200px] text-red-500 font-semibold">
-          Missing required parameters (fileId, filePath, projectId, or userId). Please select a valid file.
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== ANGULAR_URL) return;
+
+            if (event.data?.type === 'ANNOTATION_SAVE') {
+                console.log('Annotation data received:', event.data.payload);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
+
+    return (
+        <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+            {isInvalidParams ? (
+                <div className="flex justify-center items-center min-h-[200px] text-red-500 font-semibold">
+                    Missing required parameters. Please select a valid file.
+                </div>
+            ) : (
+                <iframe
+                    ref={iframeRef}
+                    src={`${ANGULAR_URL}`}
+                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    title="Rasterex Viewer"
+                    onLoad={handleIframeLoad}
+                    onError={handleIframeError}
+                    id="rxview"
+                />
+            )}
         </div>
-      )}
-
-      {/* Edge Case: Loading Indicator */}
-      {loading && !isInvalidParams && (
-        <div className="flex justify-center items-center min-h-[200px]">
-          <div className="text-primary text-lg font-semibold">Please wait while we are processing...</div>
-        </div>
-      )}
-
-      {/* Edge Case: Display Error if Iframe Fails to Load */}
-      {error && !isInvalidParams && (
-        <div className="flex justify-center items-center min-h-[200px] text-red-500 font-semibold">
-          {error}
-        </div>
-      )}
-
-      {/* Render Iframe Only When All Parameters Are Valid */}
-      {!isInvalidParams && !error && (
-        <iframe
-          ref={iframeRef}
-          src={`${ANGULAR_URL}/?fileId=${fileId}&filePath=${filePath}&projectId=${projectId}&userId=${userId}`}
-          style={{ width: '100%', height: '100%', border: 'none' }}
-          title="Annotation Tool"
-          onLoad={handleIframeLoad} // Trigger when iframe finishes loading
-          onError={handleIframeError} // Handle iframe errors
-        />
-      )}
-    </div>
-  );
+    );
 };
 
 export default AnnotationIframe;

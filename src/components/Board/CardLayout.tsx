@@ -33,7 +33,7 @@ const CardLayout = ({
         <div className="">
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-4 mb-4">
-                {["All", "To Do", "In Progress", "Completed"].map((status) => (
+                {["All", "Active", "On Going", "Completed"].map((status) => (
                     <Button
                         key={status}
                         text={status}

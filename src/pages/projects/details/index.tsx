@@ -1,30 +1,38 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
-import { projectDocumentColumns } from "../../../utils/Common.tsx";
-import { projectDocumentData } from "../../../mock/tasks.ts";
+import {projectDocumentColumns} from "../../../utils/Common.tsx";
+import {projectDocumentData} from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import {BsThreeDotsVertical} from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
 import CardLayout from "../../../components/Board/CardLayout.tsx";
-import { useDeleteProjectMutation, useGetProjectByIdQuery, useGetProjectFilesQuery, useGetProjectIssuesQuery, useToggleArchiveMutation, useUploadFilesToProjectMutation } from "../../../redux/features/projectsApi.ts";
-import { toast } from "react-toastify";
-import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
-import { useAuth } from "../../../hooks/useAuth.ts";
+import {
+    useDeleteProjectMutation,
+    useGetProjectByIdQuery,
+    useGetProjectFilesQuery,
+    useGetProjectIssuesQuery,
+    useToggleArchiveMutation,
+    useUploadFilesToProjectMutation
+} from "../../../redux/features/projectsApi.ts";
+import {toast} from "react-toastify";
+import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
+import {useAuth} from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
-import { DocumentDataRow } from "../../../types/types.ts";
-import { BASE_URL } from "../../../constant/BASE_URL.ts";
-import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
+import {DocumentDataRow} from "../../../types/types.ts";
+import {BASE_URL} from "../../../constant/BASE_URL.ts";
+import {API_ROUTES} from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
 import LargeModal from "../../../components/modal/LargeModal.tsx";
 import AnnotationIframe from "../../../components/iframe/AnnotationIframe.tsx";
-import { FiRefreshCw } from "react-icons/fi";
+import {FiRefreshCw} from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
-import { format } from "date-fns";
+import {format} from "date-fns";
+import {PROJECT_STATUS} from "../../../constant";
 
 
 const useWindowSize = () => {
@@ -65,9 +73,7 @@ const ProjectDetails = () => {
 
 
     const { userData } = useAuth();
-    const { userData: { role, id: userId } } = userData;
-
-
+    const { userData: { role, id: userId, displayName: username } } = userData;
 
     const params = useParams();
     const location = useLocation();
@@ -284,9 +290,9 @@ const ProjectDetails = () => {
         };
     }, [dropdownOpen]);
     const groupedTasks = {
-        "To Do": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "TO DO"),
-        "In Progress": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "IN PROGRESS"),
-        "Completed": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "COMPLETED"),
+        "Active": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === PROJECT_STATUS.ACTIVE.toUpperCase()),
+        "On Going": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === PROJECT_STATUS.ON_GOING.toUpperCase()),
+        "Completed": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === PROJECT_STATUS.COMPLETED.toUpperCase()),
     };
 
     const refetchData = () => {
@@ -514,7 +520,7 @@ const ProjectDetails = () => {
                 title="Webview"
             >
                 <div className="relative h-full">
-                    <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId} />
+                    <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId} username={username} />
                     <div className="sticky bottom-0 bg-background">
                         <Link
                             to={{

@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { FaCalendarAlt, FaRegClock, FaBuilding, FaUser } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
-import { format } from "date-fns";
-import { useAssignProjectMutation, useUnassignProjectMutation } from "../../../redux/features/projectsApi";
-import { ProjectInfoProps } from "../../../types/types";
+import React, {useEffect, useState} from "react";
+import {FaBuilding, FaCalendarAlt, FaRegClock, FaUser} from "react-icons/fa";
+import {FiX} from "react-icons/fi";
+import {format} from "date-fns";
+import {useAssignProjectMutation, useUnassignProjectMutation} from "../../../redux/features/projectsApi";
+import {ProjectInfoProps} from "../../../types/types";
 import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown";
-import { getStatusBadge } from "../../../utils/Common";
-import { useLazyGetAllUsersQuery } from "../../../redux/features/authApi";
-import { useAuth } from "../../../hooks/useAuth";
-import { ROLES } from "../../../constant/ROLES";
+import {getStatusBadge} from "../../../utils/Common";
+import {useLazyGetAllUsersQuery} from "../../../redux/features/authApi";
+import {useAuth} from "../../../hooks/useAuth";
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -75,7 +74,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
       }));
 
       return {
-        data: page === 1 && userOptions.length > 0 ? [{ value: "", label: "All" }, ...userOptions] : userOptions,
+        data: page === 1 && userOptions,
         hasMore: (pagination.page * pagination.limit) < pagination.total,
       };
     } catch (error) {
@@ -142,7 +141,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
         </div>
       </div>
 
-      {role !== ROLES.WORKER && (
+      {role === 'donot show' && (
         <div className="mt-4 flex gap-2 items-end">
           <div className="flex-1">
             <PaginatedDropdown
