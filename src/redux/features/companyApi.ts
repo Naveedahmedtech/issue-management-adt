@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "../../constant/BASE_URL";
-import { API_ROUTES } from "../../constant/API_ROUTES";
-import { REDUCER_PATHS } from "../../constant/REDUCER_PATH";
+import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
+import {BASE_URL} from "../../constant/BASE_URL";
+import {API_ROUTES} from "../../constant/API_ROUTES";
+import {REDUCER_PATHS} from "../../constant/REDUCER_PATH";
 
 export const companyApi = createApi({
   reducerPath: REDUCER_PATHS.COMPANY_API,
@@ -9,7 +9,7 @@ export const companyApi = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
   }),
-  tagTypes: ["Issue", "Stats"],
+  tagTypes: ["Company"],
 
   endpoints: (builder) => ({
     createCompany: builder.mutation({
@@ -18,14 +18,17 @@ export const companyApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: [{ type: "Company", id: "LIST" }],
     }),
     updateCompany: builder.mutation({
-      query: ({id, name}) => ({
+      query: ({ id, name }) => ({
         url: `${API_ROUTES.COMPANY.ROOT}/${id}`,
         method: "PUT",
-        body: {name}
+        body: { name },
       }),
+      invalidatesTags: [{ type: "Company", id: "LIST" }],
     }),
+
     getCompanyById: builder.query({
       query: (id) => ({
         url: `${API_ROUTES.COMPANY.ROOT}/${id}`,
@@ -33,12 +36,14 @@ export const companyApi = createApi({
       }),
     }),
     getAllCompanies: builder.query({
-      query: ({page, limit}) => ({
+      query: ({ page, limit }) => ({
         url: API_ROUTES.COMPANY.ROOT,
         method: "GET",
-        params: {page, limit}
+        params: { page, limit },
       }),
+      providesTags: [{ type: "Company", id: "LIST" }],
     }),
+
     deleteCompany: builder.mutation({
       query: (id) => ({
         url: `${API_ROUTES.COMPANY.ROOT}/${id}`,

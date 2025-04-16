@@ -1,7 +1,7 @@
 import React from "react";
-import { FaMapMarkerAlt, FaRegClock, FaDollarSign, FaCalendarAlt, FaBuilding } from "react-icons/fa";
-import { format } from "date-fns"; // Importing date-fns for formatting
-import { OrderInfoProps } from "../../../types/types";
+import {FaBuilding, FaCalendarAlt, FaDollarSign, FaMapMarkerAlt, FaRegClock} from "react-icons/fa";
+import {format} from "date-fns"; // Importing date-fns for formatting
+import {OrderInfoProps} from "../../../types/types";
 
 const OrderInfo: React.FC<OrderInfoProps> = ({ data, isLoading }) => {
 
@@ -56,8 +56,8 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ data, isLoading }) => {
                 <div className="flex items-center space-x-4">
                     <FaBuilding className="text-primary text-lg" />
                     <div>
-                        <p className="text-sm text-textLight font-medium">Location</p>
-                        <p className="text-text font-medium">{data?.companyName || ""}</p>
+                        <p className="text-sm text-textLight font-medium">Company</p>
+                        <p className="text-text font-medium">{data?.company?.name || ""}</p>
                     </div>
                 </div>
                 <div className="flex items-center space-x-4">

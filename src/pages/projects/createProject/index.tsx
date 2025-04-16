@@ -1,11 +1,11 @@
 import React from "react";
 import CreateOrEditProject from "../components/CreateOrEditProject.tsx";
-import { ProjectFormData } from "../../../types/types.ts";
-import { format } from "date-fns";
-import { toast } from "react-toastify";
-import { useCreateProjectMutation } from "../../../redux/features/projectsApi.ts";
-import { useNavigate } from "react-router-dom";
-import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
+import {ProjectFormData} from "../../../types/types.ts";
+import {format} from "date-fns";
+import {toast} from "react-toastify";
+import {useCreateProjectMutation} from "../../../redux/features/projectsApi.ts";
+import {useNavigate} from "react-router-dom";
+import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
 
 const CreateProject: React.FC = () => {
   // Get the mutation function from the hook
@@ -21,6 +21,9 @@ const CreateProject: React.FC = () => {
     formDataToSend.append("description", formData.description);
     formDataToSend.append("companyId", formData.companyId || "");
     formDataToSend.append("status", formData.status?.value || "");
+    formDataToSend.append("userIds", JSON.stringify(formData?.userIds || []));
+
+
 
     // Format and append dates
     formDataToSend.append(

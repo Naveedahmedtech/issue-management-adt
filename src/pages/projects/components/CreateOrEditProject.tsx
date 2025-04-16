@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import InputField from "../../../components/form/InputField.tsx";
 import DateField from "../../../components/form/DateField.tsx";
 import SelectField from "../../../components/form/SelectField.tsx";
 import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
-import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
-import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
-import { PROJECT_STATUS } from "../../../constant/index.ts";
-import { useLazyGetAllCompaniesQuery } from "../../../redux/features/companyApi.ts";
+import {validateProjectForm, ValidationError} from "../../../utils/validation.ts";
+import {CreateOrEditProjectProps, ProjectFormData} from "../../../types/types.ts";
+import {PROJECT_STATUS} from "../../../constant/index.ts";
+import {useLazyGetAllCompaniesQuery} from "../../../redux/features/companyApi.ts";
 import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown.tsx";
+import ModalContainer from "../../../components/modal/ModalContainer.tsx";
+import CreateCompanyForm from "../../company/components/CreateCompanyForm.tsx";
+import PaginatedUserSelect from "../../../components/dropdown/PaginatedUserSelect.tsx";
+import {ROLES} from "../../../constant/ROLES.ts";
 
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
@@ -19,16 +23,16 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         companyId: "",
         status: { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
         files: [],
+        userIds: [],
         ...initialData, // initial data if provided
     });
 
-
+    const [createModalOpen, setCreateModalOpen] = useState(false);
     const [errors, setErrors] = useState<ValidationError[]>([]);
 
+    // fetch companies
     const [selectedCompany, setSelectedCompany] = useState<{ label: string; value: string } | null>(null);
 
-    
-    
     const [triggerAllCompanies] = useLazyGetAllCompaniesQuery();
     useEffect(() => {
         if (initialData) {
@@ -107,6 +111,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             endDate: null,
             files: [],
             companyId: "",
+            userIds: [],
         });
     }
 
@@ -129,6 +134,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     };
 
     return (
+        <>
         <form
             className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6"
             onSubmit={handleSubmit}
@@ -162,7 +168,8 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             </div>
 
 
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                 <PaginatedDropdown
                     fetchData={fetchAllCompanies}
                     renderItem={(item: any) => <span>{item.label}</span>}
@@ -174,6 +181,10 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     placeholder="Select a company"
                 />
                 {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
+                </div>
+                <div>
+                    <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -197,7 +208,12 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     {getError("endDate") && <p className="text-red-500 text-sm mt-1">{getError("endDate")}</p>}
                 </div>
             </div>
-
+            <PaginatedUserSelect
+                name="userIds"
+                roleName={ROLES.WORKER}
+                value={formData.userIds}
+                onChange={(userIds) => setFormData({ ...formData, userIds })}
+            />
             <div>
                 <SelectField
                     label="Status"
@@ -232,6 +248,16 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 />
             </div>
         </form>
+            {
+                createModalOpen && <ModalContainer
+                    isOpen={createModalOpen}
+                    onClose={() => setCreateModalOpen(false)}
+                    title="Create Company"
+                >
+                    <CreateCompanyForm onClose={() => setCreateModalOpen(false)} />
+                </ModalContainer>
+            }
+        </>
     );
 };
 

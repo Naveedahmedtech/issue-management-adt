@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import InputField from "../../../components/form/InputField.tsx";
 import SelectField from "../../../components/form/SelectField.tsx";
 import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
-import { validateOrderForm, ValidationError } from "../../../utils/validation.ts";
-import { CreateOrEditOrderProps, OrderFormData } from "../../../types/types.ts";
+import {validateOrderForm, ValidationError} from "../../../utils/validation.ts";
+import {CreateOrEditOrderProps, OrderFormData} from "../../../types/types.ts";
 import DateField from "../../../components/form/DateField.tsx";
+import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown.tsx";
+import {useLazyGetAllCompaniesQuery} from "../../../redux/features/companyApi.ts";
+import ModalContainer from "../../../components/modal/ModalContainer.tsx";
+import CreateCompanyForm from "../../company/components/CreateCompanyForm.tsx";
 
 const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<OrderFormData>({
@@ -13,16 +17,58 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
         description: "",
         location: "",
         price: undefined,
-        companyName: "",
         status: { label: "Pending", value: "Pending" },
         startDate: null,
         endDate: null,
         files: [],
+        companyId: '',
         ...initialData,
     });
-
+    const [createModalOpen, setCreateModalOpen] = useState(false);
     const [errors, setErrors] = useState<ValidationError[]>([]);
+    // fetch companies
+    const [selectedCompany, setSelectedCompany] = useState<{ label: string; value: string } | null>(null);
 
+    const [triggerAllCompanies] = useLazyGetAllCompaniesQuery();
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData); // Prefill form data for edit mode
+
+            if (initialData.companyId) {
+                // Fetch companies and set the selected company
+                (async () => {
+                    const response = await triggerAllCompanies({ page: 1, limit: 20 }).unwrap();
+                    const companies = response?.data?.companies ?? [];
+
+                    const matchedCompany = companies.find((company: any) => company.id === initialData.companyId);
+                    if (matchedCompany) {
+                        setSelectedCompany({ label: matchedCompany.name, value: matchedCompany.id });
+                    }
+                })();
+            }
+        }
+    }, [initialData, triggerAllCompanies]);
+    const fetchAllCompanies = async (page: number) => {
+        try {
+            const response = await triggerAllCompanies({ page, limit: 20 }).unwrap();
+            const companies = response?.data?.companies ?? [];
+            const pagination = response?.data ?? {};
+
+            // Map users to dropdown format
+            const companyOptions = companies.map((company: any) => ({
+                value: company.id,
+                label: company.name,
+            }));
+
+            return {
+                data: companyOptions,
+                hasMore: (pagination.page * pagination.limit) < pagination.total,
+            };
+        } catch (error) {
+            console.error("Error fetching companies:", error);
+            return { data: [{ value: "all", label: "All" }], hasMore: false };
+        }
+    };
     useEffect(() => {
         if (initialData) {
             setFormData({ ...formData, ...initialData }); // Merge initialData to ensure proper prefill
@@ -66,7 +112,7 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
             startDate: null,
             endDate: null,
             files: [],
-            companyName: '',
+            companyId: '',
         });
     };
 
@@ -89,6 +135,7 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
     };
 
     return (
+        <>
         <form
             className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6"
             onSubmit={handleSubmit}
@@ -123,18 +170,6 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
 
             <div>
                 <InputField
-                    label="Company Name"
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    className="w-full"
-                />
-                {getError("companyName") && <p className="text-red-500 text-sm mt-1">{getError("companyName")}</p>}
-            </div>
-
-            <div>
-                <InputField
                     label="Location"
                     type="text"
                     name="location"
@@ -156,7 +191,24 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
                 />
                 {getError("price") && <p className="text-red-500 text-sm mt-1">{getError("price")}</p>}
             </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <PaginatedDropdown
+                        fetchData={fetchAllCompanies}
+                        renderItem={(item: any) => <span>{item.label}</span>}
+                        onSelect={(item: any) => {
+                            setFormData({ ...formData, companyId: item.value });
+                            setSelectedCompany(item);
+                        }}
+                        selectedItem={selectedCompany}
+                        placeholder="Select a company"
+                    />
+                    {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
+                </div>
+                <div>
+                    <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
+                </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <DateField
@@ -212,6 +264,16 @@ const CreateOrEdit: React.FC<CreateOrEditOrderProps> = ({ initialData, mode, onS
                 />
             </div>
         </form>
+            {
+                createModalOpen && <ModalContainer
+                    isOpen={createModalOpen}
+                    onClose={() => setCreateModalOpen(false)}
+                    title="Create Company"
+                >
+                    <CreateCompanyForm onClose={() => setCreateModalOpen(false)} />
+                </ModalContainer>
+            }
+        </>
     );
 };
 

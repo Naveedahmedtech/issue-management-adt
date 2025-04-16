@@ -19,10 +19,8 @@ import {useAuth} from "../../../hooks/useAuth.ts";
 import {toast} from "react-toastify";
 import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
 import {DocumentDataRow} from "../../../types/types.ts";
-import LargeModal from "../../../components/modal/LargeModal.tsx";
-import {ANGULAR_URL, BASE_URL} from "../../../constant/BASE_URL.ts";
+import {ANGULAR_URL} from "../../../constant/BASE_URL.ts";
 import {FiRefreshCw} from "react-icons/fi";
-import AnnotationIframe from "../../../components/iframe/AnnotationIframe.tsx";
 
 const OrderDetails = () => {
     const [activeTab, setActiveTab] = useState("info");
@@ -58,10 +56,7 @@ const OrderDetails = () => {
 
 
     const handleSignFile = (file: DocumentDataRow) => {
-        setSelectedFile(file)
-        // toast.info("We are working hard to bring this feature!")
-        setSignatureModalOpen(true);
-        // Add logic for file signing
+        navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&orderId=${orderId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
     };
 
     useEffect(() => {
@@ -222,14 +217,12 @@ const OrderDetails = () => {
     };
 
     const refetchData = () => {
-        console.log("🔄 Refetching data...");
-        // Call API or state update logic here
         refetchOrders();
     };
 
     return (
         <main className="p-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-wrap justify-between items-center mb-4">
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
                 <div ref={dropdownRef} className="relative">
                     {
@@ -341,44 +334,6 @@ const OrderDetails = () => {
                     />
                 </div>
             </ModalContainer>
-            <LargeModal
-                isOpen={signatureModalOpen}
-                onClose={() => setSignatureModalOpen(false)}
-                title="Webview"
-            >
-                <div className="relative h-full">
-                    <AnnotationIframe userId={userId} selectedFile={selectedFile} orderId={orderId} username={username} />
-                </div>
-            </LargeModal>
-            <LargeModal
-                isOpen={isFileViewModalOpen}
-                onClose={() => setIsFileViewModalOpen(false)}
-                title="File Details"
-            >
-                <div className="relative flex justify-center items-center bg-white p-4 rounded-lg">
-                    {selectedFilePath?.toLowerCase().endsWith(".png") ? (
-                        <img
-                            src={`${BASE_URL}/${selectedFilePath}`}
-                            alt="Image Preview"
-                            className="w-auto h-auto max-w-[95%] max-h-[80vh] object-contain"
-                            style={{ minHeight: "150px", backgroundColor: "white", padding: "10px" }}
-                        />
-                    ) : (
-                        <iframe
-                            src={`${BASE_URL}/${selectedFilePath}`}
-                            width="100%"
-                            height="500px"
-                            className="bg-white p-4 rounded-lg"
-                        />
-                    )}
-                </div>
-            </LargeModal>
-
-
-
-
-
-
         </main>
     );
 };

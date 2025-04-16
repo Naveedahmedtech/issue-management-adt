@@ -146,6 +146,7 @@ export interface ProjectFormData {
   status: { label: string; value: string } | null;
   files: File[];
   companyId: string | null;
+  userIds?: string[];
 }
 export interface OrderFormData {
   name: string;
@@ -156,7 +157,7 @@ export interface OrderFormData {
   endDate: Date | null;
   status: { label: string; value: string } | null;
   files: File[];
-  companyName: string | null;
+  companyId: string | null;
 }
 
 export interface CreateOrEditProjectProps {
@@ -185,7 +186,10 @@ export interface OrderInfoProps {
     price: number | null;
     startDate: string;
     endDate: string;
-    companyName: string;
+    company: {
+      id: string,
+      name: string
+    };
   };
   isLoading: boolean;
 }
@@ -240,8 +244,10 @@ export interface Metadata  {
 
 export interface IAnnotationProps {
   userId: string;
-  selectedFile: any;
+  fileId: string;
   projectId?: string;
   orderId?: string;
-  username: string
+  username: string;
+  filePath: string;
+  isSigned: boolean;
 }

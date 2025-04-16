@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { AiOutlineDown, AiOutlineReload } from "react-icons/ai";
+import React, {useEffect, useRef, useState} from "react";
+import {AiOutlineDown, AiOutlineReload} from "react-icons/ai";
 
 interface PaginatedDropdownProps<T> {
     fetchData: (page: number) => Promise<{ data: T[]; hasMore: boolean }>;
@@ -50,7 +50,8 @@ export default function PaginatedDropdown<T>({
             setLoading(true);
             try {
                 const result = await fetchData(1);
-                setItems(result.data);
+                console.log('result', result)
+                setItems(result?.data || []);
                 setHasMore(result.hasMore);
                 setPage(2);
             } catch (error) {
@@ -70,8 +71,10 @@ export default function PaginatedDropdown<T>({
             setLoading(true);
             try {
                 const result = await fetchData(page);
-                setItems((prev) => [...prev, ...result.data]);
-                setHasMore(result.hasMore);
+                if(result.data) {
+                    setItems((prev) => [...prev, ...result.data]);
+                    setHasMore(result.hasMore);
+                }
             } catch (error) {
                 console.error("Error fetching more data:", error);
             }

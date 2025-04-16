@@ -3,7 +3,7 @@ import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
-import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import {projectDocumentColumns} from "../../../utils/Common.tsx";
 import {projectDocumentData} from "../../../mock/tasks.ts";
@@ -27,8 +27,6 @@ import {DocumentDataRow} from "../../../types/types.ts";
 import {ANGULAR_URL, BASE_URL} from "../../../constant/BASE_URL.ts";
 import {API_ROUTES} from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
-import LargeModal from "../../../components/modal/LargeModal.tsx";
-import AnnotationIframe from "../../../components/iframe/AnnotationIframe.tsx";
 import {FiRefreshCw} from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
 import {format} from "date-fns";
@@ -159,9 +157,8 @@ const ProjectDetails = () => {
                     setSelectedFile(file); // Re-select the file to trigger useEffect
                 }, 0);
             } else {
-                // toast.info("We are working on PDF annotation for you!");
                 setSelectedFile(file);
-                setIsAnnotationModal(true);
+                navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&projectId=${projectId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
             }
         },
         [setSelectedFile, setIsAnnotationModal] // Dependencies
@@ -525,33 +522,6 @@ const ProjectDetails = () => {
                     />
                 </div>
             </ModalContainer>
-
-            <LargeModal
-                isOpen={isAnnotationModal}
-                onClose={() => {
-                    setSelectedFile(null)
-                    setIsAnnotationModal(false)
-                }}
-                title="Webview"
-            >
-                <div className="relative h-full">
-                    <AnnotationIframe userId={userId} selectedFile={selectedFile} projectId={projectId} username={username} />
-                    <div className="sticky bottom-0 bg-background">
-                        <Link
-                            to={{
-                                pathname: APP_ROUTES.APP.PROJECTS.PDF_VIEWER,
-                            }}
-                            state={{
-                                userId: userId, selectedFile: selectedFile, projectId: projectId, username
-                            }}
-                            className="underline text-textSecondary"
-                        >
-                            Open New Page
-                        </Link>
-                    </div>
-                </div>
-            </LargeModal>
-
         </main>
     );
 };

@@ -1,11 +1,11 @@
 import React from "react";
 import CreateOrEdit from "../components/CreateOrEdit.tsx";
-import { useCreateOrderMutation } from "../../../redux/features/orderApi.ts";
-import { OrderFormData } from "../../../types/types.ts";
-import { format } from "date-fns";
-import { toast } from "react-toastify";
-import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
-import { useNavigate } from "react-router-dom";
+import {useCreateOrderMutation} from "../../../redux/features/orderApi.ts";
+import {OrderFormData} from "../../../types/types.ts";
+import {format} from "date-fns";
+import {toast} from "react-toastify";
+import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
+import {useNavigate} from "react-router-dom";
 
 
 const CreateOrder: React.FC = () => {
@@ -22,7 +22,7 @@ const CreateOrder: React.FC = () => {
         formDataToSend.append("location", formData.location);
         formDataToSend.append("description", formData.description);
         formDataToSend.append("status", formData.status?.value || "");
-        formDataToSend.append("companyName", formData.companyName || "");
+        formDataToSend.append("companyId", formData.companyId || "");
 
         // Format and append dates
         formDataToSend.append(
