@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import AllOrdersCards from "../components/AllOrders";
 import InputField from "../../../components/form/InputField";
 import SelectField from "../../../components/form/SelectField";
 import DateField from "../../../components/form/DateField";
-import { useGetRecentOrdersQuery } from "../../../redux/features/orderApi";
-import { ORDER_STATUS } from "../../../constant";
+import {useGetRecentOrdersQuery} from "../../../redux/features/orderApi";
+import {ORDER_STATUS} from "../../../constant";
 
 const AllOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +38,7 @@ const AllOrders = () => {
   }, [data]);
 
   return (
-<div>
+<div className={'p-6'}>
       {/* Filters Bar */}
       <div className="flex flex-wrap  items-center gap-4 bg-backgroundShade1 p-4 rounded-md shadow-md mb-6">
         {/* Search Field */}

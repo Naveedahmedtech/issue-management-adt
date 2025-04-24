@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useGetRecentProjectsQuery } from "../../../redux/features/projectsApi";
+import {useEffect, useState} from "react";
+import {useGetRecentProjectsQuery} from "../../../redux/features/projectsApi";
 import AllProjectsCards from "../components/AllProjects";
 import InputField from "../../../components/form/InputField";
 import SelectField from "../../../components/form/SelectField";
 import DateField from "../../../components/form/DateField";
-import { PROJECT_STATUS } from "../../../constant";
+import {PROJECT_STATUS} from "../../../constant";
 
 const AllProjects = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +38,7 @@ const AllProjects = () => {
   }, [data]);
 
   return (
-    <div>
+    <div className={'p-6'}>
       {/* Filters Bar */}
       <div className="flex flex-wrap  items-center gap-4 bg-backgroundShade1 p-4 rounded-md shadow-md mb-6">
         {/* Search Field */}

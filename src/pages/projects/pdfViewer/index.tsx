@@ -11,7 +11,6 @@ const PdfViewer = () => {
   const isSigned= searchParams.get('isSigned');
   const orderId= searchParams.get('orderId') || undefined;
   const projectOrOrderId = orderId || projectId;
-
   if (!userId || !projectOrOrderId || !username || !fileId || !filePath || !isSigned) {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
@@ -29,7 +28,7 @@ const PdfViewer = () => {
       projectId={projectId}
       orderId={orderId}
       username={username}
-      isSigned={Boolean(isSigned)}
+      isSigned={isSigned === 'true'}
     />
   );
 };

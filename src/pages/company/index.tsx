@@ -1,11 +1,10 @@
-import { useGetAllCompaniesQuery } from "../../redux/features/companyApi";
-import { useEffect, useState } from "react";
-import { getCompanyColumns } from "../../utils/Common";
+import {useDeleteCompanyMutation, useGetAllCompaniesQuery} from "../../redux/features/companyApi";
+import {useEffect, useState} from "react";
+import {getCompanyColumns} from "../../utils/Common";
 import Table from "../../components/Table";
 import Button from "../../components/buttons/Button";
-import { Company as CompanyType } from "../../types/types";
+import {Company as CompanyType} from "../../types/types";
 import ModalContainer from "../../components/modal/ModalContainer";
-import { useDeleteCompanyMutation } from "../../redux/features/companyApi";
 import EditCompanyForm from "./components/EditCompanyForm";
 import DeleteCompanyForm from "./components/DeleteCompanyForm";
 import CreateCompanyForm from "./components/CreateCompanyForm";
@@ -73,8 +72,8 @@ const Company = () => {
     );
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-4">
+        <div className='p-5'>
+            <div className="flex justify-between items-center mb-4" >
                 <h1 className="text-xl font-bold text-text">All Companies</h1>
                 <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
             </div>

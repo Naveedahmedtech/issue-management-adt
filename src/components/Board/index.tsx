@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { DragDropContext, DropResult } from "@hello-pangea/dnd";
-import { fetchMockProject } from "../../mock/mockAPI";
+import React, {useEffect, useState} from "react";
+import {DragDropContext, DropResult} from "@hello-pangea/dnd";
+import {fetchMockProject} from "../../mock/mockAPI";
 import Column from "./Column";
-import { useUpdateIssueMutation } from "../../redux/features/issueApi";
-import { toast } from "react-toastify";
-import { ColumnType, Task } from "../../types/types";
-import { useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi";
+import {useUpdateIssueMutation} from "../../redux/features/issueApi";
+import {toast} from "react-toastify";
+import {ColumnType, Task} from "../../types/types";
+import {projectApi, useUpdateIssueLogHistoryMutation} from "../../redux/features/projectsApi";
+import {useAppDispatch} from "../../redux/store.ts";
 
 const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, projectId, setActiveTab, setIssueId, refetchFiles }) => {
     const [, setProject] = useState<any | null>(null);
@@ -13,6 +14,7 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
 
     const [updateIssue] = useUpdateIssueMutation();
     const [updateIssueLogHistory] = useUpdateIssueLogHistoryMutation();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const loadProject = async () => {
@@ -97,7 +99,7 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
                         newValue: newStatus,
                     }
                 ]
-
+                dispatch(projectApi.util.invalidateTags(['Stats']));
                 try {
                     await updateIssue({ issueId: updatedTask.id, formData }).unwrap();
                     refetch();

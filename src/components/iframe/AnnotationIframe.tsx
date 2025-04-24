@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {ANGULAR_URL, BASE_URL} from '../../constant/BASE_URL.ts';
+import {ANGULAR_URL} from '../../constant/BASE_URL.ts';
 import {IAnnotationProps, Metadata} from "../../types/types.ts";
 
 const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderId, isSigned}: IAnnotationProps) => {
@@ -7,9 +7,11 @@ const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderI
 
     const isInvalidParams = !fileId || !filePath || !userId;
 
-    // const fullFileUrl = `https://backend.viewsoft.com/uploads/projects/Small-Handwriting-set.pdf`;
+    const fullFileUrl = `https://backend.viewsoft.com/uploads/projects/Small-Handwriting-set.pdf`;
 
-    const fullFileUrl = `${BASE_URL}/${filePath}`;
+    console.log('isSigned', isSigned)
+
+    // const fullFileUrl = `${BASE_URL}/${filePath}`;
     const sendFileToIframe = () => {
         if (typeof window !== 'undefined' && iframeRef.current?.contentWindow) {
             const fileObj = {

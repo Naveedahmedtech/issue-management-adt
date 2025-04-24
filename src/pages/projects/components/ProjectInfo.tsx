@@ -143,7 +143,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
             </div>
 
             {role !== ROLES.WORKER && (
-                <div className="mt-4 flex gap-2 items-end">
+                <div className="mt-4 flex flex-wrap gap-2 items-end">
                     <div className="flex-1">
                         <PaginatedDropdown
                             fetchData={fetchUsers}
