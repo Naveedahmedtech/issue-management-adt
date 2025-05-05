@@ -1,6 +1,6 @@
 import React from 'react';
 import StatCard from "../../../components/cards/StatCard.tsx";
-import { useGetProjectStatsQuery, useGetRecentProjectsQuery } from '../../../redux/features/projectsApi.ts';
+import {useGetProjectStatsQuery, useGetRecentProjectsQuery} from '../../../redux/features/projectsApi.ts';
 import AllProjectsCards from '../components/AllProjects.tsx';
 
 const Index: React.FC = () => {
@@ -15,7 +15,7 @@ const Index: React.FC = () => {
                     Welcome to Project Dashboard
                 </h2>
                 <section className="mb-6">
-                    <h3 className="text-xl font-semibold text-text mb-4">Stats</h3>
+                    <h3 className="text-xl font-semibold text-text mb-4">Overview</h3>
                     {error && (
                         <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
                             Failed to load project statistics. Please try again later.

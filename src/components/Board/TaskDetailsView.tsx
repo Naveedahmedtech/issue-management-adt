@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Button from "../buttons/Button.tsx";
 import ModalContainer from "../modal/ModalContainer.tsx";
-import { formatDate, renderFileIcon } from "../../utils/TaskUtils.tsx";
-import { useAssignIssuesMutation, useDeleteIssueMutation, useRemoveAssignedUserMutation, useUpdateIssueMutation } from "../../redux/features/issueApi.ts";
-import { toast } from "react-toastify";
-import { useAuth } from "../../hooks/useAuth.ts";
-import { ROLES } from "../../constant/ROLES.ts";
-import { BASE_URL } from "../../constant/BASE_URL.ts";
-import { ITask } from "../../types/types.ts";
-import { useGetProjectActiveLogsQuery, useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi.ts";
-import { PROJECT_STATUS } from "../../constant/index.ts";
-import { useLazyGetAllUsersQuery } from "../../redux/features/authApi.ts";
+import {formatDate, renderFileIcon} from "../../utils/TaskUtils.tsx";
+import {
+  useAssignIssuesMutation,
+  useDeleteIssueMutation,
+  useRemoveAssignedUserMutation,
+  useUpdateIssueMutation
+} from "../../redux/features/issueApi.ts";
+import {toast} from "react-toastify";
+import {useAuth} from "../../hooks/useAuth.ts";
+import {ROLES} from "../../constant/ROLES.ts";
+import {BASE_URL} from "../../constant/BASE_URL.ts";
+import {ITask} from "../../types/types.ts";
+import {useGetProjectActiveLogsQuery, useUpdateIssueLogHistoryMutation} from "../../redux/features/projectsApi.ts";
+import {PROJECT_STATUS} from "../../constant/index.ts";
+import {useLazyGetAllUsersQuery} from "../../redux/features/authApi.ts";
 import PaginatedDropdown from "../dropdown/PaginatedDropdown.tsx";
-import { FiX } from "react-icons/fi";
+import {FiX} from "react-icons/fi";
 
 const statusOptions = [
   { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
@@ -378,7 +383,7 @@ const TaskDetailsView: React.FC<{
                     From: {activity.oldValue || "N/A"} → To: {activity.newValue || "N/A"}
                   </p>
                 )}
-                <p className="text-xs text-textHover truncate">
+                <p className="text-xs text-text truncate">
                   {new Date(activity.createdAt).toLocaleString()}
                 </p>
               </div>

@@ -40,6 +40,8 @@ const OrderDetails = () => {
     const { userData } = useAuth();
     const params = useParams();
     const location = useLocation();
+    const onBackReset = location.state?.onBackReset;
+
     const navigate = useNavigate();
 
 
@@ -59,6 +61,13 @@ const OrderDetails = () => {
         navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&orderId=${orderId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
     };
 
+
+    useEffect(() => {
+        if(onBackReset) {
+            setActiveTab('documents')
+        }
+    }, [onBackReset]);
+
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== ANGULAR_URL) return;
@@ -75,13 +84,6 @@ const OrderDetails = () => {
 
     const transformFilesData = (files: any[]) => {
         return files.map((file) => {
-            // ✅ Clone the array before sorting (fixes read-only issue)
-            const signatures = [...file.OrderSignatures].sort((a: any, b: any) =>
-                new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-            );
-            const signatureEntry = signatures.find(sig => sig.filename.startsWith("signature-"));
-            const initialEntry = signatures.find(sig => sig.filename.startsWith("initial-"));
-
             return {
                 id: file.id,
                 fileName: file.filePath.split("/").pop(),
@@ -90,8 +92,6 @@ const OrderDetails = () => {
                 location: "",
                 status: "Pending",
                 filePath: file.filePath,
-                signaturePath: signatureEntry ? `${signatureEntry.path.replace(/\\/g, "/")}` : null,
-                initialPath: initialEntry ? `${initialEntry.path.replace(/\\/g, "/")}` : null,
                 isSigned: file.isSigned
             };
         });

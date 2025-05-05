@@ -25,7 +25,7 @@ const SelectField: React.FC<{
                     padding: '5px',
                     cursor: 'pointer',
                     '&:hover': {
-                        borderColor: 'var(--color-primary)',
+                        borderColor: 'var(--color-background-shade-2)',
                     },
                 }),
                 singleValue: (provided) => ({
@@ -55,7 +55,7 @@ const SelectField: React.FC<{
                     color: 'var(--color-text)',
                     cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: 'var(--color-primary)',
+                        backgroundColor: 'var(--color-background-shade-2)',
                         color: 'var(--color-text)',
                     },
                 }),

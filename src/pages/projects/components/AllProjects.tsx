@@ -1,8 +1,8 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { APP_ROUTES } from "../../../constant/APP_ROUTES";
-import { PROJECT_STATUS } from "../../../constant";
+import {Link, useNavigate} from "react-router-dom";
+import {format} from "date-fns";
+import {APP_ROUTES} from "../../../constant/APP_ROUTES";
+import {PROJECT_STATUS} from "../../../constant";
 import PaginatedCardList from "../../../components/PaginatedCardList";
 
 interface Project {
@@ -38,7 +38,7 @@ const AllProjectsCards: React.FC<{ projects: any, error?: any, isLoading: boolea
     const renderProjectCard = (project: Project) => (
         <div
             key={project.id}
-            className="border border-border rounded-lg p-4 shadow-lg bg-background hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            className="border rounded-lg p-4 shadow-lg bg-background hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
             onClick={() => navigate(APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", project.id))}
         >
             {/* Card Header */}

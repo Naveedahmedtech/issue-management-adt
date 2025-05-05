@@ -122,7 +122,8 @@ export default function PDFAnnotator() {
         const { width, height } = page.getSize();
 
         // Get annotations as PNG image
-        const annotationDataUrl = fabricInstanceRef.current.toDataURL({ format: 'png' });
+        // const annotationDataUrl = fabricInstanceRef.current.toDataURL({ format: 'png' });
+        const annotationDataUrl = fabricInstanceRef.current.toDataURL();
         const annotationBytes = await fetch(annotationDataUrl).then(res => res.arrayBuffer());
         const annotationImage = await pdfDoc.embedPng(annotationBytes);
 

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Formik, Form } from "formik";
+import React, {useEffect, useState} from "react";
+import {Form, Formik} from "formik";
 import * as Yup from "yup";
 import Button from "../../../components/buttons/Button";
 import InputField from "../../../components/InputField";
 import FormikSelect from "../../../components/dropdown/Dropdown";
-import { useCreateAzureUserMutation, usePermissionsQuery, useRolesQuery } from "../../../redux/features/authApi.ts";
-import { toast } from "react-toastify";
+import {useCreateAzureUserMutation, usePermissionsQuery, useRolesQuery} from "../../../redux/features/authApi.ts";
+import {toast} from "react-toastify";
 
 const CreateUser: React.FC = () => {
   const [rolesOptions, setRolesOptions] = useState<{ label: string; value: string }[]>([]);
@@ -107,13 +107,13 @@ const CreateUser: React.FC = () => {
         }}
         validationSchema={Yup.object({
           email: Yup.string().email("Invalid email address").required("Required"),
-          password: Yup.string()
-          .min(8, "Password must be at least 8 characters long")
-          .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-          .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-          .matches(/[0-9]/, "Password must contain at least one number")
-          .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
-          .required("Password is required"),
+          // password: Yup.string()
+          // .min(8, "Password must be at least 8 characters long")
+          // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+          // .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+          // .matches(/[0-9]/, "Password must contain at least one number")
+          // .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
+          // .required("Password is required"),
         
           displayName: Yup.string().required("Required"),
           role: Yup.string().required("Required"),
@@ -124,7 +124,7 @@ const CreateUser: React.FC = () => {
         {({ setFieldValue }) => (
           <Form>
             <InputField label="Email" name="email" type="email" />
-            <InputField label="Password" name="password" type="password" />
+            {/*<InputField label="Password" name="password" type="password" />*/}
             <InputField label="Display Name" name="displayName" type="text" />
 
             {rolesLoading ? (

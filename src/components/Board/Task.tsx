@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Draggable, DraggableProvided } from "@hello-pangea/dnd";
-import { TaskProps } from "../../types/types.ts";
-import { useLazyGetAllUsersQuery } from "../../redux/features/authApi.ts";
-import { useAssignIssuesMutation, useRemoveAssignedUserMutation } from "../../redux/features/issueApi.ts";
-import { ROLES } from "../../constant/ROLES.ts";
-import { FiX } from "react-icons/fi";
+import React, {useEffect, useState} from "react";
+import {Draggable, DraggableProvided} from "@hello-pangea/dnd";
+import {TaskProps} from "../../types/types.ts";
+import {useLazyGetAllUsersQuery} from "../../redux/features/authApi.ts";
+import {useAssignIssuesMutation, useRemoveAssignedUserMutation} from "../../redux/features/issueApi.ts";
+import {ROLES} from "../../constant/ROLES.ts";
+import {FiX} from "react-icons/fi";
 import PaginatedDropdown from "../dropdown/PaginatedDropdown";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -96,7 +96,7 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick, refetch }) => {
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-semibold text-lg text-text truncate">{task.title}</h4>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[task.status] || STATUS_COLORS.Default}`}>
+            <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${STATUS_COLORS[task.status] || STATUS_COLORS.Default}`}>
               {task.status}
             </span>
           </div>

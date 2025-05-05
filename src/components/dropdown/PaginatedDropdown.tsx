@@ -91,7 +91,7 @@ export default function PaginatedDropdown<T>({
     };
 
     return (
-        <div className="relative w-64" ref={dropdownRef}>
+        <div className="relative max-w-64" ref={dropdownRef}>
             <button
                 className="w-full flex justify-between items-center border border-border p-3 rounded-lg bg-background shadow-md text-text transition-all"
                 type="button"
@@ -121,7 +121,7 @@ export default function PaginatedDropdown<T>({
                             items.map((item, index) => (
                                 <li
                                     key={index}
-                                    className="p-3 text-text hover:bg-primary cursor-pointer transition-all"
+                                    className="p-3 text-text hover:bg-backgroundShade2 cursor-pointer transition-all"
                                     onClick={(e) => handleSelect(e, item)}
                                 >
                                     {renderItem(item)}
@@ -136,7 +136,7 @@ export default function PaginatedDropdown<T>({
 
                     {!loading && hasMore && (
                         <button
-                            className="w-full text-textHover p-3 border-t border-border bg-backgroundShade2 hover:bg-primary transition-all flex justify-center items-center gap-2"
+                            className="w-full text-textHover p-3 border-t border-border bg-backgroundShade2 hover:bg-backgroundShade2 transition-all flex justify-center items-center gap-2"
                             type="button"
                             onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();

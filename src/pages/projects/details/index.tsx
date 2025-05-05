@@ -64,30 +64,47 @@ const ProjectDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("All"); // Filters: All, To Do, In Progress, Done
     const [selectedFile, setSelectedFile] = useState<DocumentDataRow | null>();
-    const [isAnnotationModal, setIsAnnotationModal] = useState(false)
+    const [, setIsAnnotationModal] = useState(false)
     const [issueId, setIssueId] = useState();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+    const [isFileView, setIsFileView] = useState(false);
 
 
-    const { userData } = useAuth();
-    const { userData: { role, id: userId, displayName: username } } = userData;
+    const {userData} = useAuth();
+    const {userData: {role, id: userId, displayName: username}} = userData;
 
     const params = useParams();
     const location = useLocation();
     const navigate = useNavigate();
 
     const isArchived = location.state?.archive;
-    const { projectId } = params;
+    const onBackReset = location.state?.onBackReset;
+    const {projectId} = params;
 
-    const { data: projectData, refetch: refetchProjectData } = useGetProjectByIdQuery(projectId);
-    const { data: projectIssues, isLoading: isLoadingIssues, isFetching: isIssueFetching, refetch: refetchIssues } = useGetProjectIssuesQuery(projectId);
-    const { data: projectFiles, isLoading: isLoadingProjectFiles, isFetching: isFileFetching, refetch: refetchProjectFiles } = useGetProjectFilesQuery(projectId);
-    const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
+    const {data: projectData, refetch: refetchProjectData} = useGetProjectByIdQuery(projectId);
+    const {
+        data: projectIssues,
+        isLoading: isLoadingIssues,
+        isFetching: isIssueFetching,
+        refetch: refetchIssues
+    } = useGetProjectIssuesQuery(projectId);
+    const {
+        data: projectFiles,
+        isLoading: isLoadingProjectFiles,
+        isFetching: isFileFetching,
+        refetch: refetchProjectFiles
+    } = useGetProjectFilesQuery(projectId);
+    const [uploadFilesToProject, {isLoading: isUploadingProjectFile}] = useUploadFilesToProjectMutation();
     // ✅ Use the deleteProject mutation
-    const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
-    const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
+    const [deleteProject, {isLoading: isDeletingProject}] = useDeleteProjectMutation();
+    const [archiveProject, {isLoading: isArchiveProject}] = useToggleArchiveMutation();
 
+    useEffect(() => {
+        if (onBackReset) {
+            setActiveTab('documents')
+        }
+    }, [onBackReset]);
 
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
@@ -151,14 +168,18 @@ const ProjectDetails = () => {
     const handleAnnotateFile = useCallback(
         (file: DocumentDataRow) => {
             if (file.fileName.endsWith(".xlsx")) {
-                setSelectedFile(null); // Temporarily reset the selected file
-
-                setTimeout(() => {
-                    setSelectedFile(file); // Re-select the file to trigger useEffect
-                }, 0);
-            } else {
+                toast.info("This feature is coming soon.")
+                // setSelectedFile(null); // Temporarily reset the selected file
+                //
+                // setTimeout(() => {
+                //     setSelectedFile(file); // Re-select the file to trigger useEffect
+                // }, 0);
+            } else if (file.fileName.endsWith(".pdf")) {
                 setSelectedFile(file);
                 navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&projectId=${projectId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
+            } else {
+                setSelectedFile(file);
+                setIsFileView(true);
             }
         },
         [setSelectedFile, setIsAnnotationModal] // Dependencies
@@ -223,10 +244,9 @@ const ProjectDetails = () => {
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
 
 
-
     const tabs = [
-        { id: "board", label: "Issues" },
-        { id: "documents", label: "Documents" },
+        {id: "board", label: "Issues"},
+        {id: "documents", label: "Documents"},
         // { id: "info", label: "Project Info" },
         // { id: "activity", label: "Activity" },
     ];
@@ -238,7 +258,6 @@ const ProjectDetails = () => {
             setIsAnnotationModal(false)
         }
     };
-
 
 
     const handleFileUpload = (uploadedFiles: File[]) => {
@@ -275,8 +294,8 @@ const ProjectDetails = () => {
         });
 
         try {
-            const response = await uploadFilesToProject({ projectId, formData }).unwrap();
-            const { uploadedFiles, skippedFiles } = response?.data as any;
+            const response = await uploadFilesToProject({projectId, formData}).unwrap();
+            const {uploadedFiles, skippedFiles} = response?.data as any;
 
             toast.success(
                 `Files processed successfully! Uploaded: ${uploadedFiles.length}, Skipped: ${skippedFiles.length}`
@@ -356,9 +375,9 @@ const ProjectDetails = () => {
                     refetch={refetchProjectFiles}
                 />;
             case "info":
-                return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />;
+                return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData}/>;
             case "activity":
-                return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />;
+                return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId}/>;
             default:
                 return null;
         }
@@ -392,11 +411,11 @@ const ProjectDetails = () => {
 
     return (
         <main className="p-6">
-            <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />
+            <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData}/>
             <div className="flex flex-wrap justify-between items-center mb-4">
                 {/* Tabs Component */}
 
-                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab}/>
 
                 <div className="flex items-center gap-3">
                     <button
@@ -407,8 +426,9 @@ const ProjectDetails = () => {
                     </button>
                     {
                         isDrawerOpen &&
-                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="500px" title={"Activity Logs"} >
-                            <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />
+                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="500px"
+                                title={"Activity Logs"}>
+                            <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId}/>
                         </Drawer>
                     }
                     {/* Refetch (Refresh) Button */}
@@ -417,7 +437,7 @@ const ProjectDetails = () => {
                         className="inline-flex justify-center items-center rounded-md border border-border bg-background py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                         title="Refresh"
                     >
-                        <FiRefreshCw className="text-xl" />
+                        <FiRefreshCw className="text-xl"/>
                     </button>
 
                     <div ref={dropdownRef} className="relative">
@@ -426,10 +446,10 @@ const ProjectDetails = () => {
                                 onClick={() => setDropdownOpen((prev) => !prev)}
                                 className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                             >
-                                <BsThreeDotsVertical className="text-xl" />
+                                <BsThreeDotsVertical className="text-xl"/>
                             </button>
                         ) : (
-                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)} />
+                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)}/>
                         )}
 
                         {dropdownOpen && (
@@ -522,6 +542,17 @@ const ProjectDetails = () => {
                     />
                 </div>
             </ModalContainer>
+
+            {
+                selectedFile &&
+                <ModalContainer
+                    isOpen={isFileView}
+                    onClose={() => setIsFileView(false)}
+                    title="View File"
+                >
+                    <img src={`${BASE_URL}/${selectedFile.filePath}`} alt={"file"} />
+                </ModalContainer>
+            }
         </main>
     );
 };

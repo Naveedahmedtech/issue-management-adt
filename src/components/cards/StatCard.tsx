@@ -9,7 +9,7 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, color, progress }) => {
     return (
-        <div className="p-4 rounded-md shadow-md bg-backgroundShade1 text-text">
+        <div className="p-4 rounded-md shadow-md  text-text">
             <h3 className="text-lg font-semibold mb-2">{title}</h3>
             <div className="text-2xl font-bold" style={{ color }}>
                 {value}

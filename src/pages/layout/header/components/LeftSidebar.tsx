@@ -58,14 +58,14 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
   return (
       <div className="flex flex-col justify-between h-screen bg-backgroundShade1 p-4 z-50">
         <Link
-            to={APP_ROUTES.APP.HOME_ALIAS}
+            to={APP_ROUTES.DASHBOARDS.PROJECT}
             className="flex items-center justify-between mb-6 cursor-pointer"
             onClick={() => {
               if (!isLargeScreen) toggleSidebar();
             }}
         >
           <div className="w-full">
-            <Text className="text-2xl lg:text-xl text-text font-normal">
+            <Text className="text-2xl lg:text-xl text-primary font-bold">
               {APP_NAME}
             </Text>
           </div>

@@ -1,4 +1,4 @@
-import {APP_NAME, BASE_URL} from "../constant/BASE_URL";
+import {APP_NAME} from "../constant/BASE_URL";
 import Text from "../components/Text";
 import {Company, DocumentDataRow, FileType, ITitleText, User,} from "../types/types";
 import {FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord,} from "react-icons/fa";
@@ -58,23 +58,7 @@ export const projectDocumentColumns = (
                                 className="text-primary hover:underline"
                                 onClick={() => handleAnnotateFile(row)}
                             >
-                                {(row.extension && row.extension.toLowerCase() === "pdf") ? "View" : (row.extension && row.extension.toLowerCase() == "xlsx") ? "View" : ""}
-                            </button>
-                            {/* {
-                  (row.extension && row.extension.toLowerCase() != "xlsx") && (
-                    <button
-                      className="text-primary hover:underline"
-                      onClick={() => handleSignFile("")}
-                    >
-                      Signing
-                    </button>
-                  )
-                } */}
-                            <button
-                                className="text-primary hover:underline"
-                                onClick={() => handleDownloadFile(row)}
-                            >
-                                Download
+                                View
                             </button>
                         </div>
                     }
@@ -96,19 +80,8 @@ export const orderDocumentColumns = (
         id: "signature",
         label: "Signature",
         render: (row: DocumentDataRow) =>
-            row.signaturePath ? (
-                <div style={{
-                    display: "inline-block",
-                    padding: "5px",
-                    backgroundColor: "#f8f8f8", // ✅ Light gray background for contrast
-                    borderRadius: "5px",
-                    border: "1px solid #ccc", // ✅ Border for clarity
-                    cursor: "pointer"
-                }}
-                     onClick={() => handleViewFile(row.signaturePath)}
-                >
-                    <img src={`${BASE_URL}/${row.signaturePath}`} alt="Signature" width="50" height="50"/>
-                </div>
+            row.isSigned ? (
+                "Signatured"
             ) : "No Signature"
     },
     // {
@@ -239,7 +212,7 @@ export const getStatusBadge = (status: string) => {
 
     return (
         <span
-            className={`px-3 py-1 text-xs font-semibold text-text rounded-full ${badgeColor}`}
+            className={`px-3 py-1 text-xs font-semibold text-white rounded-full ${badgeColor}`}
         >
       {status}
     </span>

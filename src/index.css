@@ -7,7 +7,8 @@
 
 
 :root {
-    --color-primary: #7a22fe;
+    /*--color-primary: #7a22fe;31BD59*/
+    --color-primary: #052c65;
     /* --color-primary: #FFC107; */
     --color-text-hover: #ffffff;
     --color-hover: #5808d1;
@@ -15,9 +16,12 @@
     /* Primary brand color */
     --color-background: #ffffff;
     /* Background for light theme */
-    --color-background-shade-1: #f8f9fa;
+    /*--color-background-shade-1: #f8f9fa;*/
+    --color-background-shade-1: #F0F7F9;
+
     /* Slightly darker for card backgrounds or sections */
-    --color-background-shade-2: #e9ecef;
+    /*#F0F7F9*/
+    --color-background-shade-2: #ddecf0;
     /* Lighter shadow or divider */
     --color-text: #212529;
     /* Main text color, dark gray for readability */
@@ -37,7 +41,9 @@
 }
 
 .dark {
-    --color-primary: #FFC107;
+    /*--color-primary: #FFC107;*/
+    --color-primary: #d9f1f3;
+
     --color-text-hover: #ffffff;
     --color-text-secondary: #ffffff6c;
     --color-hover: #4200a4;

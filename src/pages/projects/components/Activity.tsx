@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
-import { useGetProjectActiveLogsQuery } from "../../../redux/features/projectsApi";
-import { parseNewValueToList } from "../../../utils";
+import React, {useEffect, useState} from "react";
+import {format, parseISO} from "date-fns";
+import {useGetProjectActiveLogsQuery} from "../../../redux/features/projectsApi";
+import {parseNewValueToList} from "../../../utils";
 import SelectField from "../../../components/form/SelectField";
 
 const Activity = ({ projectId, issues, issueId }: any) => {
@@ -111,7 +111,7 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <p className="text-xs text-textHover">
+                                            <p className="text-xs text-text">
                                                 {format(new Date(log.createdAt), "PPPpp")}
                                             </p>
                                         </>
@@ -122,7 +122,7 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                                                 <span className="italic text-pending">{formattedOldValue}</span>{" "}
                                                 To: <span className="italic text-success">{formattedNewValue}</span>
                                             </p>
-                                            <p className="text-xs text-textHover">
+                                            <p className="text-xs text-text">
                                                 {format(new Date(log.createdAt), "PPPpp")}
                                             </p>
                                         </>

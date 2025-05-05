@@ -1,16 +1,8 @@
-import {
-  FaHome,
-  FaClipboardList,
-  FaUsersCog,
-  FaPlusCircle,
-  FaArchive,
-  FaUserPlus,
-  FaFolderOpen,
-} from "react-icons/fa";
-import { MdOutlineShoppingCart } from "react-icons/md";
-import { TbAlertCircle, TbBuildingSkyscraper } from "react-icons/tb"; // Modern issue tracking & project icons
-import { ROLES } from "../../../../constant/ROLES";
-import { APP_ROUTES } from "../../../../constant/APP_ROUTES";
+import {FaArchive, FaClipboardList, FaFolderOpen, FaHome, FaPlusCircle, FaUserPlus, FaUsersCog,} from "react-icons/fa";
+import {MdOutlineShoppingCart} from "react-icons/md";
+import {TbBuildingSkyscraper} from "react-icons/tb"; // Modern issue tracking & project icons
+import {ROLES} from "../../../../constant/ROLES";
+import {APP_ROUTES} from "../../../../constant/APP_ROUTES";
 
 export const links = [
   {
@@ -36,14 +28,14 @@ export const links = [
       { url: APP_ROUTES.APP.ORDERS.CREATE, text: "Create Order", Icon: FaPlusCircle },
     ],
   },
-  {
-    url: APP_ROUTES.APP.PROJECTS.ALL_ISSUES,
-    Icon: TbAlertCircle, // Issue tracking icon
-    text: "Issues",
-    roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
-    className:
-      "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
-  },
+  // {
+  //   url: APP_ROUTES.APP.PROJECTS.ALL_ISSUES,
+  //   Icon: TbAlertCircle, // Issue tracking icon
+  //   text: "Issues",
+  //   roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
+  //   className:
+  //     "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
+  // },
   {
     url: APP_ROUTES.DASHBOARDS.ORDER,
     Icon: MdOutlineShoppingCart,

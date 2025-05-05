@@ -1,18 +1,14 @@
-import { useEffect, useState } from "react";
-import { HotTable } from "@handsontable/react";
+import {useEffect, useState} from "react";
 import Table from "../Table";
-import { BASE_URL } from "../../constant/BASE_URL";
-import * as XLSX from "xlsx"; // SheetJS to parse Excel files
-import LargeModal from "../modal/LargeModal";
+import {BASE_URL} from "../../constant/BASE_URL";
+import * as XLSX from "xlsx";
 import 'handsontable/styles/handsontable.min.css';
 import 'handsontable/styles/ht-theme-main.min.css';
-import { useUpdateFileMutation } from "../../redux/features/projectsApi";
-import { toast } from "react-toastify";
-import { DocumentDataRow } from "../../types/types";
-import Button from "../buttons/Button";
-import { useTheme } from "../../context/ThemeContext";
-import { Link } from "react-router-dom";
-import { APP_ROUTES } from "../../constant/APP_ROUTES";
+import {useUpdateFileMutation} from "../../redux/features/projectsApi";
+import {toast} from "react-toastify";
+import {DocumentDataRow} from "../../types/types";
+import {useTheme} from "../../context/ThemeContext";
+import DocumentsCardList from "./DocumentsCardList.tsx";
 
 const Documents = ({
   columns,
@@ -142,69 +138,82 @@ const Documents = ({
         <>
           <div className="flex justify-center items-center min-h-[200px]">
             {data && data.length > 0 ? (
-              <Table
-                columns={columns}
-                data={data}
-              />
+                <>
+                  {/* Desktop (md and up) */}
+                  <div className="hidden md:block w-full">
+                    <Table
+                        columns={columns}
+                        data={data}
+                    />
+                  </div>
+
+                  {/* Mobile (below md) */}
+                  <div className="block md:hidden w-full">
+                    <DocumentsCardList
+                        data={data}
+                        columns={columns}
+                    />
+                  </div>
+                </>
             ) : (
               <div className="text-textLight text-lg font-medium">No documents available.</div>
             )}
           </div>
 
           {/* Modal for Excel Viewer */}
-          <LargeModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            title="Excel Viewer"
-          >
-            <Link
-              to={{
-                pathname: APP_ROUTES.APP.PROJECTS.EXCEL_VIEWER,
-              }}
-              state={{
-                excelData,
-                modifiedData,
-                theme,
-                selectedFile,
-                projectId: projectIdForNow,
-              }}
-              className="underline ml-5 text-textSecondary"
-            >
-              Open New Page
-            </Link>
-            {excelData.length > 0 && (
-              <>
-                <HotTable
-                  data={modifiedData}
-                  colHeaders={true}
-                  rowHeaders={true}
-                  stretchH="all"
-                  width="100%"
-                  height="500px"
-                  licenseKey="non-commercial-and-evaluation"
-                  colWidths={150}
-                  afterChange={(changes, source) => {
-                    if (changes && source !== "loadData") {
-                      const updatedData = [...modifiedData];
-                      changes.forEach(([row, prop, _, newVal]) => {
-                        if (typeof prop === "string" || typeof prop === "number") {
-                          updatedData[row][prop] = newVal;
-                        }
-                      });
-                      setModifiedData(updatedData);
-                    }
-                  }}
-                  themeName={`${theme === "dark" ? "ht-theme-main-dark-auto" : ""}`}
-                />
-                <Button
-                  text="Save Changes"
-                  onClick={saveExcelFile}
-                  isSubmitting={isUpdateFile}
-                  fullWidth={false}
-                />
-              </>
-            )}
-          </LargeModal>
+          {/*<LargeModal*/}
+          {/*  isOpen={isModalOpen}*/}
+          {/*  onClose={() => setIsModalOpen(false)}*/}
+          {/*  title="Excel Viewer"*/}
+          {/*>*/}
+          {/*  <Link*/}
+          {/*    to={{*/}
+          {/*      pathname: APP_ROUTES.APP.PROJECTS.EXCEL_VIEWER,*/}
+          {/*    }}*/}
+          {/*    state={{*/}
+          {/*      excelData,*/}
+          {/*      modifiedData,*/}
+          {/*      theme,*/}
+          {/*      selectedFile,*/}
+          {/*      projectId: projectIdForNow,*/}
+          {/*    }}*/}
+          {/*    className="underline ml-5 text-textSecondary"*/}
+          {/*  >*/}
+          {/*    Open New Page*/}
+          {/*  </Link>*/}
+          {/*  {excelData.length > 0 && (*/}
+          {/*    <>*/}
+          {/*      <HotTable*/}
+          {/*        data={modifiedData}*/}
+          {/*        colHeaders={true}*/}
+          {/*        rowHeaders={true}*/}
+          {/*        stretchH="all"*/}
+          {/*        width="100%"*/}
+          {/*        height="500px"*/}
+          {/*        licenseKey="non-commercial-and-evaluation"*/}
+          {/*        colWidths={150}*/}
+          {/*        afterChange={(changes, source) => {*/}
+          {/*          if (changes && source !== "loadData") {*/}
+          {/*            const updatedData = [...modifiedData];*/}
+          {/*            changes.forEach(([row, prop, _, newVal]) => {*/}
+          {/*              if (typeof prop === "string" || typeof prop === "number") {*/}
+          {/*                updatedData[row][prop] = newVal;*/}
+          {/*              }*/}
+          {/*            });*/}
+          {/*            setModifiedData(updatedData);*/}
+          {/*          }*/}
+          {/*        }}*/}
+          {/*        themeName={`${theme === "dark" ? "ht-theme-main-dark-auto" : ""}`}*/}
+          {/*      />*/}
+          {/*      <Button*/}
+          {/*        text="Save Changes"*/}
+          {/*        onClick={saveExcelFile}*/}
+          {/*        isSubmitting={isUpdateFile}*/}
+          {/*        fullWidth={false}*/}
+          {/*      />*/}
+          {/*    </>*/}
+          {/*  )}*/}
+          {/*</LargeModal>*/}
         </>
       )}
     </div>

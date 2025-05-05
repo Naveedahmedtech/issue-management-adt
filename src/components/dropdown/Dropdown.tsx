@@ -1,5 +1,5 @@
-import Select, { SingleValue, MultiValue } from 'react-select';
-import { useField, useFormikContext } from 'formik';
+import Select, {MultiValue, SingleValue} from 'react-select';
+import {useField, useFormikContext} from 'formik';
 
 interface FormikSelectProps {
     name: string;
@@ -97,14 +97,14 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                         ...provided,
                         color: 'var(--color-text)',
                         ':hover': {
-                            backgroundColor: 'var(--color-primary)',
+                            backgroundColor: 'var(--color-background-shade-2)',
                             color: 'var(--color-text)',
                         },
                         cursor: 'pointer',
                     }),
                     menu: (base) => ({
                         ...base,
-                        backgroundColor: 'var(--color-background)',
+                        backgroundColor: 'var(--color-background-shade-2)',
                         zIndex: 1000,
                     }),
                     menuPortal: (base) => ({
@@ -113,7 +113,7 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                     }),
                     option: (base, { isFocused }) => ({
                         ...base,
-                        backgroundColor: isFocused ? 'var(--color-primary)' : 'var(--color-background)',
+                        backgroundColor: isFocused ? 'var(--color-background-shade-2)' : 'var(--color-background)',
                         color: isFocused ? 'var(--color-text)' : 'var(--color-text)',
                     }),
                     singleValue: (base) => ({

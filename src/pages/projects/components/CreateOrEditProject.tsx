@@ -14,14 +14,14 @@ import CreateCompanyForm from "../../company/components/CreateCompanyForm.tsx";
 import PaginatedUserSelect from "../../../components/dropdown/PaginatedUserSelect.tsx";
 import {ROLES} from "../../../constant/ROLES.ts";
 
-const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
+const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, mode, onSubmit, isLoading}) => {
     const [formData, setFormData] = useState<ProjectFormData>({
         title: "",
         description: "",
         startDate: null,
         endDate: null,
         companyId: "",
-        status: { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
+        status: {label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase()},
         files: [],
         userIds: [],
         ...initialData, // initial data if provided
@@ -41,12 +41,12 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             if (initialData.companyId) {
                 // Fetch companies and set the selected company
                 (async () => {
-                    const response = await triggerAllCompanies({ page: 1, limit: 20 }).unwrap();
+                    const response = await triggerAllCompanies({page: 1, limit: 20}).unwrap();
                     const companies = response?.data?.companies ?? [];
 
                     const matchedCompany = companies.find((company: any) => company.id === initialData.companyId);
                     if (matchedCompany) {
-                        setSelectedCompany({ label: matchedCompany.name, value: matchedCompany.id });
+                        setSelectedCompany({label: matchedCompany.name, value: matchedCompany.id});
                     }
                 })();
             }
@@ -54,7 +54,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     }, [initialData, triggerAllCompanies]);
     const fetchAllCompanies = async (page: number) => {
         try {
-            const response = await triggerAllCompanies({ page, limit: 20 }).unwrap();
+            const response = await triggerAllCompanies({page, limit: 20}).unwrap();
             const companies = response?.data?.companies ?? [];
             const pagination = response?.data ?? {};
 
@@ -70,7 +70,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             };
         } catch (error) {
             console.error("Error fetching companies:", error);
-            return { data: [{ value: "all", label: "All" }], hasMore: false };
+            return {data: [{value: "all", label: "All"}], hasMore: false};
         }
     };
     useEffect(() => {
@@ -82,12 +82,12 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const {name, value} = e.target;
+        setFormData({...formData, [name]: value});
     };
 
     const handleDateChange = (date: Date | null, field: keyof ProjectFormData) => {
-        setFormData({ ...formData, [field]: date });
+        setFormData({...formData, [field]: date});
     };
 
     const handleFileUpload = (uploadedFiles: File[]) => {
@@ -98,7 +98,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     };
 
     const handleSelectChange = (option: { label: string; value: string } | null) => {
-        setFormData({ ...formData, status: option });
+        setFormData({...formData, status: option});
     };
 
 
@@ -106,7 +106,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
         setFormData({
             title: "",
             description: "",
-            status: { label: "", value: "" },
+            status: {label: "", value: ""},
             startDate: null,
             endDate: null,
             files: [],
@@ -135,126 +135,129 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
     return (
         <>
-        <form
-            className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6"
-            onSubmit={handleSubmit}
-        >
-            <h2 className="text-3xl font-bold text-center text-text mb-6">
-                {mode === "create" ? "Create New Project" : "Edit Project"}
-            </h2>
+            <form
+                className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6"
+                onSubmit={handleSubmit}
+            >
+                <h2 className="text-3xl font-bold text-center text-text mb-6">
+                    {mode === "create" ? "Create New Project" : "Edit Project"}
+                </h2>
 
-            <div>
-                <InputField
-                    label="Project Name"
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className="w-full"
-                />
-                {getError("title") && <p className="text-red-500 text-sm mt-1">{getError("title")}</p>}
-            </div>
-
-            <div>
-                <InputField
-                    label="Description"
-                    type="textarea"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className="w-full"
-                />
-                {getError("description") && <p className="text-red-500 text-sm mt-1">{getError("description")}</p>}
-            </div>
-
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                <PaginatedDropdown
-                    fetchData={fetchAllCompanies}
-                    renderItem={(item: any) => <span>{item.label}</span>}
-                    onSelect={(item: any) => {
-                        setFormData({ ...formData, companyId: item.value });
-                        setSelectedCompany(item);
-                    }}
-                    selectedItem={selectedCompany}
-                    placeholder="Select a company"
-                />
-                {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
-                </div>
-                <div>
-                    <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <DateField
-                        label="Start Date"
-                        selected={formData.startDate}
-                        onChange={(date) => handleDateChange(date, "startDate")}
+                    <InputField
+                        label="Project Name"
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
                         className="w-full"
                     />
-                    {getError("startDate") && <p className="text-red-500 text-sm mt-1">{getError("startDate")}</p>}
+                    {getError("title") && <p className="text-red-500 text-sm mt-1">{getError("title")}</p>}
                 </div>
 
                 <div>
-                    <DateField
-                        label="End Date"
-                        selected={formData.endDate}
-                        onChange={(date) => handleDateChange(date, "endDate")}
+                    <InputField
+                        label="Description"
+                        type="textarea"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
                         className="w-full"
                     />
-                    {getError("endDate") && <p className="text-red-500 text-sm mt-1">{getError("endDate")}</p>}
+                    {getError("description") && <p className="text-red-500 text-sm mt-1">{getError("description")}</p>}
                 </div>
-            </div>
-            <PaginatedUserSelect
-                name="userIds"
-                roleName={ROLES.WORKER}
-                value={formData.userIds}
-                onChange={(userIds) => setFormData({ ...formData, userIds })}
-            />
-            <div>
-                <SelectField
-                    label="Status"
-                    options={[
-                        { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
-                        { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
-                        { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
-                    ]}
-                    value={formData.status}
-                    onChange={handleSelectChange}
-                    className="w-full"
-                />
-                {getError("status") && <p className="text-red-500 text-sm mt-1">{getError("status")}</p>}
-            </div>
 
-            <div>
-                <FileUpload
-                    label="Upload Files (PDFs or Excel)"
-                    onChange={handleFileUpload}
-                    accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    className="w-full"
 
-                />
-                {getError("files") && <p className="text-red-500 text-sm mt-1">{getError("files")}</p>}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <PaginatedDropdown
+                            fetchData={fetchAllCompanies}
+                            renderItem={(item: any) => <span>{item.label}</span>}
+                            onSelect={(item: any) => {
+                                setFormData({...formData, companyId: item.value});
+                                setSelectedCompany(item);
+                            }}
+                            selectedItem={selectedCompany}
+                            placeholder="Select a company"
+                        />
+                        {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
+                    </div>
+                    <div>
+                        <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)}/>
+                    </div>
+                </div>
 
-            <div className="flex justify-center">
-                <Button
-                    text={mode === "create" ? "Create Project" : "Update Project"}
-                    type="submit"
-                    isSubmitting={isLoading}
-                />
-            </div>
-        </form>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <DateField
+                            label="Start Date"
+                            selected={formData.startDate}
+                            onChange={(date) => handleDateChange(date, "startDate")}
+                            className="w-full"
+                        />
+                        {getError("startDate") && <p className="text-red-500 text-sm mt-1">{getError("startDate")}</p>}
+                    </div>
+
+                    <div>
+                        <DateField
+                            label="End Date"
+                            selected={formData.endDate}
+                            onChange={(date) => handleDateChange(date, "endDate")}
+                            className="w-full"
+                        />
+                        {getError("endDate") && <p className="text-red-500 text-sm mt-1">{getError("endDate")}</p>}
+                    </div>
+                </div>
+                <div>
+                    <p>Assign to users</p>
+                    <PaginatedUserSelect
+                        name="userIds"
+                        roleName={ROLES.WORKER}
+                        value={formData.userIds}
+                        onChange={(userIds) => setFormData({...formData, userIds})}
+                    />
+                </div>
+                <div>
+                    <SelectField
+                        label="Status"
+                        options={[
+                            {label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase()},
+                            {label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase()},
+                            {label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase()},
+                        ]}
+                        value={formData.status}
+                        onChange={handleSelectChange}
+                        className="w-full"
+                    />
+                    {getError("status") && <p className="text-red-500 text-sm mt-1">{getError("status")}</p>}
+                </div>
+
+                <div>
+                    <FileUpload
+                        label="Upload Files (PDFs or Excel)"
+                        onChange={handleFileUpload}
+                        accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        className="w-full"
+
+                    />
+                    {getError("files") && <p className="text-red-500 text-sm mt-1">{getError("files")}</p>}
+                </div>
+
+                <div className="flex justify-center">
+                    <Button
+                        text={mode === "create" ? "Create Project" : "Update Project"}
+                        type="submit"
+                        isSubmitting={isLoading}
+                    />
+                </div>
+            </form>
             {
                 createModalOpen && <ModalContainer
                     isOpen={createModalOpen}
                     onClose={() => setCreateModalOpen(false)}
                     title="Create Company"
                 >
-                    <CreateCompanyForm onClose={() => setCreateModalOpen(false)} />
+                    <CreateCompanyForm onClose={() => setCreateModalOpen(false)}/>
                 </ModalContainer>
             }
         </>
