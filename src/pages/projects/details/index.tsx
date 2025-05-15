@@ -31,6 +31,7 @@ import {FiRefreshCw} from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
 import {format} from "date-fns";
 import {PROJECT_STATUS} from "../../../constant";
+import ExcelModal from "../components/ExcelModal.tsx";
 
 
 const useWindowSize = () => {
@@ -69,6 +70,8 @@ const ProjectDetails = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const [isFileView, setIsFileView] = useState(false);
+
+    const [openExcelModal, setOpenExcelModal] = useState(false);
 
 
     const {userData} = useAuth();
@@ -167,18 +170,18 @@ const ProjectDetails = () => {
 
     const handleAnnotateFile = useCallback(
         (file: DocumentDataRow) => {
+                setSelectedFile(file);
             if (file.fileName.endsWith(".xlsx")) {
-                toast.info("This feature is coming soon.")
+                setOpenExcelModal(true)
+                // toast.info("This feature is coming soon.")
                 // setSelectedFile(null); // Temporarily reset the selected file
                 //
                 // setTimeout(() => {
                 //     setSelectedFile(file); // Re-select the file to trigger useEffect
                 // }, 0);
             } else if (file.fileName.endsWith(".pdf")) {
-                setSelectedFile(file);
                 navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&projectId=${projectId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
             } else {
-                setSelectedFile(file);
                 setIsFileView(true);
             }
         },
@@ -550,9 +553,18 @@ const ProjectDetails = () => {
                     onClose={() => setIsFileView(false)}
                     title="View File"
                 >
-                    <img src={`${BASE_URL}/${selectedFile.filePath}`} alt={"file"} />
+                    <img src={`${BASE_URL}/${selectedFile.filePath}`} alt={"file"}/>
                 </ModalContainer>
             }
+
+            <ExcelModal
+                isModalOpen={openExcelModal}
+                setIsModalOpen={setOpenExcelModal}
+                selectedFile={selectedFile}
+                projectId={projectId}
+                refetch={refetchProjectFiles}
+
+            />
         </main>
     );
 };
