@@ -170,7 +170,7 @@ const ProjectDetails = () => {
 
     const handleAnnotateFile = useCallback(
         (file: DocumentDataRow) => {
-                setSelectedFile(file);
+            setSelectedFile(file);
             if (file.fileName.endsWith(".xlsx")) {
                 setOpenExcelModal(true)
                 // toast.info("This feature is coming soon.")
@@ -299,13 +299,17 @@ const ProjectDetails = () => {
         try {
             const response = await uploadFilesToProject({projectId, formData}).unwrap();
             const {uploadedFiles, skippedFiles} = response?.data as any;
+            let message = `Files processed successfully! Uploaded ${uploadedFiles.length} file${uploadedFiles.length !== 1 ? 's' : ''}.`;
 
-            toast.success(
-                `Files processed successfully! Uploaded: ${uploadedFiles.length}, Skipped: ${skippedFiles.length}`
-            );
+            if (skippedFiles.length > 0) {
+                message += ` Skipped ${skippedFiles.length} duplicate file${skippedFiles.length !== 1 ? 's' : ''} (already uploaded).`;
+            }
+
+            toast.success(message);
             setFiles([]);
             refetchProjectFiles();
             setIsUploadModalOpen(false);
+            setActiveTab('documents')
         } catch (error: any) {
             console.error("Failed to upload files:", error);
             toast.error("Failed to upload files. Please try again.");
@@ -421,6 +425,12 @@ const ProjectDetails = () => {
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab}/>
 
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsUploadModalOpen(true)}
+                        className="p-2 bg-primary text-white rounded-md"
+                    >
+                        Upload
+                    </button>
                     <button
                         onClick={() => setIsDrawerOpen(true)}
                         className="p-2 bg-primary text-white rounded-md"
@@ -557,14 +567,17 @@ const ProjectDetails = () => {
                 </ModalContainer>
             }
 
-            <ExcelModal
-                isModalOpen={openExcelModal}
-                setIsModalOpen={setOpenExcelModal}
-                selectedFile={selectedFile}
-                projectId={projectId}
-                refetch={refetchProjectFiles}
+            {
+                openExcelModal &&
+                <ExcelModal
+                    isModalOpen={openExcelModal}
+                    setIsModalOpen={setOpenExcelModal}
+                    selectedFile={selectedFile}
+                    projectId={projectId}
+                    refetch={refetchProjectFiles}
 
-            />
+                />
+            }
         </main>
     );
 };

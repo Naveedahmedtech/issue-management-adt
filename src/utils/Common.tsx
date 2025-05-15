@@ -75,14 +75,19 @@ export const orderDocumentColumns = (
 ) => [
     {id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName},
     {id: "date", label: "Created At", render: (row: DocumentDataRow) => row.date},
+    {id: "time", label: "Time", render: (row: DocumentDataRow) => row.time},
     {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
     {
         id: "signature",
         label: "Signature",
         render: (row: DocumentDataRow) =>
             row.isSigned ? (
-                "Signatured"
-            ) : "No Signature"
+                <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold bg-success`}>
+              Signed
+            </span>
+            ) :   <span className={`px-3 py-1 rounded-full text-text text-xs font-semibold bg-backgroundShade2`}>
+              No Signed
+            </span>
     },
     // {
     //   id: "initial",
@@ -114,7 +119,7 @@ export const orderDocumentColumns = (
                             className="text-primary hover:underline"
                             onClick={() => handleSignFile(row)}
                         >
-                            {row.isSigned ? "View" : "Signing"}
+                            {row.isSigned ? "View" : "Sign document"}
                         </button>
 
                     </div>

@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {ANGULAR_URL, BASE_URL} from '../../constant/BASE_URL.ts';
 import {IAnnotationProps, Metadata} from "../../types/types.ts";
 
-const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, orderId, isSigned }: IAnnotationProps) => {
+const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderId, isSigned}: IAnnotationProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const navigate = useNavigate();
 
@@ -33,7 +33,7 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
             }
 
             iframeRef.current.contentWindow.postMessage(
-                { type: 'view', payload: fileObj, metadata },
+                {type: 'view', payload: fileObj, metadata},
                 ANGULAR_URL
             );
 
@@ -58,16 +58,16 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
     }, []);
 
     const handleBack = () => {
-            navigate(projectId ? `/projects/${projectId}` : `/orders/${orderId}`, {
-                state: { onBackReset: true }
-            });
+        navigate(projectId ? `/projects/${projectId}` : `/orders/${orderId}`, {
+            state: {onBackReset: true}
+        });
     }
 
     return (
-        <div className="relative w-full h-[100vh] mt-5">
+        <div className="relative w-full h-[100vh]">
             <button
                 onClick={handleBack}
-                className="absolute top-0 left-0 m-4 px-4 py-2 bg-primary text-background font-semibold rounded hover:opacity-90 transition"
+                className="sticky  top-0 left-0 m-4 px-4 py-2 bg-primary text-background font-semibold rounded hover:opacity-90 transition"
             >
                 ← Back
             </button>
@@ -80,7 +80,7 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
                 <iframe
                     ref={iframeRef}
                     src={ANGULAR_URL}
-                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    style={{width: '100%', height: '100%', border: 'none'}}
                     title="Rasterex Viewer"
                     onLoad={handleIframeLoad}
                     id="rxview"

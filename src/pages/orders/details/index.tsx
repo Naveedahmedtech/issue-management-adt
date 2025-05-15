@@ -21,6 +21,7 @@ import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
 import {DocumentDataRow} from "../../../types/types.ts";
 import {ANGULAR_URL} from "../../../constant/BASE_URL.ts";
 import {FiRefreshCw} from "react-icons/fi";
+import {format} from "date-fns";
 
 const OrderDetails = () => {
     const [activeTab, setActiveTab] = useState("info");
@@ -61,6 +62,18 @@ const OrderDetails = () => {
         navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&orderId=${orderId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
     };
 
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== ANGULAR_URL) return;
+
+            if (event.data?.type === 'SIGNATURE_SAVE') {
+                refetchOrders();
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
 
     useEffect(() => {
         if(onBackReset) {
@@ -84,10 +97,13 @@ const OrderDetails = () => {
 
     const transformFilesData = (files: any[]) => {
         return files.map((file) => {
+            const dateObj = new Date(file.updatedAt);
+
             return {
                 id: file.id,
                 fileName: file.filePath.split("/").pop(),
-                date: new Date(file.createdAt).toLocaleDateString(),
+                date: format(dateObj, "EEEE, MMMM do yyyy"),
+                time: format(dateObj, "hh:mm a"),
                 type: file.filePath.split(".").pop()?.toUpperCase() || "Unknown",
                 location: "",
                 status: "Pending",
