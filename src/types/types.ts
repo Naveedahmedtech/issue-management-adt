@@ -147,6 +147,7 @@ export interface ProjectFormData {
   files: File[];
   companyId: string | null;
   userIds?: string[];
+  isOrder: boolean;
 }
 export interface OrderFormData {
   name: string;
@@ -220,6 +221,7 @@ export interface ProjectInfoProps {
     startDate: string | null;
     endDate: string | null;
     companyName: string | null;
+    isOrder: boolean;
     user: {
       displayName: string;
     };

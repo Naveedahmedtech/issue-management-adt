@@ -1,14 +1,14 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Tabs from "../../../components/Tabs";
 import Board from "../../../components/Board";
 import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
-import {projectDocumentColumns} from "../../../utils/Common.tsx";
-import {projectDocumentData} from "../../../mock/tasks.ts";
+import { projectDocumentColumns } from "../../../utils/Common.tsx";
+import { projectDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
-import {BsThreeDotsVertical} from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
 import CardLayout from "../../../components/Board/CardLayout.tsx";
 import {
@@ -19,19 +19,22 @@ import {
     useToggleArchiveMutation,
     useUploadFilesToProjectMutation
 } from "../../../redux/features/projectsApi.ts";
-import {toast} from "react-toastify";
-import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
-import {useAuth} from "../../../hooks/useAuth.ts";
+import { toast } from "react-toastify";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
+import { useAuth } from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
-import {DocumentDataRow} from "../../../types/types.ts";
-import {ANGULAR_URL, BASE_URL} from "../../../constant/BASE_URL.ts";
-import {API_ROUTES} from "../../../constant/API_ROUTES.ts";
+import { DocumentDataRow } from "../../../types/types.ts";
+import { ANGULAR_URL, BASE_URL } from "../../../constant/BASE_URL.ts";
+import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
-import {FiRefreshCw} from "react-icons/fi";
+import { FiRefreshCw } from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
-import {format} from "date-fns";
-import {PROJECT_STATUS} from "../../../constant";
+import { format } from "date-fns";
+import { PROJECT_STATUS } from "../../../constant";
 import ExcelModal from "../components/ExcelModal.tsx";
+import { useGetAllCommentsQuery, useGetLatestCommentQuery } from "../../../redux/features/commentApi.ts";
+import Comments from "../components/Comments.tsx";
+import {  offCommentCreated, onCommentCreated } from "../../../utils/socketClient.ts";
 
 
 const useWindowSize = () => {
@@ -73,9 +76,12 @@ const ProjectDetails = () => {
 
     const [openExcelModal, setOpenExcelModal] = useState(false);
 
+    const [isOpenComments, setIsOpenComments] = useState(false);
+    const [commentPage, setCommentPage] = useState(1);
 
-    const {userData} = useAuth();
-    const {userData: {role, id: userId, displayName: username}} = userData;
+
+    const { userData } = useAuth();
+    const { userData: { role, id: userId, displayName: username } } = userData;
 
     const params = useParams();
     const location = useLocation();
@@ -83,9 +89,37 @@ const ProjectDetails = () => {
 
     const isArchived = location.state?.archive;
     const onBackReset = location.state?.onBackReset;
-    const {projectId} = params;
+    const { projectId } = params;
 
-    const {data: projectData, refetch: refetchProjectData} = useGetProjectByIdQuery(projectId);
+    const { data: projectData, refetch: refetchProjectData } = useGetProjectByIdQuery(projectId);
+    const { data: commentData, isLoading: isLoadingComments, refetch: refetchCommentData } = useGetAllCommentsQuery({ projectId, page: commentPage, limit: 20 });
+
+
+    const { data: latestCommentData, isLoading: isLoadingLatestComments, refetch: refetchLatestComments } = useGetLatestCommentQuery({ projectId });
+
+    useEffect(() => {
+        // 1) Define your two callbacks
+        const handler1 = () => {
+            refetchCommentData();
+        };
+        const handler2 = () => {
+            refetchLatestComments();
+        };
+
+        // 2) Register both
+        onCommentCreated(handler1);
+        onCommentCreated(handler2);
+
+        // 3) Cleanup both on unmount
+        return () => {
+            offCommentCreated(handler1);
+            offCommentCreated(handler2);
+            // if you want to fully teardown the socket, uncomment:
+            // disconnectSocket();
+        };
+    }, [refetchCommentData, refetchLatestComments]);
+
+
     const {
         data: projectIssues,
         isLoading: isLoadingIssues,
@@ -98,10 +132,10 @@ const ProjectDetails = () => {
         isFetching: isFileFetching,
         refetch: refetchProjectFiles
     } = useGetProjectFilesQuery(projectId);
-    const [uploadFilesToProject, {isLoading: isUploadingProjectFile}] = useUploadFilesToProjectMutation();
+    const [uploadFilesToProject, { isLoading: isUploadingProjectFile }] = useUploadFilesToProjectMutation();
     // ✅ Use the deleteProject mutation
-    const [deleteProject, {isLoading: isDeletingProject}] = useDeleteProjectMutation();
-    const [archiveProject, {isLoading: isArchiveProject}] = useToggleArchiveMutation();
+    const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
+    const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
 
     useEffect(() => {
         if (onBackReset) {
@@ -248,8 +282,8 @@ const ProjectDetails = () => {
 
 
     const tabs = [
-        {id: "board", label: "Issues"},
-        {id: "documents", label: "Documents"},
+        { id: "board", label: "Issues" },
+        { id: "documents", label: "Documents" },
         // { id: "info", label: "Project Info" },
         // { id: "activity", label: "Activity" },
     ];
@@ -297,8 +331,8 @@ const ProjectDetails = () => {
         });
 
         try {
-            const response = await uploadFilesToProject({projectId, formData}).unwrap();
-            const {uploadedFiles, skippedFiles} = response?.data as any;
+            const response = await uploadFilesToProject({ projectId, formData }).unwrap();
+            const { uploadedFiles, skippedFiles } = response?.data as any;
             let message = `Files processed successfully! Uploaded ${uploadedFiles.length} file${uploadedFiles.length !== 1 ? 's' : ''}.`;
 
             if (skippedFiles.length > 0) {
@@ -382,9 +416,9 @@ const ProjectDetails = () => {
                     refetch={refetchProjectFiles}
                 />;
             case "info":
-                return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData}/>;
+                return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />;
             case "activity":
-                return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId}/>;
+                return <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />;
             default:
                 return null;
         }
@@ -416,13 +450,53 @@ const ProjectDetails = () => {
         }
     };
 
+    console.log('latestCommentData', latestCommentData?.data?.message)
     return (
         <main className="p-6">
-            <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData}/>
+
+
+            {
+                latestCommentData?.data && !isLoadingLatestComments && (
+                    <div
+                        tabIndex={0}
+                        role="region"
+                        aria-label="Latest comment"
+                        className="
+        mb-3 p-2
+        bg-backgroundShade2
+        border-l-4 border-primary
+        rounded-lg shadow-sm
+      "
+                    >
+                        <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center space-x-1">
+                                {/* Display the commenter’s name */}
+                                <span className="text-[10px] font-semibold bg-primary text-textHover px-1.5 py-0.5 rounded">
+                                    {latestCommentData.data.user?.displayName ?? 'Anonymous'}
+                                </span>
+                                <h4 className="text-sm text-text font-medium">Latest Comment</h4>
+                            </div>
+                            <span className="text-xs text-textSecondary">
+                                {format(
+                                    new Date(latestCommentData.data.createdAt),
+                                    "MMM d, yyyy h:mm a"
+                                )}
+                            </span>
+                        </div>
+                        <p className="text-sm text-text leading-snug">
+                            {latestCommentData.data.message}
+                        </p>
+                    </div>
+                )
+            }
+
+
+            <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />
+
             <div className="flex flex-wrap justify-between items-center mb-4">
                 {/* Tabs Component */}
 
-                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab}/>
+                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
                 <div className="flex items-center gap-3">
                     <button
@@ -430,6 +504,12 @@ const ProjectDetails = () => {
                         className="p-2 bg-primary text-white rounded-md"
                     >
                         Upload
+                    </button>
+                    <button
+                        onClick={() => setIsOpenComments(true)}
+                        className="p-2 bg-primary text-white rounded-md"
+                    >
+                        Comments
                     </button>
                     <button
                         onClick={() => setIsDrawerOpen(true)}
@@ -440,8 +520,15 @@ const ProjectDetails = () => {
                     {
                         isDrawerOpen &&
                         <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="500px"
-                                title={"Activity Logs"}>
-                            <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId}/>
+                            title={"Activity Logs"}>
+                            <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />
+                        </Drawer>
+                    }
+                    {
+                        isOpenComments &&
+                        <Drawer isOpen={isOpenComments} onClose={() => setIsOpenComments(false)} width="800px"
+                            title={`Comments (${commentData?.data?.total ?? commentData?.data?.comments.length}) `}>
+                            <Comments projectId={projectId} comments={commentData?.data?.comments} page={commentPage} setPage={setCommentPage} totalPages={commentData?.data?.totalPages} total={commentData?.data?.total} isLoading={isLoadingComments} />
                         </Drawer>
                     }
                     {/* Refetch (Refresh) Button */}
@@ -450,7 +537,7 @@ const ProjectDetails = () => {
                         className="inline-flex justify-center items-center rounded-md border border-border bg-background py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                         title="Refresh"
                     >
-                        <FiRefreshCw className="text-xl"/>
+                        <FiRefreshCw className="text-xl" />
                     </button>
 
                     <div ref={dropdownRef} className="relative">
@@ -459,10 +546,10 @@ const ProjectDetails = () => {
                                 onClick={() => setDropdownOpen((prev) => !prev)}
                                 className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                             >
-                                <BsThreeDotsVertical className="text-xl"/>
+                                <BsThreeDotsVertical className="text-xl" />
                             </button>
                         ) : (
-                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)}/>
+                            <Button text="Unarchive" onClick={() => setIsUnArchiveModalOpen(true)} />
                         )}
 
                         {dropdownOpen && (
@@ -563,7 +650,7 @@ const ProjectDetails = () => {
                     onClose={() => setIsFileView(false)}
                     title="View File"
                 >
-                    <img src={`${BASE_URL}/${selectedFile.filePath}`} alt={"file"}/>
+                    <img src={`${BASE_URL}/${selectedFile.filePath}`} alt={"file"} />
                 </ModalContainer>
             }
 

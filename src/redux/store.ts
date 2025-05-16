@@ -6,6 +6,7 @@ import { projectApi } from "./features/projectsApi";
 import { issueApi } from "./features/issueApi";
 import { orderApi } from "./features/orderApi";
 import { companyApi } from "./features/companyApi";
+import { commentApi } from "./features/commentApi";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   [issueApi.reducerPath]: issueApi.reducer,
   [orderApi.reducerPath]: orderApi.reducer,
   [companyApi.reducerPath]: companyApi.reducer,
+  [commentApi.reducerPath]: commentApi.reducer,
 });
 
 export const store = configureStore({
@@ -24,7 +26,8 @@ export const store = configureStore({
       .concat(projectApi.middleware)
       .concat(issueApi.middleware)
       .concat(orderApi.middleware)
-      .concat(companyApi.middleware),
+      .concat(companyApi.middleware)
+      .concat(commentApi.middleware),
 });
 
 // Define RootState and AppDispatch types once

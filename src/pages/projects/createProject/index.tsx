@@ -21,6 +21,7 @@ const CreateProject: React.FC = () => {
     formDataToSend.append("description", formData.description);
     formDataToSend.append("companyId", formData.companyId || "");
     formDataToSend.append("status", formData.status?.value || "");
+    formDataToSend.append("isOrder", String(formData.isOrder ?? false));
     formDataToSend.append("userIds", JSON.stringify(formData?.userIds || []));
 
 

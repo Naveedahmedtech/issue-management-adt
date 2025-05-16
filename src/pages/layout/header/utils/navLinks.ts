@@ -1,6 +1,4 @@
-import {FaArchive, FaClipboardList, FaFolderOpen, FaHome, FaPlusCircle, FaUserPlus, FaUsersCog,} from "react-icons/fa";
-import {MdOutlineShoppingCart} from "react-icons/md";
-import {TbBuildingSkyscraper} from "react-icons/tb"; // Modern issue tracking & project icons
+import {FaArchive, FaBuilding, FaClipboardList, FaFolderOpen, FaHome, FaPlusCircle, FaProjectDiagram, FaUserPlus, FaUsersCog,} from "react-icons/fa";
 import {ROLES} from "../../../../constant/ROLES";
 import {APP_ROUTES} from "../../../../constant/APP_ROUTES";
 
@@ -15,7 +13,7 @@ export const links = [
   },
   {
     url: APP_ROUTES.APP.PROJECTS.LIST,
-    Icon: TbBuildingSkyscraper, // Modern Project Management icon
+    Icon: FaProjectDiagram, // Modern Project Management icon
     text: "Projects",
     roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
     className:
@@ -23,9 +21,9 @@ export const links = [
     isDropdown: true,
     subLinks: [
       { url: APP_ROUTES.APP.PROJECTS.ALL, text: "All Projects", Icon: FaClipboardList },
-      { url: APP_ROUTES.APP.ORDERS.ALL, text: "All Orders", Icon: MdOutlineShoppingCart },
+      // { url: APP_ROUTES.APP.ORDERS.ALL, text: "All Orders", Icon: MdOutlineShoppingCart },
       { url: APP_ROUTES.APP.PROJECTS.CREATE, text: "Create Project", Icon: FaPlusCircle },
-      { url: APP_ROUTES.APP.ORDERS.CREATE, text: "Create Order", Icon: FaPlusCircle },
+      // { url: APP_ROUTES.APP.ORDERS.CREATE, text: "Create Order", Icon: FaPlusCircle },
     ],
   },
   // {
@@ -36,17 +34,17 @@ export const links = [
   //   className:
   //     "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
   // },
-  {
-    url: APP_ROUTES.DASHBOARDS.ORDER,
-    Icon: MdOutlineShoppingCart,
-    text: "Order Dashboard",
-    roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
-    className:
-      "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
-  },
+  // {
+  //   url: APP_ROUTES.DASHBOARDS.ORDER,
+  //   Icon: MdOutlineShoppingCart,
+  //   text: "Order Dashboard",
+  //   roles: [ROLES.ADMIN, ROLES.SUPER_ADMIN],
+  //   className:
+  //     "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
+  // },
   {
     url: APP_ROUTES.APP.COMPANY,
-    Icon: TbBuildingSkyscraper,
+    Icon: FaBuilding,
     text: "Company",
     roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
   },

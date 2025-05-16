@@ -13,6 +13,7 @@ import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import CreateCompanyForm from "../../company/components/CreateCompanyForm.tsx";
 import PaginatedUserSelect from "../../../components/dropdown/PaginatedUserSelect.tsx";
 import {ROLES} from "../../../constant/ROLES.ts";
+import CheckboxField from "../../../components/form/CheckboxField.tsx";
 
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, mode, onSubmit, isLoading}) => {
     const [formData, setFormData] = useState<ProjectFormData>({
@@ -24,6 +25,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
         status: {label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase()},
         files: [],
         userIds: [],
+        isOrder: false,
         ...initialData, // initial data if provided
     });
 
@@ -111,6 +113,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
             endDate: null,
             files: [],
             companyId: "",
+            isOrder: false,
             userIds: [],
         });
     }
@@ -241,6 +244,17 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
 
                     />
                     {getError("files") && <p className="text-red-500 text-sm mt-1">{getError("files")}</p>}
+                </div>
+                <div>
+                    <CheckboxField
+                        label="Mark as order type"
+                        name="isOrder"
+                        checked={formData.isOrder}
+                        onChange={e => setFormData({...formData, isOrder: e.target.checked})}
+                    />
+                    {getError("isOrder") && (
+                        <p className="text-red-500 text-sm mt-1">{getError("isOrder")}</p>
+                    )}
                 </div>
 
                 <div className="flex justify-center">

@@ -9,6 +9,7 @@ import {getStatusBadge} from "../../../utils/Common";
 import {useLazyGetAllUsersQuery} from "../../../redux/features/authApi";
 import {useAuth} from "../../../hooks/useAuth";
 import {ROLES} from "../../../constant/ROLES.ts";
+import Button from "../../../components/buttons/Button.tsx";
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
@@ -94,11 +95,24 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
         : "N/A";
 
     return (
-        <div className="bg-backgroundShade1 px-4 py-3 rounded-lg shadow-sm mb-5">
-            <h3 className="text-lg font-semibold text-primary truncate">{projectData?.title}</h3>
-            <div className="mt-1 text-sm text-textLight">
-                {showFullDescription ? projectData?.description : projectData?.description?.slice(0, 100)}
-                {projectData?.description && projectData?.description?.length > 100 && (
+        <div className="relative bg-backgroundShade1 px-6 py-5 rounded-lg shadow-sm mb-6">
+            {/* Badge and Title: Professional Inline Pill Style */}
+            <div className="flex items-center mb-4">
+                {projectData?.isOrder && (
+                    <span
+                        className="bg-primary text-background px-2 py-0.5 text-xs font-semibold uppercase rounded mr-3">
+        Order
+      </span>
+                )}
+                <h3 className="text-xl font-bold text-primary truncate">{projectData?.title}</h3>
+            </div>
+
+            {/* Description */}
+            <div className="text-sm text-textLight mb-4">
+                {showFullDescription
+                    ? projectData?.description
+                    : projectData?.description?.slice(0, 100)}
+                {projectData?.description && projectData?.description.length > 100 && (
                     <button
                         onClick={() => setShowFullDescription(!showFullDescription)}
                         className="ml-2 text-primary text-xs font-medium hover:underline"
@@ -108,67 +122,74 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm text-text mt-3">
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm text-text mb-4">
+                {/* Status */}
                 <div className="flex items-center space-x-2">
-                    <FaRegClock className="text-primary text-sm"/>
-                    <div className="flex flex-col">
-                        <span className="text-xs text-textLight">Status</span>
+                    <FaRegClock className="text-primary"/>
+                    <div>
+                        <span className="block text-xs text-textLight">Status</span>
                         {getStatusBadge(projectData?.status)}
                     </div>
                 </div>
 
+                {/* Dates */}
                 <div className="flex items-center space-x-2">
-                    <FaCalendarAlt className="text-primary text-sm"/>
-                    <div className="flex flex-col">
-                        <span className="text-xs text-textLight">Start - End</span>
+                    <FaCalendarAlt className="text-primary"/>
+                    <div>
+                        <span className="block text-xs text-textLight">Start - End</span>
                         <span>{formattedStartDate} → {formattedEndDate}</span>
                     </div>
                 </div>
 
+                {/* Company */}
                 <div className="flex items-center space-x-2">
-                    <FaBuilding className="text-primary text-sm"/>
-                    <div className="flex flex-col">
-                        <span className="text-xs text-textLight">Company</span>
+                    <FaBuilding className="text-primary"/>
+                    <div>
+                        <span className="block text-xs text-textLight">Company</span>
                         <span>{projectData?.company?.name || "N/A"}</span>
                     </div>
                 </div>
 
+                {/* Created By */}
                 <div className="flex items-center space-x-2">
-                    <FaUser className="text-primary text-sm"/>
-                    <div className="flex flex-col">
-                        <span className="text-xs text-textLight">Created By</span>
+                    <FaUser className="text-primary"/>
+                    <div>
+                        <span className="block text-xs text-textLight">Created By</span>
                         <span>{projectData?.user?.displayName || "Unknown"}</span>
                     </div>
                 </div>
             </div>
 
+            {/* Assignment Section for Non-Worker Roles */}
             {role !== ROLES.WORKER && (
-                <div className="mt-4 flex flex-wrap gap-2 items-end">
-                    <div className="">
-                        <PaginatedDropdown
-                            fetchData={fetchUsers}
-                            renderItem={(item: any) => <span>{item.label}</span>}
-                            onSelect={setSelectedUser}
-                            placeholder={selectedUser ? selectedUser.label : "Select a worker"}
-                        />
-                    </div>
-                    <button
+                <div className="flex flex-wrap gap-3 items-center mb-4">
+                    <PaginatedDropdown
+                        fetchData={fetchUsers}
+                        renderItem={(item:any) => <span>{item.label}</span>}
+                        onSelect={setSelectedUser}
+                        placeholder={selectedUser ? selectedUser.label : "Select a worker"}
+                    />
+                    <Button
+                        text={isLoading ? "Assigning..." : "Assign"}
                         onClick={handleAssignProject}
-                        disabled={!selectedUser?.value || isLoading}
-                        className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 disabled:opacity-50"
-                    >
-                        {isLoading ? "Assigning..." : "Assign"}
-                    </button>
+                        isSubmitting={isLoading}
+                        type={'button'}
+                        fullWidth={false}
+                    />
                 </div>
             )}
 
+            {/* Assigned Users List */}
             {selectedUsers.length > 0 && (
-                <div className="mt-4">
+                <div>
                     <p className="text-sm font-medium text-text mb-2">Assigned Users:</p>
                     <div className="flex flex-wrap gap-2">
-                        {selectedUsers.map((user) => (
-                            <div key={user.value}
-                                 className="flex items-center px-3 py-1 rounded-full text-sm border border-text transition">
+                        {selectedUsers.map(user => (
+                            <div
+                                key={user.value}
+                                className="flex items-center px-3 py-1 rounded-full text-sm border border-text"
+                            >
                                 {user.label}
                                 <FiX
                                     className="ml-2 text-red-500 cursor-pointer hover:text-red-700"
@@ -180,6 +201,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
                 </div>
             )}
         </div>
+
     );
 };
 

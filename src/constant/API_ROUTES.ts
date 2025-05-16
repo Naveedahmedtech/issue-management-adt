@@ -10,6 +10,7 @@ const PROJECT_BASE = `${API_BASE}/project`;
 const ISSUE_BASE = `${API_BASE}/issue`;
 const ORDER_BASE = `${API_BASE}/order`;
 const COMPANY_BASE = `${API_BASE}/company`;
+const COMMENTS_BASE = `${API_BASE}/comments`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -81,7 +82,11 @@ export const API_ROUTES = {
   },
   COMPANY: {
     ROOT: `${COMPANY_BASE}`,
-  } 
+  },
+  COMMENTS: {
+    ROOT: `${COMMENTS_BASE}`,
+    LATEST: `${COMMENTS_BASE}/latest`,
+  }
 };
 
 

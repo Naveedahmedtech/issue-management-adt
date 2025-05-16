@@ -27,6 +27,8 @@ const EditProject: React.FC = () => {
         formDataToSend.append("title", formData.title);
         formDataToSend.append("description", formData.description);
         formDataToSend.append("companyId", formData.companyId || "");
+        formDataToSend.append("isOrder", String(formData.isOrder ?? false));
+
         formDataToSend.append(
             "startDate",
             formData.startDate ? format(formData.startDate, "yyyy-MM-dd") : ""
@@ -76,6 +78,7 @@ const EditProject: React.FC = () => {
                 companyId: projectData?.data?.company?.id || "",
                 status: {label: projectData?.data?.status, value: projectData?.data?.status},
                 files: projectData?.data?.files || [],
+                isOrder: projectData?.data?.isOrder || false,
                 userIds: projectData?.data?.assignedUsers?.map((assignUsers: {
                     user: {
                         id: string;
