@@ -131,6 +131,7 @@ export interface DocumentDataRow {
   initialPath?: string;
   time?: string;
   isSigned?: boolean;
+  isOrder: boolean;
 }
 
 export interface UploadedFile {

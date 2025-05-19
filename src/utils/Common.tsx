@@ -36,8 +36,6 @@ export const getFileIcon = (type: FileType) => {
 
 export const projectDocumentColumns = (
     handleAnnotateFile: (file: DocumentDataRow) => void,
-    handleSignFile: (userId: string) => void,
-    handleDownloadFile: (file: DocumentDataRow) => void,
     isArchived: boolean
 ) => [
     // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
@@ -71,7 +69,6 @@ export const projectDocumentColumns = (
 export const orderDocumentColumns = (
     handleSignFile: (file: DocumentDataRow) => void,
     isArchived: boolean,
-    handleViewFile: (file: string | undefined) => void,
 ) => [
     {id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName},
     {id: "date", label: "Created At", render: (row: DocumentDataRow) => row.date},

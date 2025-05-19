@@ -5,7 +5,7 @@ import Documents from "../../../components/Board/Documents";
 import ProjectInfo from "../components/ProjectInfo";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
-import { projectDocumentColumns } from "../../../utils/Common.tsx";
+import { orderDocumentColumns, projectDocumentColumns } from "../../../utils/Common.tsx";
 import { projectDocumentData } from "../../../mock/tasks.ts";
 import FileUpload from "../../../components/form/FileUpload";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -25,7 +25,6 @@ import { useAuth } from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import { DocumentDataRow } from "../../../types/types.ts";
 import { ANGULAR_URL, BASE_URL } from "../../../constant/BASE_URL.ts";
-import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
 import Activity from "../components/Activity.tsx";
 import { FiRefreshCw } from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
@@ -34,7 +33,8 @@ import { PROJECT_STATUS } from "../../../constant";
 import ExcelModal from "../components/ExcelModal.tsx";
 import { useGetAllCommentsQuery, useGetLatestCommentQuery } from "../../../redux/features/commentApi.ts";
 import Comments from "../components/Comments.tsx";
-import {  offCommentCreated, onCommentCreated } from "../../../utils/socketClient.ts";
+import { offCommentCreated, onCommentCreated } from "../../../utils/socketClient.ts";
+import CheckboxField from "../../../components/form/CheckboxField.tsx";
 
 
 const useWindowSize = () => {
@@ -78,6 +78,9 @@ const ProjectDetails = () => {
 
     const [isOpenComments, setIsOpenComments] = useState(false);
     const [commentPage, setCommentPage] = useState(1);
+
+
+    const [uploadToOrder, setUploadToOrder] = useState(false)
 
 
     const { userData } = useAuth();
@@ -150,6 +153,9 @@ const ProjectDetails = () => {
             if (event.data?.type === 'ISSUE_SAVE') {
                 refetchIssues();
             }
+            if (event.data?.type === 'SIGNATURE_SAVE') {
+                refetchProjectFiles()
+            }
         };
 
         window.addEventListener('message', handleMessage);
@@ -169,7 +175,8 @@ const ProjectDetails = () => {
                     filePath: file.filePath,
                     date: format(dateObj, "EEEE, MMMM do yyyy"),
                     time: format(dateObj, "hh:mm a"),
-                    type: `${file.type === "issueFile" ? `${file.type} (${file?.issue?.title})` : file.type}` || "UNKNOWN",
+                    type: `${file.type === "issueFile" ? `${"Issue File"} (${file?.issue?.title})` : `${file.isOrder ? "Order File" : "Project File"}`}` || "UNKNOWN",
+                    isOrder: file.isOrder,
                 };
             });
 
@@ -222,50 +229,9 @@ const ProjectDetails = () => {
         [setSelectedFile, setIsAnnotationModal] // Dependencies
     );
 
-    const handleSignFile = (file: any) => {
-        console.log("Signing file:", file);
-        // Add logic for file signing
+    const handleSignFile = (file: DocumentDataRow) => {
+        navigate(`${APP_ROUTES.APP.PROJECTS.PDF_VIEWER}?userId=${userId}&username=${username}&orderId=${projectId}&fileId=${file?.id}&filePath=${file?.filePath}&isSigned=${file?.isSigned}`)
     };
-
-
-    const handleDownloadFile = async (file: DocumentDataRow) => {
-        toast.info("Downloading file, please wait...");
-        const type = file.type === 'projectFile' ? 'project' : 'issue';
-        try {
-            const response = await fetch(
-                `${BASE_URL}${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.FILES}/${file.id}/${API_ROUTES.PROJECT.DOWNLOAD}?type=${type}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: 'include'
-                }
-            );
-
-            if (!response.ok) {
-                console.log("ERRR!!!", response)
-                throw new Error("Failed to download file");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-
-            // Create an anchor and trigger the download
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = file.fileName;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-
-            toast.success("File downloaded successfully!");
-        } catch (error) {
-            console.error("Download error:", error);
-            toast.error("Failed to download the file.");
-        }
-    };
-
 
     // Function to handle view button click
 
@@ -274,9 +240,14 @@ const ProjectDetails = () => {
     // const handleEditExcel = (filePath: string) => {
     //     alert(`Edit functionality is not implemented yet for: ${filePath}`);
     // };
+    // const handleFileView = (filePath: string | undefined) => {
+    //     // setSelectedFilePath(filePath);
+    //     // setIsFileViewModalOpen(true)
+    // }
 
+    const documentColumns = projectDocumentColumns(handleAnnotateFile, isArchived);
+    const orderColumns = orderDocumentColumns(handleSignFile, isArchived);
 
-    const documentColumns = projectDocumentColumns(handleAnnotateFile, handleSignFile, handleDownloadFile, isArchived);
     const [windowWidth] = useWindowSize();
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
 
@@ -319,7 +290,7 @@ const ProjectDetails = () => {
     };
 
 
-    const handleUploadSubmit = async () => {
+    const handleUploadSubmit = async (isOrder: boolean) => {
         if (files.length === 0) {
             toast.error("Please select at least one file to upload.");
             return;
@@ -328,6 +299,7 @@ const ProjectDetails = () => {
         const formData = new FormData();
         files.forEach((file) => {
             formData.append("files", file);
+            formData.append("isOrder", isOrder ? "true" : "false");
         });
 
         try {
@@ -374,6 +346,9 @@ const ProjectDetails = () => {
         refetchIssues();
     };
 
+    const _projectFiles = documentData.filter((doc:any) => !doc.isOrder);
+    const orderFiles = documentData.filter((doc:any) => doc.isOrder);
+
     const renderActiveTab = () => {
         switch (activeTab) {
             case "board":
@@ -407,13 +382,12 @@ const ProjectDetails = () => {
                 />;
             case "documents":
                 return <Documents
-                    columns={documentColumns}
-                    data={documentData}
-                    setIsUploadModalOpen={setIsUploadModalOpen}
+                    projectColumns={documentColumns}
+                    projectData={_projectFiles}
                     isLoading={isLoadingProjectFiles || isFileFetching}
-                    selectedFile={selectedFile}
-                    projectIdForNow={projectId}
-                    refetch={refetchProjectFiles}
+                    orderColumns={orderColumns}
+                    orderData={orderFiles}
+                    isOrderProject={projectData?.data?.isOrder}
                 />;
             case "info":
                 return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />;
@@ -450,7 +424,6 @@ const ProjectDetails = () => {
         }
     };
 
-    console.log('latestCommentData', latestCommentData?.data?.message)
     return (
         <main className="p-6">
 
@@ -628,6 +601,16 @@ const ProjectDetails = () => {
                 onClose={() => setIsUploadModalOpen(false)}
                 title="Upload Files"
             >
+                {
+                    projectData?.data?.isOrder &&
+                    <CheckboxField
+                        label="Upload as Order file?"
+                        name="uploadToOrder"
+                        checked={uploadToOrder}
+                        onChange={e => setUploadToOrder(e.target.checked)}
+                        className="mb-4"
+                    />
+                }
                 <FileUpload
                     label="Upload Files (PDFs or Excel)"
                     onChange={handleFileUpload}
@@ -637,7 +620,7 @@ const ProjectDetails = () => {
                 <div className="flex justify-end mt-6 space-x-4">
                     <Button
                         text={'Upload'}
-                        onClick={handleUploadSubmit}
+                        onClick={() => handleUploadSubmit(uploadToOrder)}
                         isSubmitting={isUploadingProjectFile}
                     />
                 </div>
