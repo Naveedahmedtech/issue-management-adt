@@ -14,7 +14,7 @@ const Comments: React.FC<CommentsProps> = ({ projectId, comments = [], page, tot
       await createComment({ projectId, message: newMessage }).unwrap();
       setNewMessage('');
     } catch (err) {
-      console.error('Failed to add comment:', err);
+      console.error('Failed to add comment?:', err);
     }
   };
 
@@ -35,7 +35,7 @@ const Comments: React.FC<CommentsProps> = ({ projectId, comments = [], page, tot
           onChange={(e) => setNewMessage(e.target.value)}
           rows={1}
           className="w-full border border-border rounded p-2 focus:outline-none focus:ring focus:ring-primary bg-backgroundShade1 text-text"
-          placeholder="Write a comment..."
+          placeholder="Write a comment?..."
           disabled={isCreating}
         />
         <button
@@ -50,25 +50,25 @@ const Comments: React.FC<CommentsProps> = ({ projectId, comments = [], page, tot
       {comments.length > 0 ? (
         <ul className="space-y-4">
           {comments.map((comment) => (
-            <li key={comment.id} className="border border-border rounded p-3 bg-backgroundShade1">
+            <li key={comment?.id} className="border border-border rounded p-3 bg-backgroundShade1">
               <div className="flex items-center mb-2">
                 <div className="w-8 h-8 bg-backgroundShade2 rounded-full flex-shrink-0 flex items-center justify-center text-textSecondary">
-                  {comment.user?.displayName
-                    ? comment.user.displayName.charAt(0).toUpperCase()
-                    : comment.userId.charAt(0).toUpperCase()}
+                  {comment?.user?.displayName
+                    ? comment?.user.displayName.charAt(0).toUpperCase()
+                    : comment?.userId.charAt(0).toUpperCase()}
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-text">
-                    {comment.user?.displayName || 'Anonymous'}
+                    {comment?.user?.displayName || 'Anonymous'}
                   </p>
                   <p className="text-xs text-textSecondary">
-                    {comment.createdAt
-                      ? format(new Date(comment.createdAt), 'MMM d, yyyy h:mm a')
+                    {comment?.createdAt
+                      ? format(new Date(comment?.createdAt), 'MMM d, yyyy h:mm a')
                       : 'Unknown date'}
                   </p>
                 </div>
               </div>
-              <p className="text-text">{comment.message}</p>
+              <p className="text-text">{comment?.message}</p>
             </li>
           ))}
         </ul>

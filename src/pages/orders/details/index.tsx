@@ -119,7 +119,7 @@ const OrderDetails = () => {
     }
 
 
-    const documentColumns = orderDocumentColumns(handleSignFile, isArchived, handleFileView);
+    const documentColumns = orderDocumentColumns(handleSignFile, isArchived);
 
     const tabs = [
         { id: "info", label: "Order Info" },
@@ -190,14 +190,15 @@ const OrderDetails = () => {
     const renderActiveTab = () => {
         switch (activeTab) {
             case "documents":
-                return (
-                    <Documents
-                        columns={documentColumns}
-                        data={transformFilesData(orderData?.data?.files || [])}
-                        setIsUploadModalOpen={setIsUploadModalOpen}
-                        isLoading={isOrderDataLoading || isOrderDataRefetching}
-                    />
-                );
+                return <></>
+                // return (
+                //     <Documents
+                //         columns={documentColumns}
+                //         data={transformFilesData(orderData?.data?.files || [])}
+                //         setIsUploadModalOpen={setIsUploadModalOpen}
+                //         isLoading={isOrderDataLoading || isOrderDataRefetching}
+                //     />
+                // );
             case "info":
                 return <OrderInfo data={orderData?.data} isLoading={isOrderDataLoading || isOrderDataRefetching} />;
             default:

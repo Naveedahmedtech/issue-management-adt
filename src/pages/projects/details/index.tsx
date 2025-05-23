@@ -429,7 +429,7 @@ const ProjectDetails = () => {
 
 
             {
-                latestCommentData?.data && !isLoadingLatestComments && (
+                latestCommentData?.data && !isLoadingLatestComments && latestCommentData?.data?.message && (
                     <div
                         tabIndex={0}
                         role="region"
@@ -445,19 +445,19 @@ const ProjectDetails = () => {
                             <div className="flex items-center space-x-1">
                                 {/* Display the commenter’s name */}
                                 <span className="text-[10px] font-semibold bg-primary text-textHover px-1.5 py-0.5 rounded">
-                                    {latestCommentData.data.user?.displayName ?? 'Anonymous'}
+                                    {latestCommentData?.data.user?.displayName ?? 'Anonymous'}
                                 </span>
                                 <h4 className="text-sm text-text font-medium">Latest Comment</h4>
                             </div>
                             <span className="text-xs text-textSecondary">
-                                {format(
-                                    new Date(latestCommentData.data.createdAt),
+                                {latestCommentData?.data?.createdAt && format(
+                                    new Date(latestCommentData?.data?.createdAt),
                                     "MMM d, yyyy h:mm a"
                                 )}
                             </span>
                         </div>
                         <p className="text-sm text-text leading-snug">
-                            {latestCommentData.data.message}
+                            {latestCommentData?.data?.message}
                         </p>
                     </div>
                 )

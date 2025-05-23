@@ -57,7 +57,8 @@ const EditProject: React.FC = () => {
                 navigate(APP_ROUTES.APP.PROJECTS.DETAILS.replace(":projectId", projectId));
             }
         } catch (error: any) {
-            toast.error(error?.data?.message || "Failed to update project. Please try again.");
+            console.log('err', error)
+            toast.error(error?.data?.error?.message || "Failed to update project. Please try again.");
         }
     };
 

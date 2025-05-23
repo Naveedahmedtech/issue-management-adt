@@ -1,28 +1,28 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../../../components/form/InputField.tsx";
-import DateField from "../../../components/form/DateField.tsx";
 import SelectField from "../../../components/form/SelectField.tsx";
 import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
-import {validateProjectForm, ValidationError} from "../../../utils/validation.ts";
-import {CreateOrEditProjectProps, ProjectFormData} from "../../../types/types.ts";
-import {PROJECT_STATUS} from "../../../constant/index.ts";
-import {useLazyGetAllCompaniesQuery} from "../../../redux/features/companyApi.ts";
+import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
+import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
+import { PROJECT_STATUS } from "../../../constant/index.ts";
+import { useLazyGetAllCompaniesQuery } from "../../../redux/features/companyApi.ts";
 import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown.tsx";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 import CreateCompanyForm from "../../company/components/CreateCompanyForm.tsx";
 import PaginatedUserSelect from "../../../components/dropdown/PaginatedUserSelect.tsx";
-import {ROLES} from "../../../constant/ROLES.ts";
+import { ROLES } from "../../../constant/ROLES.ts";
 import CheckboxField from "../../../components/form/CheckboxField.tsx";
+import DateRangePicker from "../../../components/DateRangePicker.tsx";
 
-const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, mode, onSubmit, isLoading}) => {
+const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
         title: "",
         description: "",
         startDate: null,
         endDate: null,
         companyId: "",
-        status: {label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase()},
+        status: { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
         files: [],
         userIds: [],
         isOrder: false,
@@ -43,12 +43,12 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
             if (initialData.companyId) {
                 // Fetch companies and set the selected company
                 (async () => {
-                    const response = await triggerAllCompanies({page: 1, limit: 20}).unwrap();
+                    const response = await triggerAllCompanies({ page: 1, limit: 20 }).unwrap();
                     const companies = response?.data?.companies ?? [];
 
                     const matchedCompany = companies.find((company: any) => company.id === initialData.companyId);
                     if (matchedCompany) {
-                        setSelectedCompany({label: matchedCompany.name, value: matchedCompany.id});
+                        setSelectedCompany({ label: matchedCompany.name, value: matchedCompany.id });
                     }
                 })();
             }
@@ -56,7 +56,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
     }, [initialData, triggerAllCompanies]);
     const fetchAllCompanies = async (page: number) => {
         try {
-            const response = await triggerAllCompanies({page, limit: 20}).unwrap();
+            const response = await triggerAllCompanies({ page, limit: 20 }).unwrap();
             const companies = response?.data?.companies ?? [];
             const pagination = response?.data ?? {};
 
@@ -72,7 +72,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
             };
         } catch (error) {
             console.error("Error fetching companies:", error);
-            return {data: [{value: "all", label: "All"}], hasMore: false};
+            return { data: [{ value: "all", label: "All" }], hasMore: false };
         }
     };
     useEffect(() => {
@@ -84,13 +84,13 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
-    const handleDateChange = (date: Date | null, field: keyof ProjectFormData) => {
-        setFormData({...formData, [field]: date});
-    };
+    // const handleDateChange = (date: Date | null, field: keyof ProjectFormData) => {
+    //     setFormData({ ...formData, [field]: date });
+    // };
 
     const handleFileUpload = (uploadedFiles: File[]) => {
         setFormData((prev) => ({
@@ -100,7 +100,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
     };
 
     const handleSelectChange = (option: { label: string; value: string } | null) => {
-        setFormData({...formData, status: option});
+        setFormData({ ...formData, status: option });
     };
 
 
@@ -108,7 +108,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
         setFormData({
             title: "",
             description: "",
-            status: {label: "", value: ""},
+            status: { label: "", value: "" },
             startDate: null,
             endDate: null,
             files: [],
@@ -177,7 +177,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
                             fetchData={fetchAllCompanies}
                             renderItem={(item: any) => <span>{item.label}</span>}
                             onSelect={(item: any) => {
-                                setFormData({...formData, companyId: item.value});
+                                setFormData({ ...formData, companyId: item.value });
                                 setSelectedCompany(item);
                             }}
                             selectedItem={selectedCompany}
@@ -186,29 +186,24 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
                         {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
                     </div>
                     <div>
-                        <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)}/>
+                        <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <DateField
-                            label="Start Date"
-                            selected={formData.startDate}
-                            onChange={(date) => handleDateChange(date, "startDate")}
-                            className="w-full"
+                        <p className="mb-2">Choose Planning Weeks</p>
+                        <DateRangePicker
+                            startDate={formData.startDate}
+                            endDate={formData.endDate}
+                            onChange={(start, end) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    startDate: start,
+                                    endDate: end,
+                                }));
+                            }}
                         />
-                        {getError("startDate") && <p className="text-red-500 text-sm mt-1">{getError("startDate")}</p>}
-                    </div>
-
-                    <div>
-                        <DateField
-                            label="End Date"
-                            selected={formData.endDate}
-                            onChange={(date) => handleDateChange(date, "endDate")}
-                            className="w-full"
-                        />
-                        {getError("endDate") && <p className="text-red-500 text-sm mt-1">{getError("endDate")}</p>}
                     </div>
                 </div>
                 <div>
@@ -217,16 +212,16 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
                         name="userIds"
                         roleName={ROLES.WORKER}
                         value={formData.userIds}
-                        onChange={(userIds) => setFormData({...formData, userIds})}
+                        onChange={(userIds) => setFormData({ ...formData, userIds })}
                     />
                 </div>
                 <div>
                     <SelectField
                         label="Status"
                         options={[
-                            {label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase()},
-                            {label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase()},
-                            {label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase()},
+                            { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
+                            { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
+                            { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
                         ]}
                         value={formData.status}
                         onChange={handleSelectChange}
@@ -250,7 +245,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
                         label="Mark as order type"
                         name="isOrder"
                         checked={formData.isOrder}
-                        onChange={e => setFormData({...formData, isOrder: e.target.checked})}
+                        onChange={e => setFormData({ ...formData, isOrder: e.target.checked })}
                     />
                     {getError("isOrder") && (
                         <p className="text-red-500 text-sm mt-1">{getError("isOrder")}</p>
@@ -271,7 +266,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({initialData, m
                     onClose={() => setCreateModalOpen(false)}
                     title="Create Company"
                 >
-                    <CreateCompanyForm onClose={() => setCreateModalOpen(false)}/>
+                    <CreateCompanyForm onClose={() => setCreateModalOpen(false)} />
                 </ModalContainer>
             }
         </>
