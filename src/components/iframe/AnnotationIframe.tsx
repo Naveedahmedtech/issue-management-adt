@@ -58,7 +58,7 @@ const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderI
     }, []);
 
     const handleBack = () => {
-        navigate(projectId ? `/projects/${projectId}` : `/orders/${orderId}`, {
+        navigate(projectId ? `/projects/${projectId}` : `/projects/${orderId}`, {
             state: {onBackReset: true}
         });
     }

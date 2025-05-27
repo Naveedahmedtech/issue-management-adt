@@ -35,6 +35,7 @@ import { useGetAllCommentsQuery, useGetLatestCommentQuery } from "../../../redux
 import Comments from "../components/Comments.tsx";
 import { offCommentCreated, onCommentCreated } from "../../../utils/socketClient.ts";
 import CheckboxField from "../../../components/form/CheckboxField.tsx";
+import Checklist from "../components/Checklist.tsx";
 
 
 const useWindowSize = () => {
@@ -177,6 +178,7 @@ const ProjectDetails = () => {
                     time: format(dateObj, "hh:mm a"),
                     type: `${file.type === "issueFile" ? `${"Issue File"} (${file?.issue?.title})` : `${file.isOrder ? "Order File" : "Project File"}`}` || "UNKNOWN",
                     isOrder: file.isOrder,
+                    isSigned: file?.isSigned || false,
                 };
             });
 
@@ -255,6 +257,7 @@ const ProjectDetails = () => {
     const tabs = [
         { id: "board", label: "Issues" },
         { id: "documents", label: "Documents" },
+        { id: "checklist", label: "Checklist" },
         // { id: "info", label: "Project Info" },
         // { id: "activity", label: "Activity" },
     ];
@@ -346,8 +349,8 @@ const ProjectDetails = () => {
         refetchIssues();
     };
 
-    const _projectFiles = documentData.filter((doc:any) => !doc.isOrder);
-    const orderFiles = documentData.filter((doc:any) => doc.isOrder);
+    const _projectFiles = documentData.filter((doc: any) => !doc.isOrder);
+    const orderFiles = documentData.filter((doc: any) => doc.isOrder);
 
     const renderActiveTab = () => {
         switch (activeTab) {
@@ -388,6 +391,10 @@ const ProjectDetails = () => {
                     orderColumns={orderColumns}
                     orderData={orderFiles}
                     isOrderProject={projectData?.data?.isOrder}
+                />;
+            case "checklist":
+                return <Checklist
+                    projectId={projectId}
                 />;
             case "info":
                 return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />;

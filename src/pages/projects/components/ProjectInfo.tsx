@@ -1,25 +1,26 @@
-import React, {useEffect, useState} from "react";
-import {FaBuilding, FaCalendarAlt, FaRegClock, FaUser} from "react-icons/fa";
-import {FiX} from "react-icons/fi";
-import {format} from "date-fns";
-import {useAssignProjectMutation, useUnassignProjectMutation} from "../../../redux/features/projectsApi";
-import {ProjectInfoProps} from "../../../types/types";
+import React, { useEffect, useState } from "react";
+import { FaBuilding, FaCalendarAlt, FaRegClock, FaUser } from "react-icons/fa";
+import { FiX } from "react-icons/fi";
+import { format } from "date-fns";
+import { useAssignProjectMutation, useUnassignProjectMutation } from "../../../redux/features/projectsApi";
+import { ProjectInfoProps } from "../../../types/types";
 import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown";
-import {getStatusBadge} from "../../../utils/Common";
-import {useLazyGetAllUsersQuery} from "../../../redux/features/authApi";
-import {useAuth} from "../../../hooks/useAuth";
-import {ROLES} from "../../../constant/ROLES.ts";
+import { getStatusBadge } from "../../../utils/Common";
+import { useLazyGetAllUsersQuery } from "../../../redux/features/authApi";
+import { useAuth } from "../../../hooks/useAuth";
+import { ROLES } from "../../../constant/ROLES.ts";
 import Button from "../../../components/buttons/Button.tsx";
+import { toast } from "react-toastify";
 
-const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
+const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [selectedUser, setSelectedUser] = useState<{ value: string; label: string } | null>(null);
     const [selectedUsers, setSelectedUsers] = useState<{ value: string; label: string }[]>([]);
 
-    const {userData} = useAuth();
-    const {role} = userData;
+    const { userData } = useAuth();
+    const { role } = userData;
 
-    const [assignToUser, {isLoading}] = useAssignProjectMutation();
+    const [assignToUser, { isLoading }] = useAssignProjectMutation();
     const [unassignUser] = useUnassignProjectMutation();
     const [triggerGetUsers] = useLazyGetAllUsersQuery();
 
@@ -27,7 +28,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
     useEffect(() => {
         if (projectData?.assignedUsers) {
             setSelectedUsers(
-                projectData.assignedUsers.map(({user}) => ({value: user.id, label: user.displayName}))
+                projectData.assignedUsers.map(({ user }) => ({ value: user.id, label: user.displayName }))
             );
         }
     }, [projectData]);
@@ -44,8 +45,10 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
             refetch()
             setSelectedUsers((prev) => [...prev, selectedUser]);
             setSelectedUser(null);
-        } catch (error) {
+        } catch (error:any) {
             console.error("Error assigning project:", error);
+            toast.error(error?.data?.error?.message || "Failed to update project. Please try again.");
+
         }
     };
 
@@ -66,7 +69,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
     // Fetch users for dropdown
     const fetchUsers = async (page: number) => {
         try {
-            const response = await triggerGetUsers({page, limit: 10, roleName: ROLES.WORKER}).unwrap();
+            const response = await triggerGetUsers({ page, limit: 10, roleName: ROLES.WORKER }).unwrap();
             const users = response?.data?.users ?? [];
             const pagination = response?.data?.pagination ?? {};
 
@@ -81,7 +84,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
             };
         } catch (error) {
             console.error("Error fetching users:", error);
-            return {data: [], hasMore: false};
+            return { data: [], hasMore: false };
         }
     };
 
@@ -101,8 +104,8 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
                 {projectData?.isOrder && (
                     <span
                         className="bg-primary text-background px-2 py-0.5 text-xs font-semibold uppercase rounded mr-3">
-        Order
-      </span>
+                        Order
+                    </span>
                 )}
                 <h3 className="text-xl font-bold text-primary truncate">{projectData?.title}</h3>
             </div>
@@ -126,7 +129,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm text-text mb-4">
                 {/* Status */}
                 <div className="flex items-center space-x-2">
-                    <FaRegClock className="text-primary"/>
+                    <FaRegClock className="text-primary" />
                     <div>
                         <span className="block text-xs text-textLight">Status</span>
                         {getStatusBadge(projectData?.status)}
@@ -135,7 +138,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
 
                 {/* Dates */}
                 <div className="flex items-center space-x-2">
-                    <FaCalendarAlt className="text-primary"/>
+                    <FaCalendarAlt className="text-primary" />
                     <div>
                         <span className="block text-xs text-textLight">Start - End</span>
                         <span>{formattedStartDate} → {formattedEndDate}</span>
@@ -144,7 +147,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
 
                 {/* Company */}
                 <div className="flex items-center space-x-2">
-                    <FaBuilding className="text-primary"/>
+                    <FaBuilding className="text-primary" />
                     <div>
                         <span className="block text-xs text-textLight">Company</span>
                         <span>{projectData?.company?.name || "N/A"}</span>
@@ -153,7 +156,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
 
                 {/* Created By */}
                 <div className="flex items-center space-x-2">
-                    <FaUser className="text-primary"/>
+                    <FaUser className="text-primary" />
                     <div>
                         <span className="block text-xs text-textLight">Created By</span>
                         <span>{projectData?.user?.displayName || "Unknown"}</span>
@@ -166,7 +169,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({projectData, refetch}) => {
                 <div className="flex flex-wrap gap-3 items-center mb-4">
                     <PaginatedDropdown
                         fetchData={fetchUsers}
-                        renderItem={(item:any) => <span>{item.label}</span>}
+                        renderItem={(item: any) => <span>{item.label}</span>}
                         onSelect={setSelectedUser}
                         placeholder={selectedUser ? selectedUser.label : "Select a worker"}
                     />

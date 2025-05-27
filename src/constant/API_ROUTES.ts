@@ -11,6 +11,7 @@ const ISSUE_BASE = `${API_BASE}/issue`;
 const ORDER_BASE = `${API_BASE}/order`;
 const COMPANY_BASE = `${API_BASE}/company`;
 const COMMENTS_BASE = `${API_BASE}/comments`;
+const CHECKLIST_BASE = `${API_BASE}/checklist-templates`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -86,6 +87,9 @@ export const API_ROUTES = {
   COMMENTS: {
     ROOT: `${COMMENTS_BASE}`,
     LATEST: `${COMMENTS_BASE}/latest`,
+  },
+  CHECKLIST: {
+    ROOT: `${CHECKLIST_BASE}`,
   }
 };
 

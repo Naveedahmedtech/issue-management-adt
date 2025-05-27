@@ -1,4 +1,4 @@
-import {FaArchive, FaBuilding, FaClipboardList, FaFolderOpen, FaHome, FaPlusCircle, FaProjectDiagram, FaUserPlus, FaUsersCog,} from "react-icons/fa";
+import {FaBuilding, FaClipboardList, FaFolderOpen, FaHome, FaPlusCircle, FaProjectDiagram, FaUserPlus, FaUsersCog,} from "react-icons/fa";
 import {ROLES} from "../../../../constant/ROLES";
 import {APP_ROUTES} from "../../../../constant/APP_ROUTES";
 
@@ -72,12 +72,12 @@ export const links = [
     className:
       "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
   },
-  {
-    url: APP_ROUTES.APP.ORDERS.ARCHIVED,
-    Icon: FaArchive,
-    text: "Archived Orders",
-    roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
-    className:
-      "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
-  },  
+  // {
+  //   url: APP_ROUTES.APP.ORDERS.ARCHIVED,
+  //   Icon: FaArchive,
+  //   text: "Archived Orders",
+  //   roles: [ROLES.ADMIN, ROLES.WORKER, ROLES.SUPER_ADMIN],
+  //   className:
+  //     "text-text hover:text-textHover hover:bg-hover p-2 rounded-lg transition-all",
+  // },  
 ];

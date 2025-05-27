@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InputField from "../../../components/form/InputField.tsx";
 import SelectField from "../../../components/form/SelectField.tsx";
-import FileUpload from "../../../components/form/FileUpload.tsx";
+// import FileUpload from "../../../components/form/FileUpload.tsx";
 import Button from "../../../components/buttons/Button.tsx";
 import { validateProjectForm, ValidationError } from "../../../utils/validation.ts";
 import { CreateOrEditProjectProps, ProjectFormData } from "../../../types/types.ts";
@@ -92,12 +92,12 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     //     setFormData({ ...formData, [field]: date });
     // };
 
-    const handleFileUpload = (uploadedFiles: File[]) => {
-        setFormData((prev) => ({
-            ...prev,
-            files: uploadedFiles,
-        }));
-    };
+    // const handleFileUpload = (uploadedFiles: File[]) => {
+    //     setFormData((prev) => ({
+    //         ...prev,
+    //         files: uploadedFiles,
+    //     }));
+    // };
 
     const handleSelectChange = (option: { label: string; value: string } | null) => {
         setFormData({ ...formData, status: option });
@@ -230,7 +230,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                     {getError("status") && <p className="text-red-500 text-sm mt-1">{getError("status")}</p>}
                 </div>
 
-                <div>
+                {/* <div>
                     <FileUpload
                         label="Upload Files (PDFs or Excel)"
                         onChange={handleFileUpload}
@@ -239,7 +239,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
                     />
                     {getError("files") && <p className="text-red-500 text-sm mt-1">{getError("files")}</p>}
-                </div>
+                </div> */}
                 <div>
                     <CheckboxField
                         label="Mark as order type"
