@@ -123,12 +123,12 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
 
     if (isLoading) return (
         <div className="flex justify-center items-center min-h-[200px]">
-            <div className="text-primary text-lg font-semibold">Loading issues...</div>
+            <div className="text-textDark text-lg font-semibold">Loading issues...</div>
         </div>
     );
 
     return (
-        <div className="p-6 bg-background min-h-screen">
+        <div className="bg-backgroundShade2 min-h-screen">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4">
                     {localProjectIssues?.map((column) => (

@@ -26,11 +26,11 @@ const CardLayout = ({
 
     if (isLoading) return (
         <div className="flex justify-center items-center min-h-[200px]">
-            <div className="text-primary text-lg font-semibold">Loading issues...</div>
+            <div className="text-textDark text-lg font-semibold">Loading issues...</div>
         </div>
     );
     return (
-        <div className="">
+        <div className="text-textDark">
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-4 mb-4">
                 {["All", "Active", "On Going", "Completed"].map((status) => (
@@ -40,7 +40,7 @@ const CardLayout = ({
                         onClick={() => handleFilterChange(status)}
                         preview={activeFilter === status ? "primary" : "secondary"}
                         fullWidth={false}
-                        style={{color: '#FFFF'}}
+                        className="text-textDark"
                     />
                 ))}
             </div>
@@ -48,7 +48,7 @@ const CardLayout = ({
             {/* Sections */}
             {sectionsToShow.map((section) => (
                 <div key={section} className="mb-8">
-                    <h3 className="text-2xl font-bold text-primary mb-4">{section}</h3>
+                    <h3 className="text-2xl font-bold  mb-4">{section}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {groupedTasks[section]?.map((task: any) => (
                             <TaskCard key={task.id} task={task} onView={handleViewTask} />

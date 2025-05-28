@@ -14,6 +14,7 @@ export interface CheckboxFieldProps {
     disabled?: boolean;
     /** extra wrapper classes */
     className?: string;
+    labelColor?: string;
 }
 
 const CheckboxField: React.FC<CheckboxFieldProps> = ({
@@ -23,6 +24,7 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
                                                          onChange,
                                                          disabled = false,
                                                          className,
+                                                         labelColor = 'text-text'
                                                      }) => (
     <div className={clsx("flex items-center mb-4", className)}>
         <input
@@ -33,15 +35,14 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
             onChange={onChange}
             disabled={disabled}
             className={clsx(
-                "h-4 w-4 border rounded focus:ring-2 focus:ring-offset-0",
+                "h-4 w-4 border rounded  focus:ring-offset-0",
                 // match your theme tokens
                 "border-border",
-                "text-primary",
-                "focus:ring-primary",
+                "text-textDark",
                 disabled && "opacity-50 cursor-not-allowed"
             )}
         />
-        <label htmlFor={name} className="ml-2 text-text select-none">
+        <label htmlFor={name} className={`ml-2 ${labelColor} select-none`}>
             {label}
         </label>
     </div>

@@ -95,8 +95,8 @@ const CreateUser: React.FC = () => {
   };
 
   return (
-    <div className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6">
-      <h1 className="text-3xl font-bold text-center text-text mb-6">Create User</h1>
+    <div className="p-10 bg-backgroundShade2 text-textDark rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Create User</h1>
       <Formik
         initialValues={{
           email: "",
@@ -141,6 +141,7 @@ const CreateUser: React.FC = () => {
                   setFieldValue("role", option.value);
                   handleRoleChange(option.value, setFieldValue);
                 }}
+                label="Role"
               />
             )}
 
@@ -155,6 +156,7 @@ const CreateUser: React.FC = () => {
                 placeholder="Select Permissions"
                 className="my-4"
                 isMulti
+                label="Permissions"
               />
             )}
 

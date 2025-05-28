@@ -14,6 +14,9 @@ import PaginatedUserSelect from "../../../components/dropdown/PaginatedUserSelec
 import { ROLES } from "../../../constant/ROLES.ts";
 import CheckboxField from "../../../components/form/CheckboxField.tsx";
 import DateRangePicker from "../../../components/DateRangePicker.tsx";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
     const [formData, setFormData] = useState<ProjectFormData>({
@@ -139,10 +142,10 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
     return (
         <>
             <form
-                className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6"
+                className="p-10 bg-backgroundShade2 text-textDark rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6"
                 onSubmit={handleSubmit}
             >
-                <h2 className="text-3xl font-bold text-center text-text mb-6">
+                <h2 className="text-3xl font-bold text-center mb-6">
                     {mode === "create" ? "Create New Project" : "Edit Project"}
                 </h2>
 
@@ -159,16 +162,17 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 </div>
 
                 <div>
-                    <InputField
-                        label="Description"
-                        type="textarea"
-                        name="description"
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <ReactQuill
                         value={formData.description}
-                        onChange={handleChange}
-                        className="w-full"
+                        onChange={(value) => setFormData({ ...formData, description: value })}
+                        className="bg-white"
                     />
-                    {getError("description") && <p className="text-red-500 text-sm mt-1">{getError("description")}</p>}
+                    {getError("description") && (
+                        <p className="text-red-500 text-sm mt-1">{getError("description")}</p>
+                    )}
                 </div>
+
 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -192,7 +196,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <p className="mb-2">Choose Planning Weeks</p>
+                        <p className="mb-2">Set Planning Timeframe</p>
                         <DateRangePicker
                             startDate={formData.startDate}
                             endDate={formData.endDate}
@@ -215,7 +219,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                         onChange={(userIds) => setFormData({ ...formData, userIds })}
                     />
                 </div>
-                <div>
+                <div className="hidden">
                     <SelectField
                         label="Status"
                         options={[
@@ -246,6 +250,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                         name="isOrder"
                         checked={formData.isOrder}
                         onChange={e => setFormData({ ...formData, isOrder: e.target.checked })}
+                        labelColor="text-textDark"
                     />
                     {getError("isOrder") && (
                         <p className="text-red-500 text-sm mt-1">{getError("isOrder")}</p>

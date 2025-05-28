@@ -1,5 +1,5 @@
-import Select, {MultiValue, SingleValue} from 'react-select';
-import {useField, useFormikContext} from 'formik';
+import Select, { MultiValue, SingleValue } from 'react-select';
+import { useField, useFormikContext } from 'formik';
 
 interface FormikSelectProps {
     name: string;
@@ -14,6 +14,7 @@ interface FormikSelectProps {
     onMenuScrollToBottom?: () => void;
     isLoading?: boolean;  // Add loading state prop
     hasMoreOptions?: boolean;  // To prevent unnecessary loading when no more data
+    label?: string; // ✅ optional label
 }
 
 const FormikSelect: React.FC<FormikSelectProps> = ({
@@ -27,6 +28,7 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
     onMenuScrollToBottom,
     isLoading = false,  // Default loading state
     hasMoreOptions = true,  // Default to true
+    label
 }) => {
     const { setFieldValue } = useFormikContext();
     const [field, meta] = useField(name);
@@ -53,6 +55,11 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
 
     return (
         <div className={className}>
+            {label && (
+                <label htmlFor={name} className="block text-sm font-medium text-textDark mb-1">
+                    {label}
+                </label>
+            )}
             <Select
                 isMulti={isMulti}
                 options={options}
@@ -70,11 +77,11 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                 styles={{
                     control: (base, state) => ({
                         ...base,
-                        backgroundColor: 'var(--color-background)',
-                        borderColor: meta.touched && meta.error ? 'red' : 'var(--color-text)',
-                        color: 'var(--color-text)',
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        borderColor: meta.touched && meta.error ? 'red' : 'var(--color-secondary)',
+                        color: 'var(--color-background)',
                         '&:hover': {
-                            borderColor: meta.touched && meta.error ? 'red' : 'var(--color-hover)',
+                            borderColor: meta.touched && meta.error ? 'red' : 'var(--color-primary)',
                         },
                         boxShadow: state.isFocused ? '0 0 0 1px var(--color-primary)' : 'none',
                         zIndex: state.isFocused ? 20 : base.zIndex,
@@ -85,7 +92,7 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                     }),
                     multiValue: (provided) => ({
                         ...provided,
-                        backgroundColor: 'var(--color-background-shade-1)',
+                        backgroundColor: 'var(--color-background)',
                         borderRadius: '8px',
                         cursor: 'pointer',
                     }),
@@ -97,14 +104,14 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                         ...provided,
                         color: 'var(--color-text)',
                         ':hover': {
-                            backgroundColor: 'var(--color-background-shade-2)',
+                            backgroundColor: 'var(--color-background)',
                             color: 'var(--color-text)',
                         },
                         cursor: 'pointer',
                     }),
                     menu: (base) => ({
                         ...base,
-                        backgroundColor: 'var(--color-background-shade-2)',
+                        backgroundColor: 'var(--color-background)',
                         zIndex: 1000,
                     }),
                     menuPortal: (base) => ({
@@ -113,16 +120,16 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                     }),
                     option: (base, { isFocused }) => ({
                         ...base,
-                        backgroundColor: isFocused ? 'var(--color-background-shade-2)' : 'var(--color-background)',
-                        color: isFocused ? 'var(--color-text)' : 'var(--color-text)',
+                        backgroundColor: isFocused ? 'var(--color-hover)' : 'var(--color-background-shade-2)',
+                        color: isFocused ? 'var(--color-text)' : 'var(--color-text-dark)',
                     }),
                     singleValue: (base) => ({
                         ...base,
-                        color: 'var(--color-text)',
+                        color: 'var(--color-text-dark)',
                     }),
                     placeholder: (base) => ({
                         ...base,
-                        color: 'var(--color-text-hover)',
+                        color: 'var(--color-text-secondary)',
                     }),
                 }}
                 menuPortalTarget={document.body}

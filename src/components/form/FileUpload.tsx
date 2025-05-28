@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import clsx from "clsx";
 import {FaTrashAlt} from "react-icons/fa";
+import { toast } from "react-toastify";
 
 interface FileUploadProps {
     label: string;
@@ -21,7 +22,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, onChange, accept, classN
             );
 
             if (selectedFiles.length !== e.target.files.length) {
-                alert("Some files were not allowed and were excluded.");
+                toast.info("Some files were not allowed and were excluded.");
             }
 
             const updatedFiles = [...files, ...selectedFiles];
@@ -60,7 +61,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, onChange, accept, classN
             <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 border border-border bg-backgroundShade2 text-text rounded-md hover:bg-backgroundShade1"
+                className="px-4 py-2 border border-border bg-hover text-text rounded-md hover:bg-backgroundShade1"
             >
                 Choose Files
             </button>
@@ -69,7 +70,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, onChange, accept, classN
                     {files.map((file, index) => (
                         <li
                             key={index}
-                            className="flex justify-between items-center bg-backgroundShade2 p-3 rounded-md shadow-sm"
+                            className="flex justify-between items-center bg-hover p-3 rounded-md shadow-sm"
                         >
                             <span className="truncate text-text font-medium">{file.name}</span>
                             <button

@@ -39,9 +39,8 @@ const Documents: React.FC<DocumentsProps> = ({
 
   const columns = activeTab === "project" ? projectColumns : orderColumns;
   const data = activeTab === "project" ? projectData : orderData;
-  console.log('projectData', projectData, orderData)
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-backgroundShade2 min-h-screen p-2">
       {
         isOrderProject &&
         < Tabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
@@ -67,7 +66,7 @@ const Documents: React.FC<DocumentsProps> = ({
         </>
       ) : (
         <div className="flex justify-center items-center min-h-[200px]">
-          <div className="text-textLight text-lg font-medium">
+          <div className="text-textDark text-lg font-medium">
             No {activeTab === "project" ? "project" : "order"} files available.
           </div>
         </div>

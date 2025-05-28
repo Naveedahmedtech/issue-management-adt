@@ -65,7 +65,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
             }}
         >
           <div className="w-full">
-            <Text className="text-2xl lg:text-xl text-primary font-bold">
+            <Text className="text-2xl lg:text-xl text-text font-bold">
               {APP_NAME}
             </Text>
           </div>
@@ -75,7 +75,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
           {filteredLinks.map((link, index) => (
               <div key={index} className="w-full">
                 <div
-                    className={`flex items-center justify-between p-2 rounded-lg cursor-pointer ${location.pathname === link.url ? "bg-backgroundShade2" : "hover:bg-backgroundShade2"
+                    className={`flex items-center justify-between p-2 rounded-lg cursor-pointer ${location.pathname === link.url ? "bg-hover" : "hover:bg-hover"
                     }`}
                     onClick={() => {
                       if (link.isDropdown) {
@@ -117,8 +117,8 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
                           <Link
                               key={subIndex}
                               className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer ${location.pathname === subLink.url
-                                  ? "bg-backgroundShade2"
-                                  : "hover:bg-backgroundShade2"
+                                  ? "bg-hover"
+                                  : "hover:bg-hover"
                               }`}
                               to={subLink.url}
                               onClick={() => {
@@ -137,7 +137,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
 
         <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center space-x-2 mt-auto p-2 rounded-lg transition-all duration-300 text-text hover:bg-backgroundShade2"
+            className="flex items-center space-x-2 mt-auto p-2 rounded-lg transition-all duration-300 text-text hover:bg-hover"
         >
           <FaSignOutAlt className="text-2xl" />
           <span className="hidden lg:block">Logout</span>

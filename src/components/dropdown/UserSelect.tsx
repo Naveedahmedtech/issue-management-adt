@@ -1,5 +1,5 @@
 import React from 'react';
-import Select, {MultiValue, SingleValue} from 'react-select';
+import Select, { MultiValue, SingleValue } from 'react-select';
 
 interface UserSelectProps {
     name?: string;
@@ -18,16 +18,16 @@ interface UserSelectProps {
 }
 
 const UserSelect: React.FC<UserSelectProps> = ({
-                                                   options,
-                                                   value,
-                                                   onChange,
-                                                   placeholder = 'Select...',
-                                                   className,
-                                                   isMulti = false,
-                                                   onMenuScrollToBottom,
-                                                   isLoading = false,
-                                                   hasMoreOptions = true,
-                                               }) => {
+    options,
+    value,
+    onChange,
+    placeholder = 'Select...',
+    className,
+    isMulti = false,
+    onMenuScrollToBottom,
+    isLoading = false,
+    hasMoreOptions = true,
+}) => {
     const selectedValue = isMulti
         ? options.filter((option) => Array.isArray(value) && value.includes(option.value))
         : options.find((option) => option.value === value);
@@ -61,18 +61,13 @@ const UserSelect: React.FC<UserSelectProps> = ({
                 noOptionsMessage={() => (isLoading ? 'Loading...' : 'No options available')}
                 loadingMessage={() => 'Loading more options...'}
                 styles={{
-                    control: (base, state) => ({
+                    control: (base) => ({
                         ...base,
-                        backgroundColor: 'var(--color-background)',
-                        borderColor: 'var(--color-text)',
-                        '&:hover': {
-                            borderColor: 'var(--color-hover)',
-                        },
-                        boxShadow: state.isFocused ? '0 0 0 1px var(--color-primary)' : 'none',
-                        minWidth: '150px',
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background-shade-2)',
                         borderRadius: '8px',
                         padding: '5px',
-                        borderWidth: '2px',
+                        cursor: 'pointer',
                     }),
                     multiValue: (provided) => ({
                         ...provided,
@@ -102,14 +97,19 @@ const UserSelect: React.FC<UserSelectProps> = ({
                         ...base,
                         zIndex: 1000,
                     }),
-                    option: (base, { isFocused }) => ({
-                        ...base,
-                        backgroundColor: isFocused ? 'var(--color-primary)' : 'var(--color-background)',
-                        color: 'var(--color-text)',
+                    option: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        color: 'var(--color-text-dark)',
+                        cursor: 'pointer',
+                        ':hover': {
+                            backgroundColor: 'var(--color-hover)',
+                            color: 'var(--color-text)',
+                        },
                     }),
-                    singleValue: (base) => ({
-                        ...base,
-                        color: 'var(--color-text)',
+                    singleValue: (provided) => ({
+                        ...provided,
+                        color: 'var(--color-text-dark)',
                     }),
                     placeholder: (base) => ({
                         ...base,

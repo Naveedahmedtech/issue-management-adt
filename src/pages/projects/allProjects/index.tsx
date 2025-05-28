@@ -40,7 +40,7 @@ const AllProjects = () => {
   return (
     <div className={'p-6'}>
       {/* Filters Bar */}
-      <div className="flex flex-wrap  items-center gap-4 bg-backgroundShade1 p-4 rounded-md shadow-md mb-6">
+      <div className="flex flex-wrap  items-center gap-4 bg-backgroundShade2 text-textDark p-4 rounded-md shadow-md mb-6">
         {/* Search Field */}
         <div className="">
           <InputField

@@ -16,7 +16,7 @@ const DateField: React.FC<{
             onChange={onChange}
             placeholderText={placeholderText}
             className={clsx(
-                "w-full p-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                "w-full p-2 bg-backgroundShade2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             )}
             calendarClassName="custom-calendar"
             dateFormat="yyyy-MM-dd"

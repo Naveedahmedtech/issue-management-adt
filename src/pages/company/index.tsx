@@ -72,9 +72,9 @@ const Company = () => {
     );
 
     return (
-        <div className='p-5'>
-            <div className="flex justify-between items-center mb-4" >
-                <h1 className="text-xl font-bold text-text">All Companies</h1>
+        <div className='p-5 text-textDark'>
+            <div className="flex flex-wrap justify-between items-center mb-4" >
+                <h1 className="text-xl font-bold">All Companies</h1>
                 <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
             </div>
             {allCompanies && <Table

@@ -21,6 +21,7 @@ export const projectApi = createApi({
     "Stats",
     "IssueFiles",
     "Issues",
+    "ArchivedProjects"
   ],
 
   endpoints: (builder) => ({
@@ -79,7 +80,7 @@ export const projectApi = createApi({
         url: `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.TOGGLE_ARCHIVED}`,
         method: "PATCH",
       }),
-      invalidatesTags: ["Project", "RecentProjects", "Stats"],
+      invalidatesTags: ["Project", "RecentProjects", "Stats", "ArchivedProjects"],
     }),
 
     getProjectById: builder.query({
@@ -151,6 +152,7 @@ export const projectApi = createApi({
     getArchivedProjects: builder.query({
       query: ({ page, limit }) =>
         `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ARCHIVED}?page=${page}&limit=${limit}`,
+      providesTags: ["ArchivedProjects"],
     }),
 
     updateIssueLogHistory: builder.mutation({

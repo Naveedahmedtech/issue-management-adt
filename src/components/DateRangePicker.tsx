@@ -138,8 +138,9 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const d1 = selection[0].startDate!;
   const d2 = selection[0].endDate!;
   const label = weekMode
-    ? `Weeks: ${format(d1, 'MMM d')} – ${format(d2, 'MMM d')}`
-    : `Range: ${format(d1, 'MMM d, yyyy')} – ${format(d2, 'MMM d, yyyy')}`;
+    ? `Selected Weeks: ${format(d1, 'MMM d')} – ${format(d2, 'MMM d')}`
+    : `Selected Dates: ${format(d1, 'MMM d, yyyy')} – ${format(d2, 'MMM d, yyyy')}`;
+
 
   return (
     <div ref={ref} className="relative inline-block w-full">
@@ -166,7 +167,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             e.stopPropagation();
             toggleMode();
           }}
-          title={`Switch to ${weekMode ? 'Day Range Mode' : 'Week Mode'}`}
+          title={weekMode ? 'Switch to Day Mode (custom date selection)' : 'Switch to Week Mode (auto group by week)'}
+
           className="
             relative inline-flex items-center h-6 w-12
             bg-gray-200 dark:bg-gray-700
@@ -174,6 +176,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500
           "
           aria-pressed={weekMode}
+          aria-label={weekMode ? 'Switch to Day Mode' : 'Switch to Week Mode'}
         >
           <span
             className={`

@@ -9,7 +9,7 @@ import FileUpload from "../form/FileUpload";
 import { useUpdateIssueMutation } from "../../redux/features/issueApi";
 import { toast } from "react-toastify";
 import { useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi";
-import {PROJECT_STATUS} from "../../constant";
+import { PROJECT_STATUS } from "../../constant";
 
 const statusOptions = [
     { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
@@ -103,7 +103,7 @@ const TaskEditForm: React.FC<{
                     // Update the issue
                     await updateIssue({ issueId: initialTask.id, formData }).unwrap();
                     refetch();
-                    if(refetchFiles) {
+                    if (refetchFiles) {
                         refetchFiles();
                     }
                     toast.success("Issue updated successfully");
@@ -127,49 +127,49 @@ const TaskEditForm: React.FC<{
             }}
         >
             {({ setFieldValue, values }) => (
-                <Form className="space-y-6 px-5">
+                <Form className="space-y-6 px-4 sm:px-6">
                     <InputField
                         label="Title"
                         name="title"
                         type="text"
                         value={values.title}
                         onChange={(e) => setFieldValue("title", e.target.value)}
+                        labelColor="text-text"
                     />
+
                     <InputField
                         label="Description"
                         name="description"
                         type="textarea"
                         value={values.description}
                         onChange={(e) => setFieldValue("description", e.target.value)}
+                        labelColor="text-text"
+
                     />
-                    <div className="grid grid-cols-2 gap-6">
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <SelectField
                             label="Status"
                             options={statusOptions}
                             value={statusOptions.find((option) => option.value === values.status) || null}
                             onChange={(option) => setFieldValue("status", option?.value || "")}
+                            labelColor="text-text" 
                         />
-                        {/* <DateField
-                            label="Start Date"
-                            selected={values.startDate}
-                            onChange={(date) => setFieldValue("startDate", date)}
-                        />
-                        <DateField
-                            label="End Date"
-                            selected={values.endDate}
-                            onChange={(date) => setFieldValue("endDate", date)}
-                        /> */}
                     </div>
+
                     <FileUpload
                         label="Attachments"
                         onChange={(files) => setFieldValue("files", files)}
                         accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         className="w-full"
                     />
-                    <div className="flex justify-end space-x-4 sticky bottom-0 py-4">
-                        <Button text="Save Changes" type="submit" fullWidth={false} isSubmitting={isLoading} />
+
+                    {/* Sticky submit area for mobile usability */}
+                    <div className="flex justify-end sm:justify-end space-x-4 sticky bottom-0  py-4 z-10 ">
+                        <Button text="Save Changes" type="submit" fullWidth={true} isSubmitting={isLoading} />
                     </div>
                 </Form>
+
             )}
         </Formik>
     );

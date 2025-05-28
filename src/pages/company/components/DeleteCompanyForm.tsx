@@ -29,7 +29,7 @@ const DeleteCompanyForm = ({ handleDeleteConfirm, isDeleting, onClose, refetch }
                     onClick={onClose}
                     fullWidth={false}
                     preview="secondary"
-                    className="text-white"
+                    className="text-textDark"
                 />
                 <Button
                     text={isDeleting ? "Deleting..." : "Delete"}

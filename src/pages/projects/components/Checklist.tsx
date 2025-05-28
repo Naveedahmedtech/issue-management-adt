@@ -12,13 +12,14 @@ import ChecklistUI from "./checklist/ChecklistUI";
 
 interface ChecklistProps {
     projectId: any;
+    isArchived: boolean
 }
 interface ResponseItem {
     answer: boolean | null;
     comment: string;
 }
 
-const Checklist: FC<ChecklistProps> = ({ projectId }) => {
+const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
     const { data: templateData = { data: [] } as any, isLoading: loadingTemplates } =
         useGetProjectAllTemplatesQuery({ projectId });
     const [selectedEntry, setSelectedEntry] = useState<any>(null);
@@ -145,33 +146,38 @@ const Checklist: FC<ChecklistProps> = ({ projectId }) => {
 
 
     return (
-        <ChecklistUI
-            templateData={templateData}
-            selectedEntry={selectedEntry}
-            setSelectedEntry={setSelectedEntry}
-            checklistData={checklistData}
-            responses={responses}
-            dirty={dirty}
-            setDirty={setDirty}
-            saving={saving}
-            saved={saved}
-            uploadedFiles={uploadedFiles}
-            showAddModal={showAddModal}
-            setShowAddModal={setShowAddModal}
-            newQuestion={newQuestion}
-            setNewQuestion={setNewQuestion}
-            handleAnswer={handleAnswer}
-            handleComment={handleComment}
-            handleSave={handleSave}
-            handleAddItem={handleAddItem}
-            handleFileUpload={handleFileUpload}
-            loadingItems={loadingItems}
-            isAppendingLoading={isAppendingLoading}
-            loadingTemplates={loadingTemplates}
-            isUploading={isUploading}
-            handleDeleteItem={handleDeleteItem}
+        <>
+            {
+                !isArchived &&
+                <ChecklistUI
+                    templateData={templateData}
+                    selectedEntry={selectedEntry}
+                    setSelectedEntry={setSelectedEntry}
+                    checklistData={checklistData}
+                    responses={responses}
+                    dirty={dirty}
+                    setDirty={setDirty}
+                    saving={saving}
+                    saved={saved}
+                    uploadedFiles={uploadedFiles}
+                    showAddModal={showAddModal}
+                    setShowAddModal={setShowAddModal}
+                    newQuestion={newQuestion}
+                    setNewQuestion={setNewQuestion}
+                    handleAnswer={handleAnswer}
+                    handleComment={handleComment}
+                    handleSave={handleSave}
+                    handleAddItem={handleAddItem}
+                    handleFileUpload={handleFileUpload}
+                    loadingItems={loadingItems}
+                    isAppendingLoading={isAppendingLoading}
+                    loadingTemplates={loadingTemplates}
+                    isUploading={isUploading}
+                    handleDeleteItem={handleDeleteItem}
 
-        />
+                />
+            }
+        </>
     );
 
 };

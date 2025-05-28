@@ -10,12 +10,12 @@ const Index: React.FC = () => {
 
     return (
         <div>
-            <main className="p-4">
-                <h2 className="text-2xl font-bold mb-4 text-text">
+            <main className="p-4 text-textDark">
+                <h2 className="text-2xl font-bold mb-4">
                     Welcome to Project Dashboard
                 </h2>
                 <section className="mb-6">
-                    <h3 className="text-xl font-semibold text-text mb-4">Overview</h3>
+                    <h3 className="text-xl font-semibold mb-4">Overview</h3>
                     {error && (
                         <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
                             Failed to load project statistics. Please try again later.
@@ -25,8 +25,8 @@ const Index: React.FC = () => {
                         {isLoading ? (
                             [1, 2, 3, 4].map((index) => (
                                 <div key={index} className="p-4 bg-backgroundShade2 rounded shadow animate-pulse">
-                                    <div className="h-6 bg-background mb-4 rounded"></div>
-                                    <div className="h-4 bg-background w-1/2 rounded"></div>
+                                    <div className="h-6 bg-backgroundShade2 mb-4 rounded"></div>
+                                    <div className="h-4 bg-backgroundShade2 w-1/2 rounded"></div>
                                 </div>
                             ))
                         ) : (
@@ -34,12 +34,12 @@ const Index: React.FC = () => {
                                 <StatCard
                                     title="Total Projects"
                                     value={data?.data?.totalProjects || 0}
-                                    color={"var(--color-text)"}
+                                    color={"var(--color-text-dark)"}
                                 />
                                 <StatCard
                                     title="Total Issues"
                                     value={data?.data?.totalIssues || 0}
-                                    color={"var(--color-text)"}
+                                    color={"var(--color-text-dark)"}
                                 />
                                 <StatCard
                                     title="Total Issues Completed"
@@ -47,7 +47,7 @@ const Index: React.FC = () => {
                                     color="green"
                                 />
                                 <StatCard
-                                    title="Total Issues Todo"
+                                    title="Total Issues Active"
                                     value={data?.data?.totalToDoIssues || 0}
                                     color="orange"
                                 />
@@ -58,7 +58,7 @@ const Index: React.FC = () => {
 
 
                 <section className='mb-6'>
-                <h3 className="text-xl font-semibold text-text mb-4">Recent Projects</h3>
+                <h3 className="text-xl font-semibold text-textDark mb-4">Recent Projects</h3>
                     <AllProjectsCards
                         projects={recentProjects?.data?.projects}
                         error={recentProjectError}

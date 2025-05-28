@@ -10,17 +10,17 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
     if (totalPages <= 1) return null;
 
     return (
-        <div className="flex justify-center mt-6 text-text">
+        <div className="flex justify-center mt-6 text-textDark">
             <button
-                className="px-4 py-2 mx-1 bg-primary text-white rounded-full shadow-md hover:bg-hover transition"
+                className="px-4 py-2 mx-1 bg-primary text-text rounded-full shadow-md hover:bg-hover transition"
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >
                 Prev
             </button>
-            <span className="px-4 py-2 bg-backgroundShade1 text-text font-semibold rounded-lg shadow">Page {currentPage} of {totalPages}</span>
+            <span className="px-4 py-2  font-semibold ">Page {currentPage} of {totalPages}</span>
             <button
-                className="px-4 py-2 mx-1 bg-primary text-white rounded-full shadow-md hover:bg-hover transition"
+                className="px-4 py-2 mx-1 bg-primary text-text rounded-full shadow-md hover:bg-hover transition"
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >

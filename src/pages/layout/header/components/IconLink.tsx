@@ -19,7 +19,7 @@ const IconLink: React.FC<IconLinkProps> = ({ url, Icon, text, className, isActiv
         <Link
             to={url}
             onClick={handleClick} 
-            className={`flex items-center space-x-2 px-2 rounded-lg transition-all duration-300 text-text ${className} ${isActive ? 'bg-backgroundShade2 text-text' : 'text-text hover:bg-backgroundShade2'}`}
+            className={`flex items-center space-x-2 px-2 rounded-lg transition-all duration-300 text-textDark ${className} ${isActive ? 'bg-backgroundShade2 text-textDark' : 'text-textDark hover:bg-hover'}`}
         >
             {Icon && <Icon className="text-sm" />}
             <span>{text}</span>

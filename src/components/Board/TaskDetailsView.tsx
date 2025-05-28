@@ -1,23 +1,23 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../buttons/Button.tsx";
 import ModalContainer from "../modal/ModalContainer.tsx";
-import {formatDate, renderFileIcon} from "../../utils/TaskUtils.tsx";
+import { formatDate, renderFileIcon } from "../../utils/TaskUtils.tsx";
 import {
   useAssignIssuesMutation,
   useDeleteIssueMutation,
   useRemoveAssignedUserMutation,
   useUpdateIssueMutation
 } from "../../redux/features/issueApi.ts";
-import {toast} from "react-toastify";
-import {useAuth} from "../../hooks/useAuth.ts";
-import {ROLES} from "../../constant/ROLES.ts";
-import {BASE_URL} from "../../constant/BASE_URL.ts";
-import {ITask} from "../../types/types.ts";
-import {useGetProjectActiveLogsQuery, useUpdateIssueLogHistoryMutation} from "../../redux/features/projectsApi.ts";
-import {PROJECT_STATUS} from "../../constant/index.ts";
-import {useLazyGetAllUsersQuery} from "../../redux/features/authApi.ts";
+import { toast } from "react-toastify";
+import { useAuth } from "../../hooks/useAuth.ts";
+import { ROLES } from "../../constant/ROLES.ts";
+import { BASE_URL } from "../../constant/BASE_URL.ts";
+import { ITask } from "../../types/types.ts";
+import { useGetProjectActiveLogsQuery, useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi.ts";
+import { PROJECT_STATUS } from "../../constant/index.ts";
+import { useLazyGetAllUsersQuery } from "../../redux/features/authApi.ts";
 import PaginatedDropdown from "../dropdown/PaginatedDropdown.tsx";
-import {FiX} from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 
 const statusOptions = [
   { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
@@ -198,42 +198,41 @@ const TaskDetailsView: React.FC<{
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Main Task Details */}
-      <div className="col-span-2 space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      <div className="md:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <h4 className="text-lg font-bold text-primary mb-2">Title</h4>
+            <h4 className="text-lg font-bold text-text mb-2">Title</h4>
             <p className="text-text">{task.title}</p>
           </div>
           <div>
-            <h4 className="text-lg font-bold text-primary mb-2">Description</h4>
-            <p className="text-text">{task.description}</p>
+            <h4 className="text-lg font-bold text-text mb-2">Description</h4>
+            <div
+              className="text-text text-sm"
+              dangerouslySetInnerHTML={{ __html: task.description }}
+            />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <h4 className="text-lg font-bold text-primary mb-2">Status</h4>
-            <span className="px-4 py-2 bg-primary text-text rounded">
-              {task.status}
-            </span>
-            <div className="flex items-center mt-2">
+            <h4 className="text-lg font-bold text-text mb-2">Status</h4>
+            <span className="px-4 py-2 bg-hover text-text rounded">{task.status}</span>
+            <div className="flex flex-wrap items-center mt-2 gap-2">
               {isMovingStatus ? (
-                <span className="text-gray-500 italic">Moving...</span>
+                <span className="text-text italic">Moving...</span>
               ) : (
                 <>
                   <button
                     onClick={() => updateStatus(getPreviousStatus(task.status), false)}
-                    className="py-2 text-sm font-medium text-gray-700 underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="py-2 text-sm font-medium text-text underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isMovingStatus}
-                    aria-label="Move task to the previous status"
                   >
                     Move Back
                   </button>
-
                   <button
                     onClick={() => updateStatus(getNextStatus(task.status), true)}
-                    className="p-2 text-sm font-medium text-gray-700 underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="py-2 text-sm font-medium text-text underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isMovingStatus}
-                    aria-label="Move task to the next status"
                   >
                     Move Forward
                   </button>
@@ -242,18 +241,16 @@ const TaskDetailsView: React.FC<{
             </div>
           </div>
           <div>
-            <h4 className="text-lg font-bold text-primary mb-2">Created At</h4>
-            <p>
-              {task?.createdAt ? formatDate(task?.createdAt) : "--"}
-            </p>
+            <h4 className="text-lg font-bold text-text mb-2">Created At</h4>
+            <p>{task?.createdAt ? formatDate(task?.createdAt) : "--"}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <h4 className="text-lg font-bold text-primary mb-2">Attachments</h4>
+            <h4 className="text-lg font-bold text-text mb-2">Attachments</h4>
             <ul className="space-y-2">
-              {task.files?.map((file: { name: string; type: string; url: string }, index: number) => (
+              {task.files?.map((file, index) => (
                 <li key={index} className="flex items-center space-x-2">
                   {renderFileIcon(file.type)}
                   <a
@@ -268,25 +265,22 @@ const TaskDetailsView: React.FC<{
               ))}
             </ul>
           </div>
-          {
-            filteroutWhoCreatedIssue && (
-              <div>
-                <h4 className="text-lg font-bold text-primary mb-2">Created By</h4>
-                <p>{filteroutWhoCreatedIssue?.user?.displayName}</p>
-              </div>
-            )
-          }
+          {filteroutWhoCreatedIssue && (
+            <div>
+              <h4 className="text-lg font-bold text-text mb-2">Created By</h4>
+              <p>{filteroutWhoCreatedIssue?.user?.displayName}</p>
+            </div>
+          )}
         </div>
+
         <div>
-            <h4 className="text-lg font-bold text-primary mb-2">Project Name</h4>
-            <p>
-              {task?.project?.title}
-            </p>
-          </div>
-        <div className="grid grid-cols-2 gap-4">
-          {/* User Assignment Dropdown */}
+          <h4 className="text-lg font-bold text-text mb-2">Project Name</h4>
+          <p className="text-text">{task?.project?.title}</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="mb-4">
-            <label className="text-lg font-bold text-primary mb-2">Assign Issue to users:</label>
+            <label className="font-bold text-text mb-2 block">Assign Issue to users:</label>
             <PaginatedDropdown
               fetchData={fetchUsers}
               renderItem={(item) => <span>{item.label}</span>}
@@ -295,7 +289,6 @@ const TaskDetailsView: React.FC<{
             />
           </div>
 
-          {/* Assigned Users Section */}
           {selectedUsers.length > 0 && (
             <div>
               <p className="text-sm font-medium text-text mb-2">Assigned Users:</p>
@@ -303,37 +296,29 @@ const TaskDetailsView: React.FC<{
                 {selectedUsers.map((user) => (
                   <div
                     key={user.value}
-                    className="flex items-center  px-3 py-1 rounded-full text-sm text-text border border-text transition"
+                    className="flex items-center px-3 py-1 rounded-full text-sm text-text border border-text"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemoveUser(user.value);
                     }}
                   >
                     {user.label}
-                    <FiX
-                      className="ml-2 text-red-500 cursor-pointer hover:text-red-700"
-                    />
+                    <FiX className="ml-2 text-red-500 cursor-pointer hover:text-red-700" />
                   </div>
                 ))}
               </div>
             </div>
           )}
         </div>
-        <div className="flex justify-end space-x-4 mt-6">
-          {!isArchived && (
-            <Button
-              text="Edit"
-              onClick={onEdit}
-              fullWidth={false}
-              className="bg-primary text-white"
-            />
-          )}
+
+        <div className="flex flex-wrap justify-end gap-4 mt-6">
+          {!isArchived && <Button text="Edit" onClick={onEdit} fullWidth={false} />}
           {role !== ROLES.WORKER && !isArchived && (
             <Button
               text="Delete"
               onClick={() => setIsDeleteModalOpen(true)}
               fullWidth={false}
-              preview={"danger"}
+              preview="danger"
             />
           )}
         </div>
@@ -350,10 +335,10 @@ const TaskDetailsView: React.FC<{
             </p>
             <div className="flex justify-end mt-6 space-x-4">
               <Button
-                text={"Delete"}
+                text="Delete"
                 onClick={handleDelete}
                 fullWidth={false}
-                preview={"danger"}
+                preview="danger"
                 isSubmitting={isDeleting}
               />
             </div>
@@ -361,14 +346,14 @@ const TaskDetailsView: React.FC<{
         )}
       </div>
 
-      {/* Compact Latest Activity */}
-      <div className="col-span-1">
-        <h4 className="text-lg font-bold text-primary mb-4">Latest Activity</h4>
+      {/* Latest Activity */}
+      <div className="space-y-2 md:col-span-1">
+        <h4 className="text-lg font-bold text-text mb-2">Latest Activity</h4>
         {isActivityLoading ? (
           <p className="text-text">Loading latest activity...</p>
         ) : latestActivity?.data?.history?.length > 0 ? (
           <div className="space-y-2 max-h-64 overflow-auto">
-            {latestActivity.data.history.map((activity: any) => (
+            {latestActivity.data.history.map((activity:any) => (
               <div key={activity.id} className="bg-backgroundShade1 p-2 rounded-md">
                 <p className="text-xs text-text font-semibold truncate">
                   {activity.user.displayName}
@@ -392,17 +377,9 @@ const TaskDetailsView: React.FC<{
         ) : (
           <p className="text-text">No recent activity.</p>
         )}
-        {/*<div className="mt-4">*/}
-        {/*  <span className="underline cursor-pointer" onClick={() => {*/}
-        {/*    if(setActiveTab && setIssueId) {*/}
-        {/*    setActiveTab('activity');*/}
-        {/*    setIssueId(task.id);*/}
-        {/*    }*/}
-
-        {/*  }}>See all</span>*/}
-        {/*</div>*/}
       </div>
     </div>
+
   );
 };
 

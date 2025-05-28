@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {format, parseISO} from "date-fns";
-import {useGetProjectActiveLogsQuery} from "../../../redux/features/projectsApi";
-import {parseNewValueToList} from "../../../utils";
+import React, { useEffect, useState } from "react";
+import { format, parseISO } from "date-fns";
+import { useGetProjectActiveLogsQuery } from "../../../redux/features/projectsApi";
+import { parseNewValueToList } from "../../../utils";
 import SelectField from "../../../components/form/SelectField";
 
 const Activity = ({ projectId, issues, issueId }: any) => {
@@ -62,7 +62,7 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                         label: issue.title,
                         value: issue.id,
                     }))]}
-                    value={selectedIssue} 
+                    value={selectedIssue}
                     onChange={(option) => {
                         setSelectedIssue(option);
                         setPage(1); // Reset to the first page when selecting a new issue
@@ -86,10 +86,10 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                         return (
                             <div
                                 key={log.id}
-                                className="p-4 bg-backgroundShade1 rounded-md border border-border"
+                                className="p-4 bg-backgroundShade2 text-textDark rounded-md border border-border"
                             >
-                                <p className="text-sm text-text">
-                                    <strong className="text-text">{log.user.displayName}</strong>{" "}
+                                <p className="text-sm">
+                                    <strong className="">{log.user.displayName}</strong>{" "}
                                     {
                                         log?.fieldName !== "Issue Created" ? (
                                             <>
@@ -104,25 +104,26 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                                 {
                                     log?.fieldName === "Issue Created" ? (
                                         <>
-                                            <ul className="list-disc ml-6 text-sm text-text">
+                                            <ul className="list-disc ml-6 text-sm">
                                                 {parseNewValueToList(log.newValue).map(({ key, value }, index) => (
                                                     <li key={index}>
-                                                        <strong>{key}:</strong> {value}
+                                                        <strong>{key}:</strong> {value === null || value === undefined || value === '' ? 'N/A' : value}
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <p className="text-xs text-text">
+
+                                            <p className="text-xs">
                                                 {format(new Date(log.createdAt), "PPPpp")}
                                             </p>
                                         </>
                                     ) : (
                                         <>
-                                            <p className="text-sm text-text">
+                                            <p className="text-sm">
                                                 From:{" "}
                                                 <span className="italic text-pending">{formattedOldValue}</span>{" "}
                                                 To: <span className="italic text-success">{formattedNewValue}</span>
                                             </p>
-                                            <p className="text-xs text-text">
+                                            <p className="text-xs">
                                                 {format(new Date(log.createdAt), "PPPpp")}
                                             </p>
                                         </>

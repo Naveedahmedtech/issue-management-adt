@@ -25,10 +25,10 @@ const Column: React.FC<any> = ({ column, refetch, isArchived, projectId, setActi
 
 
     return (
-        <div className="bg-backgroundShade1 rounded-md shadow-md p-4 flex-grow max-w-[450px]">
+        <div className="bg-backgroundShade2 rounded-md shadow-md p-4 flex-grow max-w-[450px]">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-text mr-2">{column.name}</h3>
-                <FiFolder className="text-border" />
+                <h3 className="text-lg font-semibold text-textDark mr-2">{column.name}</h3>
+                <FiFolder className="text-textDark" />
             </div>
             <Droppable droppableId={column.id}>
                 {(provided) => (

@@ -33,13 +33,13 @@ const ChecklistUI = ({
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
     return (
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 text-textDark bg-backgroundShade2">
             {templateData.data.length === 0 ? (
-                <p className="text-sm text-textSecondary italic">No templates available</p>
+                <p className="text-sm  italic">No templates available</p>
             ) : (
                 <>
                     <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-base font-semibold text-text">Checklist Templates</h2>
+                        <h2 className="text-base font-semibold ">Checklist Templates</h2>
                         <button
                             onClick={() => setShowAddModal(true)}
                             className="flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition"
@@ -58,8 +58,8 @@ const ChecklistUI = ({
                                         key={entry.id}
                                         onClick={() => setSelectedEntry(entry)}
                                         className={`w-full text-left px-3 py-2 rounded-md text-sm ${entry.id === selectedEntry?.id
-                                            ? "bg-primary text-white"
-                                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                            ? "bg-backgroundShade1 text-text"
+                                            : "bg-background text-textDark hover:bg-backgroundShade2"
                                             }`}
                                     >
                                         {entry.template.name}
@@ -71,7 +71,7 @@ const ChecklistUI = ({
 
                         <main className="lg:col-span-3 space-y-3">
                             {loadingItems ? (
-                                <p className="text-sm text-textSecondary">Loading items...</p>
+                                <p className="text-sm">Loading items...</p>
                             ) : (
                                 checklistData.data.items.map((item: any) => {
                                     const isChecked = responses[item.id]?.answer === true;
@@ -169,23 +169,31 @@ const ChecklistUI = ({
                     onClose={() => setShowAddModal(false)}
                     title="Add Checklist Item"
                 >
-                    <input
-                        type="text"
-                        value={newQuestion}
-                        onChange={(e) => setNewQuestion(e.target.value)}
-                        placeholder="Enter checklist item..."
-                        className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                    />
-                    <div className="flex justify-end mt-4 space-x-2">
-                        <Button
-                            text="Add"
-                            onClick={handleAddItem}
-                            fullWidth={false}
-                            isSubmitting={isAppendingLoading}
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault(); 
+                            handleAddItem();   
+                        }}
+                    >
+                        <input
+                            type="text"
+                            value={newQuestion}
+                            onChange={(e) => setNewQuestion(e.target.value)}
+                            placeholder="Enter checklist item..."
+                            className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
                         />
-
-                    </div>
+                        <div className="flex justify-end mt-4 space-x-2">
+                            <Button
+                                text="Add"
+                                onClick={handleAddItem}
+                                fullWidth={false}
+                                isSubmitting={isAppendingLoading}
+                                type="submit"
+                            />
+                        </div>
+                    </form>
                 </ModalContainer>
+
             )}
             {deleteItemId && (
                 <ModalContainer
@@ -193,7 +201,7 @@ const ChecklistUI = ({
                     onClose={() => setDeleteItemId(null)}
                     title="Confirm Delete"
                 >
-                    <p className="text-sm text-gray-700">Are you sure you want to delete this checklist item?</p>
+                    <p className="text-sm text-text">Are you sure you want to delete this checklist item?</p>
                     <div className="flex justify-end mt-4 space-x-2">
                         <Button
                             text="Cancel"

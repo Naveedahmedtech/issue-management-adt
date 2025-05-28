@@ -137,9 +137,9 @@ const UserManagement: React.FC = () => {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 text-textDark">
             <div className="flex flex-wrap gap-x-10 justify-between items-center mb-4">
-                <h1 className="text-xl font-bold text-text">User Management</h1>
+                <h1 className="text-xl font-bold">User Management</h1>
                 <div className="flex justify-center items-center space-x-4">
                     <SelectField
                         label=""

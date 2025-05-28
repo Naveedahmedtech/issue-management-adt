@@ -9,13 +9,13 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, color, progress }) => {
     return (
-        <div className="p-4 rounded-md shadow-md  text-text">
+        <div className="p-4 rounded-md shadow-md bg-backgroundShade2 text-textDark">
             <h3 className="text-lg font-semibold mb-2">{title}</h3>
             <div className="text-2xl font-bold" style={{ color }}>
                 {value}
             </div>
             {progress !== undefined && (
-                <div className="w-full bg-border rounded h-2 mt-2 overflow-hidden">
+                <div className="w-full bg-backgroundShade2 rounded h-2 mt-2 overflow-hidden">
                     <div
                         className="h-full"
                         style={{

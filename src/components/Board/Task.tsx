@@ -90,19 +90,19 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick, refetch }) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="bg-backgroundShade1 p-5 my-2 rounded-md shadow hover:shadow-lg transition-all cursor-pointer"
+          className="bg-backgroundShade2 p-5 my-2 text-textDark rounded-md shadow hover:shadow-lg transition-all cursor-pointer"
           onClick={() => onClick(task)}
         >
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <h4 className="font-semibold text-lg text-text truncate">{task.title}</h4>
+            <h4 className="font-semibold text-lg truncate">{task.title}</h4>
             <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${STATUS_COLORS[task.status] || STATUS_COLORS.Default}`}>
               {task.status}
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-text text-sm mb-3 line-clamp-2">{task.description || "No description available."}</p>
+          <p className="text-sm mb-3 line-clamp-2">{task.description || "No description available."}</p>
 
           {/* Task Details */}
           <div className="text-xs text-text-muted border-t border-gray-300 pt-3 mb-3 space-y-1">
@@ -113,7 +113,7 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick, refetch }) => {
 
           {/* User Assignment Dropdown */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-text mb-2">Assign User:</label>
+            <label className="block text-sm font-medium mb-2">Assign User:</label>
             <PaginatedDropdown
               fetchData={fetchUsers}
               renderItem={(item) => <span>{item.label}</span>}
@@ -125,12 +125,12 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick, refetch }) => {
           {/* Assigned Users Section */}
           {selectedUsers.length > 0 && (
             <div>
-              <p className="text-sm font-medium text-text mb-2">Assigned Users:</p>
+              <p className="text-sm font-medium mb-2">Assigned Users:</p>
               <div className="flex flex-wrap gap-2">
                 {selectedUsers.map((user) => (
                   <div
                     key={user.value}
-                    className="flex items-center  px-3 py-1 rounded-full text-sm text-text border border-text transition"
+                    className="flex items-center  px-3 py-1 rounded-full text-sm border border-text transition"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemoveUser(user.value);

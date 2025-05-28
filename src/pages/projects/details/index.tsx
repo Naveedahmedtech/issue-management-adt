@@ -318,6 +318,7 @@ const ProjectDetails = () => {
             setFiles([]);
             refetchProjectFiles();
             setIsUploadModalOpen(false);
+            setUploadToOrder(false)
             setActiveTab('documents')
         } catch (error: any) {
             console.error("Failed to upload files:", error);
@@ -395,6 +396,7 @@ const ProjectDetails = () => {
             case "checklist":
                 return <Checklist
                     projectId={projectId}
+                    isArchived={isArchived}
                 />;
             case "info":
                 return <ProjectInfo projectData={projectData?.data} refetch={refetchProjectData} />;
@@ -448,13 +450,13 @@ const ProjectDetails = () => {
         rounded-lg shadow-sm
       "
                     >
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex flex-wrap items-center justify-between mb-1">
                             <div className="flex items-center space-x-1">
                                 {/* Display the commenter’s name */}
-                                <span className="text-[10px] font-semibold bg-primary text-textHover px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] font-semibold bg-primary text-text px-1.5 py-0.5 rounded">
                                     {latestCommentData?.data.user?.displayName ?? 'Anonymous'}
                                 </span>
-                                <h4 className="text-sm text-text font-medium">Latest Comment</h4>
+                                <h4 className="text-sm text-textDark font-medium">Latest Comment</h4>
                             </div>
                             <span className="text-xs text-textSecondary">
                                 {latestCommentData?.data?.createdAt && format(
@@ -463,7 +465,7 @@ const ProjectDetails = () => {
                                 )}
                             </span>
                         </div>
-                        <p className="text-sm text-text leading-snug">
+                        <p className="text-sm text-textDark leading-snug">
                             {latestCommentData?.data?.message}
                         </p>
                     </div>
@@ -478,22 +480,22 @@ const ProjectDetails = () => {
 
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="p-2 bg-primary text-white rounded-md"
+                        className="p-2 bg-primary text-text rounded-md"
                     >
                         Upload
                     </button>
                     <button
                         onClick={() => setIsOpenComments(true)}
-                        className="p-2 bg-primary text-white rounded-md"
+                        className="p-2 bg-primary text-text rounded-md"
                     >
                         Comments
                     </button>
                     <button
                         onClick={() => setIsDrawerOpen(true)}
-                        className="p-2 bg-primary text-white rounded-md"
+                        className="p-2 bg-primary text-text rounded-md"
                     >
                         Activity
                     </button>
@@ -508,13 +510,16 @@ const ProjectDetails = () => {
                         isOpenComments &&
                         <Drawer isOpen={isOpenComments} onClose={() => setIsOpenComments(false)} width="800px"
                             title={`Comments (${commentData?.data?.total ?? commentData?.data?.comments.length}) `}>
-                            <Comments projectId={projectId} comments={commentData?.data?.comments} page={commentPage} setPage={setCommentPage} totalPages={commentData?.data?.totalPages} total={commentData?.data?.total} isLoading={isLoadingComments} />
+                            {
+                                !isArchived &&
+                                <Comments projectId={projectId} comments={commentData?.data?.comments} page={commentPage} totalPages={commentData?.data?.totalPages} setPage={setCommentPage} isLoading={isLoadingComments} total={commentData?.data?.total} />
+                            }
                         </Drawer>
                     }
                     {/* Refetch (Refresh) Button */}
                     <button
                         onClick={refetchData} // Function to refetch data
-                        className="inline-flex justify-center items-center rounded-md border border-border bg-background py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                        className="inline-flex justify-center items-center rounded-md border border-border bg-backgroundShade1 py-2 px-3 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                         title="Refresh"
                     >
                         <FiRefreshCw className="text-xl" />
@@ -524,7 +529,7 @@ const ProjectDetails = () => {
                         {!isArchived ? (
                             <button
                                 onClick={() => setDropdownOpen((prev) => !prev)}
-                                className="inline-flex justify-center w-full rounded-md border border-border bg-background py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
+                                className="inline-flex justify-center w-full rounded-md border border-border bg-backgroundShade1 py-2 px-4 text-sm font-medium text-text hover:bg-backgroundShade1 focus:outline-none"
                             >
                                 <BsThreeDotsVertical className="text-xl" />
                             </button>
@@ -621,7 +626,8 @@ const ProjectDetails = () => {
                 <FileUpload
                     label="Upload Files (PDFs or Excel)"
                     onChange={handleFileUpload}
-                    accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    // accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    accept=".pdf, .xls, .xlsx, .png, image/png"
                     className="mb-4"
                 />
                 <div className="flex justify-end mt-6 space-x-4">

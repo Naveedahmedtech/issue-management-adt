@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaBuilding, FaCalendarAlt, FaRegClock, FaUser } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
+import { FiInfo, FiX } from "react-icons/fi";
 import { format } from "date-fns";
 import { useAssignProjectMutation, useUnassignProjectMutation } from "../../../redux/features/projectsApi";
 import { ProjectInfoProps } from "../../../types/types";
@@ -11,11 +11,13 @@ import { useAuth } from "../../../hooks/useAuth";
 import { ROLES } from "../../../constant/ROLES.ts";
 import Button from "../../../components/buttons/Button.tsx";
 import { toast } from "react-toastify";
+import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
-    const [showFullDescription, setShowFullDescription] = useState(false);
     const [selectedUser, setSelectedUser] = useState<{ value: string; label: string } | null>(null);
     const [selectedUsers, setSelectedUsers] = useState<{ value: string; label: string }[]>([]);
+    const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+
 
     const { userData } = useAuth();
     const { role } = userData;
@@ -45,7 +47,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
             refetch()
             setSelectedUsers((prev) => [...prev, selectedUser]);
             setSelectedUser(null);
-        } catch (error:any) {
+        } catch (error: any) {
             console.error("Error assigning project:", error);
             toast.error(error?.data?.error?.message || "Failed to update project. Please try again.");
 
@@ -98,35 +100,35 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
         : "N/A";
 
     return (
-        <div className="relative bg-backgroundShade1 px-6 py-5 rounded-lg shadow-sm mb-6">
+        <div className="relative bg-backgroundShade2 text-textDark px-6 py-5 rounded-lg shadow-md mb-6">
             {/* Badge and Title: Professional Inline Pill Style */}
-            <div className="flex items-center mb-4">
-                {projectData?.isOrder && (
-                    <span
-                        className="bg-primary text-background px-2 py-0.5 text-xs font-semibold uppercase rounded mr-3">
-                        Order
-                    </span>
-                )}
-                <h3 className="text-xl font-bold text-primary truncate">{projectData?.title}</h3>
-            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+                <div className="flex items-center gap-3">
+                    {projectData?.isOrder && (
+                        <span className="bg-primary text-text px-2 py-0.5 text-xs font-semibold uppercase rounded ">
+                            Order
+                        </span>
+                    )}
+                    <h3 className="text-xl font-bold break-words">
+                        {projectData?.title}
+                    </h3>
+                </div>
 
-            {/* Description */}
-            <div className="text-sm text-textLight mb-4">
-                {showFullDescription
-                    ? projectData?.description
-                    : projectData?.description?.slice(0, 100)}
-                {projectData?.description && projectData?.description.length > 100 && (
+                {projectData?.description && (
                     <button
-                        onClick={() => setShowFullDescription(!showFullDescription)}
-                        className="ml-2 text-primary text-xs font-medium hover:underline"
+                        onClick={() => setShowDescriptionModal(true)}
+                        className="flex items-center text-sm text-primary hover:underline gap-1 sm:ml-auto mt-2 sm:mt-0"
                     >
-                        {showFullDescription ? "Show Less" : "Show More"}
+                        <FiInfo className="w-4 h-4" />
+                        View Description
                     </button>
                 )}
+
             </div>
 
+
             {/* Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm text-text mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm text-text mb-4 text-textDark">
                 {/* Status */}
                 <div className="flex items-center space-x-2">
                     <FaRegClock className="text-primary" />
@@ -179,6 +181,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
                         isSubmitting={isLoading}
                         type={'button'}
                         fullWidth={false}
+                        className="text-text"
                     />
                 </div>
             )}
@@ -186,12 +189,12 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
             {/* Assigned Users List */}
             {selectedUsers.length > 0 && (
                 <div>
-                    <p className="text-sm font-medium text-text mb-2">Assigned Users:</p>
+                    <p className="text-sm font-medium text-textDark mb-2">Assigned Users:</p>
                     <div className="flex flex-wrap gap-2">
                         {selectedUsers.map(user => (
                             <div
                                 key={user.value}
-                                className="flex items-center px-3 py-1 rounded-full text-sm border border-text"
+                                className="flex items-center px-3 py-1 rounded-full text-sm border border-border"
                             >
                                 {user.label}
                                 <FiX
@@ -203,6 +206,22 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
                     </div>
                 </div>
             )}
+            {showDescriptionModal && (
+                <ModalContainer
+                    isOpen={showDescriptionModal}
+                    onClose={() => setShowDescriptionModal(false)}
+                    title="Project Description"
+                >
+                    <div className="prose prose-sm max-w-none text-text">
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: projectData?.description || "<p>No description available.</p>",
+                            }}
+                        />
+                    </div>
+                </ModalContainer>
+            )}
+
         </div>
 
     );

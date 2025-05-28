@@ -79,11 +79,11 @@ export const orderDocumentColumns = (
         label: "Signature",
         render: (row: DocumentDataRow) =>
             row.isSigned ? (
-                <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold bg-success`}>
+                <span className={`px-3 py-1 rounded-full text-text text-xs font-semibold bg-success`}>
               Signed
             </span>
-            ) :   <span className={`px-3 py-1 rounded-full text-text text-xs font-semibold bg-backgroundShade2`}>
-              No Signed
+            ) :   <span className={`px-3 py-1 rounded-full text-textDark text-xs font-semibold bg-background`}>
+              Unsigned
             </span>
     },
     // {

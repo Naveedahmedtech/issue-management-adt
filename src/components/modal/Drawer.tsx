@@ -21,13 +21,13 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children, width = "500
 
             {/* Drawer Panel */}
             <div
-                className={`fixed top-0 right-0 h-full bg-backgroundShade1 shadow-lg transform transition-transform z-50 overflow-auto ${isOpen ? "translate-x-0" : "translate-x-full"
+                className={`fixed top-0 right-0 h-full bg-backgroundShade2 shadow-lg transform transition-transform z-50 overflow-auto ${isOpen ? "translate-x-0" : "translate-x-full"
                     } border-l border-border w-[${width}]`}
             >
                 {/* Header */}
                 <div className="p-4 flex justify-between items-center border-b border-border bg-backgroundShade2">
-                    <h3 className="text-lg font-bold text-primary">{title}</h3>
-                    <button onClick={onClose} className="text-textSecondary hover:text-primary">
+                    <h3 className="text-lg font-bold text-textDark">{title}</h3>
+                    <button onClick={onClose} className="text-textDark hover:text-primary">
                         <FaTimes className="text-xl" />
                     </button>
                 </div>

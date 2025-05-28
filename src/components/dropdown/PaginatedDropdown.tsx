@@ -93,7 +93,7 @@ export default function PaginatedDropdown<T>({
     return (
         <div className="relative max-w-64" ref={dropdownRef}>
             <button
-                className="w-full flex justify-between items-center border border-border p-3 rounded-lg bg-background shadow-md text-text transition-all"
+                className="w-full text-textDark flex justify-between items-center border border-border p-2 rounded-lg bg-backgroundShade2 shadow-md  transition-all"
                 type="button"
                 onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
@@ -102,14 +102,14 @@ export default function PaginatedDropdown<T>({
             >
                 {selectedItem ? renderItem(selectedItem) : placeholder}
                 {loading ? (
-                    <AiOutlineReload className="animate-spin text-textSecondary" />
+                    <AiOutlineReload className="animate-spin text-textDark" />
                 ) : (
-                    <AiOutlineDown className="text-textSecondary" />
+                    <AiOutlineDown className="text-textDark" />
                 )}
             </button>
 
             {open && (
-                <div className="absolute mt-2 w-full max-h-60 overflow-auto border border-border rounded-lg shadow-lg bg-backgroundShade1 text-textSecondary transition-all animate-fadeIn z-50">
+                <div className="absolute mt-2 w-full max-h-60 overflow-auto border border-border rounded-lg shadow-lg bg-backgroundShade2 text-textDark transition-all animate-fadeIn z-50">
                     <ul>
                         {loading && items.length === 0 ? (
                             <div className="p-3 space-y-2">
@@ -121,7 +121,7 @@ export default function PaginatedDropdown<T>({
                             items.map((item, index) => (
                                 <li
                                     key={index}
-                                    className="p-3 text-text hover:bg-backgroundShade2 cursor-pointer transition-all"
+                                    className="p-3 text-textDark hover:bg-background cursor-pointer transition-all"
                                     onClick={(e) => handleSelect(e, item)}
                                 >
                                     {renderItem(item)}

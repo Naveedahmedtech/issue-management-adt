@@ -26,7 +26,7 @@ const DocumentsCardList: React.FC<DocumentsCardListProps> = ({ data, columns }) 
             {data.map((row, idx) => (
                 <div
                     key={row.id || idx}
-                    className="bg-backgroundShade2 border border-border rounded-xl shadow-sm p-5 space-y-2"
+                    className="bg-backgroundShade1 border border-border rounded-xl shadow-sm p-5 space-y-2"
                 >
                     {columns.map((col, index) => {
                         const isLast = index === columns.length - 1;

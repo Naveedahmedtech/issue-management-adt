@@ -41,6 +41,7 @@ const CreateCompanyForm = ({ onClose, refetch }: CreateCompanyFormProps) => {
                         name="name"
                         type="text"
                         placeholder="Enter company name"
+                        labelColor="text-text"
                     />
                     <Button
                         type="submit"

@@ -15,7 +15,7 @@ interface ISelectFieldProps {
     onChange: (option: Option | null) => void;
 }
 
-const SelectField: React.FC<ISelectFieldProps> = ({ label, name, value, options, loadOptions, onChange }) => {
+const SelectField: React.FC<ISelectFieldProps> = ({ label, name, value, options, onChange }) => {
     const handleChange = (selectedOption: Option | null) => {
         onChange(selectedOption);
     };
@@ -27,7 +27,7 @@ const SelectField: React.FC<ISelectFieldProps> = ({ label, name, value, options,
 
     return (
         <div>
-            <label htmlFor={name} className="block text-sm font-medium text-text mb-1">
+            <label htmlFor={name} className="block text-sm font-medium text-textDark mb-1">
                 {label}
             </label>
             <Select
@@ -43,18 +43,27 @@ const SelectField: React.FC<ISelectFieldProps> = ({ label, name, value, options,
                 styles={{
                     control: (base) => ({
                         ...base,
-                        borderColor: 'var(--color-primary)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        '&:hover': { borderColor: 'var(--color-primary)' },
-                        minWidth: "150px"
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
                     }),
                     menu: (base) => ({
                         ...base,
                         zIndex: 9999,
-                        backgroundColor: 'var(--color-background)',
+                        backgroundColor: 'var(--color-background-shade-2)',
                         maxHeight: 200,
                         overflowY: 'auto'
+                    }),
+                    option: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        color: 'var(--color-text-dark)',
+                        cursor: 'pointer',
+                        ':hover': {
+                            backgroundColor: 'var(--color-background)',
+                            color: 'var(--color-text-dark)',
+                        },
                     }),
                 }}
             />
