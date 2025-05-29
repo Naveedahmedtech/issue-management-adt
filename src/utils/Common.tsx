@@ -73,7 +73,7 @@ export const orderDocumentColumns = (
     {id: "fileName", label: "File Name", render: (row: DocumentDataRow) => row.fileName},
     {id: "date", label: "Created At", render: (row: DocumentDataRow) => row.date},
     {id: "time", label: "Time", render: (row: DocumentDataRow) => row.time},
-    {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
+    // {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
     {
         id: "signature",
         label: "Signature",

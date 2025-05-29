@@ -95,14 +95,15 @@ const FormikSelect: React.FC<FormikSelectProps> = ({
                         backgroundColor: 'var(--color-background)',
                         borderRadius: '8px',
                         cursor: 'pointer',
+                        color: 'var(--color-text-dark)',
                     }),
                     multiValueLabel: (provided) => ({
                         ...provided,
-                        color: 'var(--text)',
+                        color: 'var(--color-text-dark)',
                     }),
                     multiValueRemove: (provided) => ({
                         ...provided,
-                        color: 'var(--color-text)',
+                        color: 'var(--color-text-dark)',
                         ':hover': {
                             backgroundColor: 'var(--color-background)',
                             color: 'var(--color-text)',

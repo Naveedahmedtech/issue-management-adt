@@ -22,11 +22,11 @@ const DocumentsCardList: React.FC<DocumentsCardListProps> = ({ data, columns }) 
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 text-textDark">
             {data.map((row, idx) => (
                 <div
                     key={row.id || idx}
-                    className="bg-backgroundShade1 border border-border rounded-xl shadow-sm p-5 space-y-2"
+                    className="bg-backgroundShade2 rounded-xl shadow-md p-5 space-y-2"
                 >
                     {columns.map((col, index) => {
                         const isLast = index === columns.length - 1;
@@ -46,7 +46,7 @@ const DocumentsCardList: React.FC<DocumentsCardListProps> = ({ data, columns }) 
                                 </div>
                                 <div
                                     className={`text-sm text-right ${
-                                        index === 0 ? 'text-primary font-bold text-base' : 'text-text'
+                                        index === 0 ? 'text-primary font-bold text-base' : 'text-textDark'
                                     }`}
                                 >
                                     {col.render(row)}

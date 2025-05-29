@@ -51,7 +51,7 @@ const Activity = ({ projectId, issues, issueId }: any) => {
     const { history, page: currentPage, totalPages } = data.data;
 
     return (
-        <div className=" rounded-lg shadow-md">
+        <div className=" rounded-lg shadow-md p-2">
             {/* <h3 className="text-lg font-bold text-primary mb-4">Activity Logs</h3> */}
 
             {/* Dropdown to select issue */}
@@ -141,13 +141,13 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                         onClick={handlePreviousPage}
                         disabled={page === 1}
                         className={`px-4 py-2 rounded-md   ${page === 1
-                            ? "bg-backgroundShade2 text-text cursor-not-allowed "
-                            : "bg-primary text-background border-2 border-primary hover:bg-transparent hover:text-primary"
+                            ? "bg-backgroundShade2 text-textSecondary cursor-not-allowed "
+                            : "bg-primary text-text border-2 border-primary hover:bg-transparent hover:text-primary"
                             }`}
                     >
                         Previous
                     </button>
-                    <span className="text-sm text-text">
+                    <span className="text-sm text-textDark">
                         Page {currentPage} of {totalPages}
                     </span>
                     <button
@@ -155,7 +155,7 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                         disabled={page === totalPages}
                         className={`px-4 py-2 rounded-md ${page === totalPages
                             ? "bg-backgroundShade2 text-text cursor-not-allowed"
-                            : "bg-primary text-background border-2 border-primary  hover:bg-transparent hover:text-primary"
+                            : "bg-primary text-text border-2 border-primary  hover:bg-transparent hover:text-primary"
                             }`}
                     >
                         Next

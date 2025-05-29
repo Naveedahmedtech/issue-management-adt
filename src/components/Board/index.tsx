@@ -121,11 +121,11 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
     };
 
 
-    if (isLoading) return (
-        <div className="flex justify-center items-center min-h-[200px]">
-            <div className="text-textDark text-lg font-semibold">Loading issues...</div>
-        </div>
-    );
+    // if (isLoading) return (
+    //     <div className="flex justify-center items-center min-h-[200px]">
+    //         <div className="text-textDark text-lg font-semibold">Loading issues...</div>
+    //     </div>
+    // );
 
     return (
         <div className="bg-backgroundShade2 min-h-screen">

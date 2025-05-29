@@ -72,8 +72,9 @@ const UserSelect: React.FC<UserSelectProps> = ({
                     multiValue: (provided) => ({
                         ...provided,
                         backgroundColor: 'var(--color-background-shade-1)',
-                        borderRadius: '8px',
+                        borderRadius: '6px',
                         cursor: 'pointer',
+                        color: 'var(--color-text)'
                     }),
                     multiValueLabel: (provided) => ({
                         ...provided,

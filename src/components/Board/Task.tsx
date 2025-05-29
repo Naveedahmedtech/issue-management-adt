@@ -96,7 +96,7 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick, refetch }) => {
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-semibold text-lg truncate">{task.title}</h4>
-            <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${STATUS_COLORS[task.status] || STATUS_COLORS.Default}`}>
+            <span className={`px-3 py-1 rounded-full text-text text-xs font-semibold ${STATUS_COLORS[task.status] || STATUS_COLORS.Default}`}>
               {task.status}
             </span>
           </div>

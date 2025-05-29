@@ -8,9 +8,10 @@ interface FileUploadProps {
     onChange: (files: File[]) => void;
     accept: string;
     className: string;
+    labelColor?: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ label, onChange, accept, className }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ label, onChange, accept, className, labelColor = "text-text" }) => {
     const [files, setFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +50,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, onChange, accept, classN
 
     return (
         <div className={clsx("mb-4", className)}>
-            <label className="block text-text mb-2 font-medium">{label}</label>
+            <label className={`block ${labelColor} mb-2 font-medium`}>{label}</label>
             <input
                 ref={fileInputRef}
                 type="file"

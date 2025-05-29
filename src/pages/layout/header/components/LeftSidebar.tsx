@@ -85,8 +85,8 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
                 >
                   {link.isDropdown ? (
                       <div className="flex items-center space-x-2 w-full">
-                        {link.Icon && <link.Icon className="text-lg" />}
-                        <span className="text-text text-lg">{link.text}</span>
+                        {link.Icon && <link.Icon className="text-base" />}
+                        <span className="text-text text-base">{link.text}</span>
                       </div>
                   ) : (
                       <Link
@@ -96,8 +96,8 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
                             if (!isLargeScreen) toggleSidebar();
                           }}
                       >
-                        {link.Icon && <link.Icon className="text-lg" />}
-                        <span className="text-text text-lg">{link.text}</span>
+                        {link.Icon && <link.Icon className="text-base" />}
+                        <span className="text-text text-base">{link.text}</span>
                       </Link>
                   )}
                   {link.isDropdown && (

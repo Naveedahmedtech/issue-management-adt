@@ -41,14 +41,14 @@ const LargeModal: React.FC<LargeModalProps> = ({
             {/* Modal content */}
             <div
                 ref={modalRef}
-                className="relative bg-backgroundShade1 p-6 rounded-lg shadow-lg w-full max-w-screen-xl max-h-screen overflow-auto transform scale-100"
+                className="relative bg-backgroundShade2 p-6 rounded-lg shadow-lg w-full max-w-screen-xl max-h-screen overflow-auto transform scale-100"
             >
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-text">{title}</h2>
+                    <h2 className="text-2xl font-bold text-textDark">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="text-text hover:text-red-600 transition-all"
+                        className="text-textDark hover:text-red-600 transition-all"
                     >
                         <AiOutlineCloseCircle className="w-8 h-8" />
                     </button>

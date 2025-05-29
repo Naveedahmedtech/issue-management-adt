@@ -5,7 +5,7 @@ interface DrawerProps {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
-    width?: string; // Optional: Custom width (default is 300px)
+    width?: string; 
     title: string; 
 }
 
@@ -21,8 +21,8 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children, width = "500
 
             {/* Drawer Panel */}
             <div
-                className={`fixed top-0 right-0 h-full bg-backgroundShade2 shadow-lg transform transition-transform z-50 overflow-auto ${isOpen ? "translate-x-0" : "translate-x-full"
-                    } border-l border-border w-[${width}]`}
+                className={`fixed top-0 right-0 h-full bg-backgroundShade2 max-w-[600px] shadow-lg transform transition-transform z-50 overflow-auto ${isOpen ? "translate-x-0" : "translate-x-full"
+                    } border-l border-border w-[${width}] min-w[${width}]`}
             >
                 {/* Header */}
                 <div className="p-4 flex justify-between items-center border-b border-border bg-backgroundShade2">

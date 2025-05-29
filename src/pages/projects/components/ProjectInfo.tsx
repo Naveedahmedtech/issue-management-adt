@@ -181,7 +181,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
                         isSubmitting={isLoading}
                         type={'button'}
                         fullWidth={false}
-                        className="text-text"
+                        className="text-text bg-backgroundShade1 border-backgroundShade1"
                     />
                 </div>
             )}
@@ -212,7 +212,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
                     onClose={() => setShowDescriptionModal(false)}
                     title="Project Description"
                 >
-                    <div className="prose prose-sm max-w-none text-text">
+                    <div className="prose prose-sm max-w-none text-text prose-headings:text-text  prose-strong:text-text">
                         <div
                             dangerouslySetInnerHTML={{
                                 __html: projectData?.description || "<p>No description available.</p>",

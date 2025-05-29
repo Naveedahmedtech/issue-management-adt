@@ -42,12 +42,14 @@ const CreateCompanyForm = ({ onClose, refetch }: CreateCompanyFormProps) => {
                         type="text"
                         placeholder="Enter company name"
                         labelColor="text-text"
+                        className="!bg-hover !text-text"
                     />
                     <Button
                         type="submit"
                         text="Create Company"
                         fullWidth={false}
                         isSubmitting={isLoading || isSubmitting}
+                        className="bg-primary hover:border-primary hover:!text-text"
                     />
                 </Form>
             )}

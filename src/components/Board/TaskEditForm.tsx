@@ -134,7 +134,7 @@ const TaskEditForm: React.FC<{
                         type="text"
                         value={values.title}
                         onChange={(e) => setFieldValue("title", e.target.value)}
-                        labelColor="text-text"
+                        inputClassName="text-textDark"
                     />
 
                     <InputField
@@ -143,8 +143,7 @@ const TaskEditForm: React.FC<{
                         type="textarea"
                         value={values.description}
                         onChange={(e) => setFieldValue("description", e.target.value)}
-                        labelColor="text-text"
-
+                        inputClassName="text-textDark"
                     />
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -153,7 +152,6 @@ const TaskEditForm: React.FC<{
                             options={statusOptions}
                             value={statusOptions.find((option) => option.value === values.status) || null}
                             onChange={(option) => setFieldValue("status", option?.value || "")}
-                            labelColor="text-text" 
                         />
                     </div>
 
@@ -162,11 +160,12 @@ const TaskEditForm: React.FC<{
                         onChange={(files) => setFieldValue("files", files)}
                         accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         className="w-full"
+                        labelColor="text-textDark"
                     />
 
                     {/* Sticky submit area for mobile usability */}
                     <div className="flex justify-end sm:justify-end space-x-4 sticky bottom-0  py-4 z-10 ">
-                        <Button text="Save Changes" type="submit" fullWidth={true} isSubmitting={isLoading} />
+                        <Button text="Save Changes" type="submit" fullWidth={false} isSubmitting={isLoading} />
                     </div>
                 </Form>
 

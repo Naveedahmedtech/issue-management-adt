@@ -24,7 +24,7 @@ import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import { useAuth } from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import { DocumentDataRow } from "../../../types/types.ts";
-import { ANGULAR_URL, BASE_URL } from "../../../constant/BASE_URL.ts";
+import {  BASE_URL } from "../../../constant/BASE_URL.ts";
 import Activity from "../components/Activity.tsx";
 import { FiRefreshCw } from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
@@ -148,14 +148,17 @@ const ProjectDetails = () => {
     }, [onBackReset]);
 
     useEffect(() => {
-        const handleMessage = (event: MessageEvent) => {
-            if (event.origin !== ANGULAR_URL) return;
-
-            if (event.data?.type === 'ISSUE_SAVE') {
+        const handleMessage = () => {
+            const wasIssueSaved = window.sessionStorage.getItem("ISSUE_SAVED") === "true";
+            const wasSignatureSaved = window.sessionStorage.getItem("SIGNATURE_SAVED") === "true";
+            if (wasIssueSaved) {
                 refetchIssues();
+                refetchProjectFiles();
+                window.sessionStorage.removeItem("ISSUE_SAVED");
             }
-            if (event.data?.type === 'SIGNATURE_SAVE') {
+            if (wasSignatureSaved) {
                 refetchProjectFiles()
+                window.sessionStorage.removeItem("SIGNATURE_SAVED");
             }
         };
 
@@ -483,25 +486,25 @@ const ProjectDetails = () => {
                 <div className="flex flex-wrap items-center gap-3">
                     <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="p-2 bg-primary text-text rounded-md"
+                        className="p-2 bg-backgroundShade1 text-text rounded-md"
                     >
                         Upload
                     </button>
                     <button
                         onClick={() => setIsOpenComments(true)}
-                        className="p-2 bg-primary text-text rounded-md"
+                        className="p-2 bg-backgroundShade1 text-text rounded-md"
                     >
                         Comments
                     </button>
                     <button
                         onClick={() => setIsDrawerOpen(true)}
-                        className="p-2 bg-primary text-text rounded-md"
+                        className="p-2 bg-backgroundShade1 text-text rounded-md"
                     >
                         Activity
                     </button>
                     {
                         isDrawerOpen &&
-                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="500px"
+                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="800px"
                             title={"Activity Logs"}>
                             <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />
                         </Drawer>
@@ -626,8 +629,7 @@ const ProjectDetails = () => {
                 <FileUpload
                     label="Upload Files (PDFs or Excel)"
                     onChange={handleFileUpload}
-                    // accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    accept=".pdf, .xls, .xlsx, .png, image/png"
+                    accept="application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     className="mb-4"
                 />
                 <div className="flex justify-end mt-6 space-x-4">

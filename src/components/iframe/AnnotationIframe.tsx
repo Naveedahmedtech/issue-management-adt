@@ -1,9 +1,9 @@
-import React, {useEffect, useRef} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {ANGULAR_URL, BASE_URL} from '../../constant/BASE_URL.ts';
-import {IAnnotationProps, Metadata} from "../../types/types.ts";
+import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ANGULAR_URL, BASE_URL } from '../../constant/BASE_URL.ts';
+import { IAnnotationProps, Metadata } from "../../types/types.ts";
 
-const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderId, isSigned}: IAnnotationProps) => {
+const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, orderId, isSigned }: IAnnotationProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const navigate = useNavigate();
 
@@ -33,13 +33,31 @@ const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderI
             }
 
             iframeRef.current.contentWindow.postMessage(
-                {type: 'view', payload: fileObj, metadata},
+                { type: 'view', payload: fileObj, metadata },
                 ANGULAR_URL
             );
 
             console.log("Sent file object via postMessage:", fileObj);
         }
     };
+
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== ANGULAR_URL) return;
+
+            if (event.data?.type === 'ISSUE_SAVE') {
+                console.log("Issue saved! ✅")
+                window.sessionStorage.setItem("ISSUE_SAVED", "true");
+            }
+            if (event.data?.type === 'SIGNATURE_SAVE') {
+                console.log("Signature saved! ✅")
+                window.sessionStorage.setItem("SIGNATURE_SAVED", "true");
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
 
     const handleIframeLoad = () => {
         sendFileToIframe();
@@ -59,7 +77,7 @@ const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderI
 
     const handleBack = () => {
         navigate(projectId ? `/projects/${projectId}` : `/projects/${orderId}`, {
-            state: {onBackReset: true}
+            state: { onBackReset: true }
         });
     }
 
@@ -67,7 +85,7 @@ const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderI
         <div className="relative w-full h-[100vh]">
             <button
                 onClick={handleBack}
-                className="sticky  top-0 left-0 m-4 px-4 py-2 bg-primary text-background font-semibold rounded hover:opacity-90 transition"
+                className="sticky  top-0 left-0 m-4 px-4 py-2 bg-primary text-text font-semibold rounded hover:opacity-90 transition"
             >
                 ← Back
             </button>
@@ -80,7 +98,7 @@ const AnnotationIframe = ({userId, filePath, fileId, projectId, username, orderI
                 <iframe
                     ref={iframeRef}
                     src={ANGULAR_URL}
-                    style={{width: '100%', height: '100%', border: 'none'}}
+                    style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Rasterex Viewer"
                     onLoad={handleIframeLoad}
                     id="rxview"

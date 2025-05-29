@@ -25,6 +25,13 @@ const statusOptions = [
   { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
 ];
 
+const STATUS_COLORS: Record<string, string> = {
+  "ACTIVE": "bg-todo text-text",
+  "ON GOING": "bg-pending text-text",
+  "COMPLETED": "bg-success text-text",
+  Default: "bg-todo text-text",
+};
+
 const getNextStatus = (currentStatus: any) => {
   const currentIndex = statusOptions.findIndex((status) => status.value === currentStatus);
   return statusOptions[currentIndex + 1]?.value || currentStatus;
@@ -47,8 +54,12 @@ const TaskDetailsView: React.FC<{
   setActiveTab: (tab: string) => void;
   setIssueId: (id: string) => void;
   refetchFiles: () => void;
-}> = ({ task, onEdit, onDelete, component, refetch, isArchived, projectId, refetchFiles, onClose }) => {
-  console.log("task:", task);
+}> = ({ task, onEdit, onDelete, component, refetch, isArchived, projectId, refetchFiles }) => {
+  const [localTask, setLocalTask] = useState<ITask>(task);
+
+
+  console.log('localTask', localTask)
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [selectedUsers, setSelectedUsers] = useState<{ value: string; label: string }[]>([]);
@@ -57,7 +68,9 @@ const TaskDetailsView: React.FC<{
   const [triggerGetUsers, { isFetching }] = useLazyGetAllUsersQuery();
   const [assignIssues] = useAssignIssuesMutation();
   const [removeAssignedUser] = useRemoveAssignedUserMutation();
-
+  useEffect(() => {
+    setLocalTask(task);
+  }, [task]);
   useEffect(() => {
     if (task.assignedUsers?.length > 0) {
       setSelectedUsers(
@@ -168,16 +181,10 @@ const TaskDetailsView: React.FC<{
       }
     ]
 
-    console.log("Formdata", formData.get("status"));
-    console.log("logbody", logBody)
-
     try {
       await updateIssue({ issueId: task.id, formData }).unwrap();
+      setLocalTask((prev) => ({ ...prev, status: newStatus })); 
       refetch();
-      if (refetchFiles) {
-        refetchFiles();
-      }
-      onClose();
       toast.success(`Status updated to "${newStatus}"`);
     } catch (error: any) {
       console.log("error", error)
@@ -196,66 +203,104 @@ const TaskDetailsView: React.FC<{
 
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Main Task Details */}
-      <div className="md:col-span-2 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-textDark">
+      {/* Task Details */}
+      <div className="md:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-lg font-bold text-text mb-2">Title</h4>
-            <p className="text-text">{task.title}</p>
+            <h4 className="text-base font-semibold mb-1">Title</h4>
+            <p className="text-sm">{task.title}</p>
           </div>
           <div>
-            <h4 className="text-lg font-bold text-text mb-2">Description</h4>
+            <h4 className="text-base font-semibold mb-1">Description</h4>
             <div
-              className="text-text text-sm"
+              className="text-sm leading-relaxed max-h-40 overflow-y-auto pr-2"
               dangerouslySetInnerHTML={{ __html: task.description }}
             />
           </div>
+
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-lg font-bold text-text mb-2">Status</h4>
-            <span className="px-4 py-2 bg-hover text-text rounded">{task.status}</span>
-            <div className="flex flex-wrap items-center mt-2 gap-2">
+            <label className="block text-sm font-semibold mb-2">Assign Users</label>
+            <PaginatedDropdown
+              fetchData={fetchUsers}
+              renderItem={(item) => <span>{item.label}</span>}
+              onSelect={handleUserSelect}
+              placeholder={isFetching ? "Loading..." : "Select a user"}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-2">Assigned To</label>
+            {selectedUsers.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {selectedUsers.map((user) => (
+                  <div
+                    key={user.value}
+                    className="flex items-center px-3 py-1 rounded-full text-sm border cursor-pointer hover:bg-hover"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveUser(user.value);
+                    }}
+                  >
+                    {user.label}
+                    <FiX className="ml-2 text-red-500 hover:text-red-700" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted italic">No users assigned</p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-base font-semibold mb-1">Status</h4>
+            <span className={`rounded-full text-xs font-semibold ${STATUS_COLORS[localTask.status.toUpperCase()] || STATUS_COLORS.Default} px-5 py-2`}>{localTask.status}</span>
+            <div className="flex gap-2 mt-3">
               {isMovingStatus ? (
-                <span className="text-text italic">Moving...</span>
+                <span className="italic text-sm">Updating status...</span>
               ) : (
                 <>
                   <button
-                    onClick={() => updateStatus(getPreviousStatus(task.status), false)}
-                    className="py-2 text-sm font-medium text-text underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => updateStatus(getPreviousStatus(localTask.status), false)}
+                    className="text-sm underline disabled:opacity-50"
                     disabled={isMovingStatus}
                   >
-                    Move Back
+                    Previous Status
                   </button>
                   <button
-                    onClick={() => updateStatus(getNextStatus(task.status), true)}
-                    className="py-2 text-sm font-medium text-text underline rounded-md transition hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => updateStatus(getNextStatus(localTask.status), true)}
+                    className="text-sm underline disabled:opacity-50"
                     disabled={isMovingStatus}
                   >
-                    Move Forward
+                    Next Status
                   </button>
                 </>
               )}
             </div>
           </div>
+
           <div>
-            <h4 className="text-lg font-bold text-text mb-2">Created At</h4>
-            <p>{task?.createdAt ? formatDate(task?.createdAt) : "--"}</p>
+            <h4 className="text-base font-semibold mb-1">Created</h4>
+            <p className="text-sm">{task?.createdAt ? formatDate(task.createdAt) : "—"}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-lg font-bold text-text mb-2">Attachments</h4>
+            <h4 className="text-base font-semibold mb-1">Attachments</h4>
             <ul className="space-y-2">
+              {task.files.length === 0 && "No attachments"}
               {task.files?.map((file, index) => (
-                <li key={index} className="flex items-center space-x-2">
+                <li key={index} className="flex items-center gap-2 text-sm">
                   {renderFileIcon(file.type)}
                   <a
-                    className="text-text hover:underline"
-                    href={`${BASE_URL}/${file?.url}`}
+                    className="hover:underline"
+                    href={`${BASE_URL}/${file.url}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -267,58 +312,25 @@ const TaskDetailsView: React.FC<{
           </div>
           {filteroutWhoCreatedIssue && (
             <div>
-              <h4 className="text-lg font-bold text-text mb-2">Created By</h4>
-              <p>{filteroutWhoCreatedIssue?.user?.displayName}</p>
+              <h4 className="text-base font-semibold mb-1">Created By</h4>
+              <p className="text-sm">{filteroutWhoCreatedIssue?.user?.displayName}</p>
             </div>
           )}
         </div>
 
         <div>
-          <h4 className="text-lg font-bold text-text mb-2">Project Name</h4>
-          <p className="text-text">{task?.project?.title}</p>
+          <h4 className="text-base font-semibold mb-1">Project</h4>
+          <p className="text-sm">{task?.project?.title}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label className="font-bold text-text mb-2 block">Assign Issue to users:</label>
-            <PaginatedDropdown
-              fetchData={fetchUsers}
-              renderItem={(item) => <span>{item.label}</span>}
-              onSelect={handleUserSelect}
-              placeholder={isFetching ? "Loading users..." : "Select a user"}
-            />
-          </div>
-
-          {selectedUsers.length > 0 && (
-            <div>
-              <p className="text-sm font-medium text-text mb-2">Assigned Users:</p>
-              <div className="flex flex-wrap gap-2">
-                {selectedUsers.map((user) => (
-                  <div
-                    key={user.value}
-                    className="flex items-center px-3 py-1 rounded-full text-sm text-text border border-text"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveUser(user.value);
-                    }}
-                  >
-                    {user.label}
-                    <FiX className="ml-2 text-red-500 cursor-pointer hover:text-red-700" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-wrap justify-end gap-4 mt-6">
+        <div className="flex justify-end gap-3 pt-4">
           {!isArchived && <Button text="Edit" onClick={onEdit} fullWidth={false} />}
           {role !== ROLES.WORKER && !isArchived && (
             <Button
               text="Delete"
               onClick={() => setIsDeleteModalOpen(true)}
-              fullWidth={false}
               preview="danger"
+              fullWidth={false}
             />
           )}
         </div>
@@ -329,15 +341,13 @@ const TaskDetailsView: React.FC<{
             onClose={() => setIsDeleteModalOpen(false)}
             title={`Delete ${component === "order" ? "Order" : "Issue"} Confirmation`}
           >
-            <p className="text-text">
-              Are you sure you want to delete this {component === "order" ? "Order" : "Issue"}? This
-              action cannot be undone.
+            <p className="text-sm">
+              Are you sure you want to delete this {component === "order" ? "Order" : "Issue"}? This action cannot be undone.
             </p>
-            <div className="flex justify-end mt-6 space-x-4">
+            <div className="flex justify-end mt-4 space-x-4">
               <Button
                 text="Delete"
                 onClick={handleDelete}
-                fullWidth={false}
                 preview="danger"
                 isSubmitting={isDeleting}
               />
@@ -346,36 +356,34 @@ const TaskDetailsView: React.FC<{
         )}
       </div>
 
-      {/* Latest Activity */}
-      <div className="space-y-2 md:col-span-1">
-        <h4 className="text-lg font-bold text-text mb-2">Latest Activity</h4>
+      {/* Activity Feed */}
+      <div className="space-y-4 md:col-span-1">
+        <h4 className="text-base font-semibold mb-1">Latest Activity</h4>
         {isActivityLoading ? (
-          <p className="text-text">Loading latest activity...</p>
+          <p className="text-sm">Loading activity...</p>
         ) : latestActivity?.data?.history?.length > 0 ? (
           <div className="space-y-2 max-h-64 overflow-auto">
-            {latestActivity.data.history.map((activity:any) => (
-              <div key={activity.id} className="bg-backgroundShade1 p-2 rounded-md">
-                <p className="text-xs text-text font-semibold truncate">
-                  {activity.user.displayName}
-                </p>
-                <p className="text-xs text-text truncate">
+            {latestActivity.data.history.map((activity: any) => (
+              <div key={activity.id} className="bg-background p-3 rounded-md">
+                <p className="text-xs font-semibold truncate">{activity.user.displayName}</p>
+                <p className="text-xs truncate">
                   {activity.fieldName === "Issue Created"
-                    ? "Created this issue"
+                    ? "Created the issue"
                     : `Updated ${activity.fieldName}`}
                 </p>
                 {activity.fieldName !== "Issue Created" && (
-                  <p className="text-xs text-text truncate">
-                    From: {activity.oldValue || "N/A"} → To: {activity.newValue || "N/A"}
+                  <p className="text-xs truncate">
+                    From: {activity.oldValue || "—"} → To: {activity.newValue || "—"}
                   </p>
                 )}
-                <p className="text-xs text-text truncate">
+                <p className="text-xs truncate">
                   {new Date(activity.createdAt).toLocaleString()}
                 </p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-text">No recent activity.</p>
+          <p className="text-sm">No recent activity.</p>
         )}
       </div>
     </div>

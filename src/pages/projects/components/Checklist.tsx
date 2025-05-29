@@ -24,6 +24,7 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
         useGetProjectAllTemplatesQuery({ projectId });
     const [selectedEntry, setSelectedEntry] = useState<any>(null);
     const [uploadedFiles, setUploadedFiles] = useState<Record<string, any>>({});
+    const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>({});
 
 
     useEffect(() => {
@@ -73,29 +74,62 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
 
 
 
-    const handleAnswer = (id: string, answer: boolean) => {
-        setResponses((prev) => ({ ...prev, [id]: { ...prev[id], answer } }));
-        // setDirty((prev) => ({ ...prev, [id]: true }));
+    const handleAnswer = async (id: string, answer: boolean) => {
+        setResponses((prev) => ({
+            ...prev,
+            [id]: { ...prev[id], answer },
+        }));
+
+        // Use latest answer directly instead of reading stale state
+        const comment = responses[id]?.comment || "";
+        try {
+
+            await saveResponse({
+                projectId,
+                checklistId: selectedEntry.id,
+                itemId: id,
+                body: { answer, comment },
+            });
+
+            setSaved((prev) => ({ ...prev, [id]: true }));
+            setDirty((prev) => ({ ...prev, [id]: false }));
+            setTimeout(() => setSaved((prev) => ({ ...prev, [id]: false })), 1500);
+        } catch (error) {
+            console.log('error', error)
+        } finally {
+            setSaving((prev) => ({ ...prev, [id]: false }));
+        }
     };
+
 
     const handleComment = (id: string, comment: string) => {
         setResponses((prev) => ({ ...prev, [id]: { ...prev[id], comment } }));
         setDirty((prev) => ({ ...prev, [id]: true }));
     };
 
-    const handleSave = async (id: string) => {
-        if (!dirty[id]) return;
+    const handleSave = async (id: string, passDirt = false) => {
+        const { answer, comment } = responses[id] ?? {};
+        console.log('responses[id]', responses[id])
+        if ((!dirty[id] && !passDirt) || answer == null) return;
+
         setSaving((prev) => ({ ...prev, [id]: true }));
-        const { answer, comment } = responses[id];
         try {
-            await saveResponse({ projectId, checklistId: selectedEntry.id, itemId: id, body: { answer, comment } });
+            await saveResponse({
+                projectId,
+                checklistId: selectedEntry.id,
+                itemId: id,
+                body: { answer, comment },
+            });
             setSaved((prev) => ({ ...prev, [id]: true }));
             setDirty((prev) => ({ ...prev, [id]: false }));
             setTimeout(() => setSaved((prev) => ({ ...prev, [id]: false })), 1500);
+        } catch (error) {
+            console.log('error', error)
         } finally {
             setSaving((prev) => ({ ...prev, [id]: false }));
         }
     };
+
     const handleAddItem = async () => {
         if (!newQuestion.trim() || !selectedEntry) return;
         await appendItems({ templateId: selectedEntry.template.id, projectId, body: { items: [{ question: newQuestion.trim() }] } });
@@ -108,7 +142,7 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
 
         const formData = new FormData();
         formData.append("files", file);
-
+        setUploadingMap(prev => ({ ...prev, [itemId]: true }));
         try {
             const res = await uploadFileToItem({
                 projectId,
@@ -126,6 +160,8 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
             }
         } catch (err) {
             console.error("File upload failed", err);
+        } finally {
+            setUploadingMap(prev => ({ ...prev, [itemId]: false }));
         }
     };
 
@@ -174,7 +210,7 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
                     loadingTemplates={loadingTemplates}
                     isUploading={isUploading}
                     handleDeleteItem={handleDeleteItem}
-
+                    uploadingMap={uploadingMap}
                 />
             }
         </>

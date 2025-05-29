@@ -1,4 +1,4 @@
-import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiPaperclip, FiPlus, FiTrash2 } from "react-icons/fi";
 import ModalContainer from "../../../../components/modal/ModalContainer";
 import Button from "../../../../components/buttons/Button";
 import { BASE_URL } from "../../../../constant/BASE_URL";
@@ -29,6 +29,7 @@ const ChecklistUI = ({
     loadingTemplates,
     isUploading,
     handleDeleteItem,
+    uploadingMap
 }: any) => {
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
@@ -87,11 +88,7 @@ const ChecklistUI = ({
                                                     <input
                                                         type="checkbox"
                                                         checked={isChecked}
-                                                        onChange={() => {
-                                                            handleAnswer(item.id, !isChecked);
-                                                            handleSave(item.id);
-                                                        }}
-
+                                                        onChange={() => handleAnswer(item.id, !isChecked)}
                                                         className="mt-1 accent-blue-600"
                                                     />
                                                     <span className={isChecked ? "line-through text-gray-500" : ""}>
@@ -117,16 +114,17 @@ const ChecklistUI = ({
                                             />
 
                                             <div className="flex justify-between items-center text-xs text-gray-600">
-                                                <label className={`cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : "text-blue-600 hover:underline"}`}>
-                                                    📎 Attach
+                                                <label className={`flex items-center cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : "text-blue-600 hover:underline"}`}>
+                                                    <FiPaperclip className="text-xs" /> Attach Document
                                                     <input
                                                         type="file"
                                                         className="hidden"
-                                                        disabled={isUploading}
+                                                        disabled={uploadingMap[item.id]}
+                                                        accept="application/pdf"
                                                         onChange={(e) => handleFileUpload(item.id, e.target.files?.[0])}
                                                     />
                                                 </label>
-
+                                                {uploadingMap[item.id] && <span className="text-xs italic">Uploading...</span>}
                                                 {hasFile && (
                                                     <a
                                                         href={`${BASE_URL}/${uploadedFiles[item.id].filePath}`}
@@ -171,8 +169,8 @@ const ChecklistUI = ({
                 >
                     <form
                         onSubmit={(e) => {
-                            e.preventDefault(); 
-                            handleAddItem();   
+                            e.preventDefault();
+                            handleAddItem();
                         }}
                     >
                         <input
@@ -180,7 +178,7 @@ const ChecklistUI = ({
                             value={newQuestion}
                             onChange={(e) => setNewQuestion(e.target.value)}
                             placeholder="Enter checklist item..."
-                            className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
+                            className="w-full p-2 text-sm bg-hover border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
                         />
                         <div className="flex justify-end mt-4 space-x-2">
                             <Button

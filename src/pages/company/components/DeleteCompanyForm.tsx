@@ -36,6 +36,7 @@ const DeleteCompanyForm = ({ handleDeleteConfirm, isDeleting, onClose, refetch }
                     onClick={handleDelete}
                     fullWidth={false}
                     isSubmitting={isDeleting}
+                    preview="danger"
                 />
             </div>
         </div>

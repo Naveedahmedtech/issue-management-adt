@@ -49,13 +49,14 @@ const EditCompanyForm = ({ selectedCompany, onClose, refetch }: EditCompanyFormP
                         type="text"
                         placeholder="Enter company name"
                         labelColor="text-text"
+                        className="!bg-hover !text-text"
                     />
                     <Button
                         type="submit"
-                        className="mt-4"
                         text="Update Company"
                         fullWidth={false}
                         isSubmitting={isLoading || isSubmitting}
+                        className="bg-primary hover:border-primary hover:!text-text"
                     />
                 </Form>
             )}
