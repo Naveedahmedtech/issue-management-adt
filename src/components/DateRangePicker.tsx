@@ -19,6 +19,9 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   onChange,
 }) => {
   const { theme } = useTheme();
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+
   const [weekMode, setWeekMode] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const [selection, setSelection] = useState<Range[]>([
@@ -28,8 +31,15 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
       key: 'selection',
     },
   ]);
+
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Sync props → internal selection
   useEffect(() => {
@@ -190,21 +200,23 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
       {open && (
         <div
-          className={`
-            mt-2 bg-white dark:bg-gray-800
-            border rounded-lg shadow-lg p-4
-            ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-          `}
+          className={`mt-2 bg-white dark:bg-gray-800
+    border rounded-lg shadow-lg p-4
+    ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
+    overflow-x-auto max-w-full
+  `}
         >
-          <DateRange
-            editableDateInputs={false}
-            moveRangeOnFirstSelection={false}
-            ranges={selection}
-            onChange={handleSelect}
-            months={2}
-            direction="vertical"
-            className="rounded-lg overflow-hidden"
-          />
+          <div className="min-w-[300px] sm:min-w-[600px]">
+            <DateRange
+              editableDateInputs={false}
+              moveRangeOnFirstSelection={false}
+              ranges={selection}
+              onChange={handleSelect}
+              months={isMobile ? 1 : 2}
+              direction="vertical"
+              className="rounded-lg overflow-hidden"
+            />
+          </div>
         </div>
       )}
     </div>

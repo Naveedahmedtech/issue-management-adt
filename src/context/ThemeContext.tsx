@@ -10,13 +10,14 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const getSystemTheme = (): Theme => {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    // return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+    return 'light';
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     // const [theme, setTheme] = useState<Theme>(window.localStorage.getItem('theme') as Theme || getSystemTheme());
     // const [theme, setTheme] = useState<Theme>(window.localStorage.getItem('theme') as Theme || 'dark'); // Default to 'dark'
-    const [theme, setTheme] = useState<Theme>(window.localStorage.getItem('theme') as Theme || getSystemTheme() || 'dark');
+    const [theme, setTheme] = useState<Theme>(window.localStorage.getItem('theme') as Theme || getSystemTheme() || 'light');
 
 
 
@@ -24,8 +25,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         const localTheme = window.localStorage.getItem('theme') as Theme | null;
         setTheme(localTheme || getSystemTheme());
 
-        const themeChangeHandler = (e: MediaQueryListEvent) => {
-            const newTheme = e.matches ? 'dark' : 'light';
+        const themeChangeHandler = () => {
+            // const newTheme = e.matches ? 'dark' : 'light';
+            const newTheme = 'light';
             setTheme(newTheme);
             window.localStorage.setItem('theme', newTheme);
         };
@@ -37,10 +39,11 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const toggleTheme = useCallback(() => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
+        // const newTheme = theme === 'light' ? 'dark' : 'light';
+        const newTheme = 'light';
         setTheme(newTheme);
         window.localStorage.setItem('theme', newTheme);
-    }, [theme]);
+    }, []);
 
     useEffect(() => {
         document.documentElement.classList.toggle('dark', theme === 'dark');

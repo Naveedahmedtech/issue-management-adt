@@ -74,8 +74,14 @@ const Activity = ({ projectId, issues, issueId }: any) => {
                 <div className="text-text">No activity logs found for this project or issue.</div>
             ) : (
                 <div className="space-y-4">
-                    {history.map((log: any) => {
+                    {history.filter((log: any) => {
+                        // Always allow "Issue Created"
+                        if (log.fieldName === "Issue Created") return true;
+                        const noChange = log.oldValue == null && log.newValue == null;
+                        return !noChange;
+                    }).map((log: any) => {
                         const isDateField = log.fieldName === "startDate" || log.fieldName === "endDate";
+
                         const formattedOldValue = isDateField && log.oldValue
                             ? format(parseISO(log.oldValue), "PPP")
                             : log.oldValue || "N/A";

@@ -15,7 +15,7 @@ const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
 
         return (
             <div className="flex items-center justify-center min-h-screen bg-background">
-                <div className="max-w-md w-full bg-background-shade-1 shadow-md rounded-lg p-8 text-center">
+                <div className="max-w-md w-full bg-backgroundShade1 shadow-md rounded-lg p-8 text-center">
                     <h1 className="text-3xl font-bold text-red-600">{isRouteErrorResponse(error) ? "Oops!" : "Something Went Wrong"}</h1>
                     {isRouteErrorResponse(error) ? (
                         <>

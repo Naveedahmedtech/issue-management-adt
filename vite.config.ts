@@ -3,6 +3,12 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  // this block makes Vite listen on all network interfaces (0.0.0.0)
+  server: {
+    host: true, // or explicitly: host: '0.0.0.0'
+    // strictPort: true,  // optional: fail if port is already in use
+  },
+
   build: {
     rollupOptions: {
       output: {

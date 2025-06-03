@@ -22,7 +22,6 @@ const TaskModal: React.FC<{
         setIsEditMode(false);
     };
 
-    console.log("task", task)
 
     return (
         <LargeModal

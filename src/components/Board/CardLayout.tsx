@@ -40,7 +40,7 @@ const CardLayout = ({
                         onClick={() => handleFilterChange(status)}
                         preview={activeFilter === status ? "primary" : "secondary"}
                         fullWidth={false}
-                        className="text-textDark"
+                        className={activeFilter === status ? "text-text" : "secondary"}
                     />
                 ))}
             </div>

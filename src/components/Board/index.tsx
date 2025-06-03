@@ -8,7 +8,7 @@ import {ColumnType, Task} from "../../types/types";
 import {projectApi, useUpdateIssueLogHistoryMutation} from "../../redux/features/projectsApi";
 import {useAppDispatch} from "../../redux/store.ts";
 
-const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, projectId, setActiveTab, setIssueId, refetchFiles }) => {
+const Board: React.FC<any> = ({ projectIssues, refetch, isArchived, projectId, setActiveTab, setIssueId, refetchFiles }) => {
     const [, setProject] = useState<any | null>(null);
     const [localProjectIssues, setLocalProjectIssues] = useState<ColumnType[]>(projectIssues);
 

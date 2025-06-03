@@ -24,7 +24,7 @@ import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 import { useAuth } from "../../../hooks/useAuth.ts";
 import ProjectDropDown from "../components/ProjectDropDown.tsx";
 import { DocumentDataRow } from "../../../types/types.ts";
-import {  BASE_URL } from "../../../constant/BASE_URL.ts";
+import { BASE_URL } from "../../../constant/BASE_URL.ts";
 import Activity from "../components/Activity.tsx";
 import { FiRefreshCw } from "react-icons/fi";
 import Drawer from "../../../components/modal/Drawer.tsx";
@@ -468,7 +468,7 @@ const ProjectDetails = () => {
                                 )}
                             </span>
                         </div>
-                        <p className="text-sm text-textDark leading-snug">
+                        <p className="break-words text-sm text-textDark whitespace-pre-line">
                             {latestCommentData?.data?.message}
                         </p>
                     </div>
@@ -504,14 +504,14 @@ const ProjectDetails = () => {
                     </button>
                     {
                         isDrawerOpen &&
-                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="800px"
+                        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}
                             title={"Activity Logs"}>
                             <Activity projectId={projectId} issues={projectIssues?.data?.issues} issueId={issueId} />
                         </Drawer>
                     }
                     {
                         isOpenComments &&
-                        <Drawer isOpen={isOpenComments} onClose={() => setIsOpenComments(false)} width="800px"
+                        <Drawer isOpen={isOpenComments} onClose={() => setIsOpenComments(false)} 
                             title={`Comments (${commentData?.data?.total ?? commentData?.data?.comments.length}) `}>
                             {
                                 !isArchived &&
@@ -587,6 +587,7 @@ const ProjectDetails = () => {
                         onClick={handleArchive}
                         fullWidth={false}
                         isSubmitting={isArchiveProject}
+                        className="bg-primary hover:border-primary hover:!text-text"
                     />
                 </div>
             </ModalContainer>
@@ -606,6 +607,7 @@ const ProjectDetails = () => {
                         onClick={handleArchive}
                         fullWidth={false}
                         isSubmitting={isArchiveProject}
+                        className="bg-primary hover:border-primary hover:!text-text"
                     />
                 </div>
             </ModalContainer>
@@ -637,6 +639,7 @@ const ProjectDetails = () => {
                         text={'Upload'}
                         onClick={() => handleUploadSubmit(uploadToOrder)}
                         isSubmitting={isUploadingProjectFile}
+                        className="bg-primary hover:border-primary hover:!text-text"
                     />
                 </div>
             </ModalContainer>

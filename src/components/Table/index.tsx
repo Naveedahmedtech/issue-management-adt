@@ -27,7 +27,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 <button
                     key="first"
                     onClick={() => onPageChange(1)}
-                    className="px-3 py-2  rounded-md bg-backgroundShade1  hover:bg-primary hover:text-white transition-colors duration-200"
+                    className="px-3 py-2  rounded-md bg-backgroundShade2  hover:bg-primary hover:text-white transition-colors duration-200"
                 >
                     1
                 </button>
@@ -49,7 +49,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 <button
                     key={i}
                     onClick={() => onPageChange(i)}
-                    className={`px-4 py-2  rounded-md mx-1 transition-colors duration-200 ${i === currentPage ? "bg-primary text-white" : "bg-backgroundShade1  hover:bg-primary hover:text-white"
+                    className={`px-4 py-2  rounded-md mx-1 transition-colors duration-200 ${i === currentPage ? "bg-primary text-text" : "bg-backgroundShade2 border-background border  hover:bg-primary hover:text-text"
                         }`}
                 >
                     {i}
@@ -72,7 +72,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 <button
                     key="last"
                     onClick={() => onPageChange(totalPages)}
-                    className="px-3 py-2  rounded-md bg-backgroundShade1  hover:bg-primary hover:text-white transition-colors duration-200"
+                    className="px-3 py-2  rounded-md bg-backgroundShade2  hover:bg-primary hover:text-text transition-colors duration-200"
                 >
                     {totalPages}
                 </button>
@@ -84,7 +84,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 {currentPage > 1 && (
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
-                        className="px-3 py-2  rounded-md bg-backgroundShade1  hover:bg-primary hover:text-white transition-colors duration-200"
+                        className="px-3 py-2  rounded-md border border-background bg-backgroundShade2  hover:bg-primary hover:text-text transition-colors duration-200"
                     >
                         Prev
                     </button>
@@ -93,7 +93,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 {currentPage < totalPages && (
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
-                        className="px-3 py-2  rounded-md bg-backgroundShade1  hover:bg-primary hover:text-white transition-colors duration-200"
+                        className="px-3 py-2  rounded-md border border-background bg-backgroundShade2  hover:bg-primary hover:text-text transition-colors duration-200"
                     >
                         Next
                     </button>

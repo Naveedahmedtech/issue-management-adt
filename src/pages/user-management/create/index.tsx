@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {Form, Formik} from "formik";
+import React, { useEffect, useState } from "react";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import Button from "../../../components/buttons/Button";
 import InputField from "../../../components/InputField";
 import FormikSelect from "../../../components/dropdown/Dropdown";
-import {useCreateAzureUserMutation, usePermissionsQuery, useRolesQuery} from "../../../redux/features/authApi.ts";
-import {toast} from "react-toastify";
+import { useCreateAzureUserMutation, usePermissionsQuery, useRolesQuery } from "../../../redux/features/authApi.ts";
+import { toast } from "react-toastify";
 
 const CreateUser: React.FC = () => {
   const [rolesOptions, setRolesOptions] = useState<{ label: string; value: string }[]>([]);
@@ -49,15 +49,15 @@ const CreateUser: React.FC = () => {
           "EDIT_ISSUE",
           "READ_ISSUE"
         ].map((action) =>
-          permissionsData.data.find((perm:any) => perm.action === action)?.id
+          permissionsData.data.find((perm: any) => perm.action === action)?.id
         ).filter(Boolean) as string[],
         ADMIN: permissionsData.data
           .filter(
-            (perm:any) =>
+            (perm: any) =>
               !["MANAGE_USERS", "MANAGE_ROLES", "MANAGE_PERMISSIONS"].includes(perm.action)
           )
-          .map((perm:any) => perm.id),
-        SUPER_ADMIN: permissionsData.data.map((perm:any) => perm.id),
+          .map((perm: any) => perm.id),
+        SUPER_ADMIN: permissionsData.data.map((perm: any) => perm.id),
       };
 
       const selectedRole = rolesOptions.find((r) => r.value === role)?.label;
@@ -88,9 +88,10 @@ const CreateUser: React.FC = () => {
       toast.success(`User created successfully!`);
       console.log("User Created:", response);
       resetForm();
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error creating user:", error);
-      toast.error("Failed to create user. Please try again.");
+      toast.error(error?.data?.message || error?.data?.error?.message || "Failed to create user. Please try again.");
+
     }
   };
 
@@ -114,7 +115,7 @@ const CreateUser: React.FC = () => {
           // .matches(/[0-9]/, "Password must contain at least one number")
           // .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
           // .required("Password is required"),
-        
+
           displayName: Yup.string().required("Required"),
           role: Yup.string().required("Required"),
           permissions: Yup.array().of(Yup.string()).required("Required"),
@@ -123,9 +124,9 @@ const CreateUser: React.FC = () => {
       >
         {({ setFieldValue }) => (
           <Form>
-            <InputField label="Email" name="email" type="email" />
+            <InputField label="Email" name="email" type="email" labelColor="text-textDark" />
             {/*<InputField label="Password" name="password" type="password" />*/}
-            <InputField label="Display Name" name="displayName" type="text" />
+            <InputField label="Display Name" name="displayName" type="text" labelColor="text-textDark" />
 
             {rolesLoading ? (
               <p>Loading roles...</p>

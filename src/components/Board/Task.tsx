@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
-import {Draggable, DraggableProvided} from "@hello-pangea/dnd";
-import {TaskProps} from "../../types/types.ts";
-import {useLazyGetAllUsersQuery} from "../../redux/features/authApi.ts";
-import {useAssignIssuesMutation, useRemoveAssignedUserMutation} from "../../redux/features/issueApi.ts";
-import {ROLES} from "../../constant/ROLES.ts";
-import {FiX} from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { Draggable, DraggableProvided } from "@hello-pangea/dnd";
+import { TaskProps } from "../../types/types.ts";
+import { useLazyGetAllUsersQuery } from "../../redux/features/authApi.ts";
+import { useAssignIssuesMutation, useRemoveAssignedUserMutation } from "../../redux/features/issueApi.ts";
+import { ROLES } from "../../constant/ROLES.ts";
+import { FiX } from "react-icons/fi";
 import PaginatedDropdown from "../dropdown/PaginatedDropdown";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -90,19 +90,43 @@ const Task: React.FC<TaskProps> = ({ task, index, onClick, refetch }) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="bg-backgroundShade2 p-5 my-2 text-textDark rounded-md shadow hover:shadow-lg transition-all cursor-pointer"
+          className="bg-backgroundShade2 p-5 my-2 text-textDark border-background border-2 rounded-lg shadow-lg hover:shadow-lg transition-all cursor-pointer"
           onClick={() => onClick(task)}
         >
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <h4 className="font-semibold text-lg truncate">{task.title}</h4>
+            <h4
+              className="
+    font-semibold text-base sm:text-lg
+    break-words break-all
+    whitespace-normal
+    max-w-full
+    sm:line-clamp-2 sm:overflow-hidden
+  "
+              title={task.title}
+            >
+              {task.title}
+            </h4>
+
             <span className={`px-3 py-1 rounded-full text-text text-xs font-semibold ${STATUS_COLORS[task.status] || STATUS_COLORS.Default}`}>
               {task.status}
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-sm mb-3 line-clamp-2">{task.description || "No description available."}</p>
+          <p
+            className="
+    text-sm mb-3
+    break-words break-all
+    whitespace-normal
+    line-clamp-2
+    overflow-hidden
+  "
+            title={task.description || "No description available."}
+          >
+            {task.description || "No description available."}
+          </p>
+
 
           {/* Task Details */}
           <div className="text-xs text-text-muted border-t border-gray-300 pt-3 mb-3 space-y-1">

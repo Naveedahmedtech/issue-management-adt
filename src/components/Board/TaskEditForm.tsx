@@ -135,6 +135,7 @@ const TaskEditForm: React.FC<{
                         value={values.title}
                         onChange={(e) => setFieldValue("title", e.target.value)}
                         inputClassName="text-textDark"
+                        maxLength={100}
                     />
 
                     <InputField

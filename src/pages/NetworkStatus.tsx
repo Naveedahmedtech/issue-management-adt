@@ -19,7 +19,7 @@ const NetworkStatus = ({ children }: any) => {
 
     if (!isOnline) {
         return (
-            <div className="flex items-center justify-center h-screen max-h-screen overflow-hidden bg-background">
+            <div className="flex items-center justify-center h-screen max-h-screen overflow-hidden bg-backgroundShade1">
                 <div className="text-center p-6 mx-auto">
                     <div className="flex justify-center">
                         <AiOutlineCloud className="text-8xl text-danger" />

@@ -3,7 +3,7 @@ import { ITextProps } from '../types/types'
 
 const Text: React.FC<ITextProps> = ({ children, className, onClick }) => {
     return (
-        <p className={`text-primary ${className}`} onClick={onClick}>{children}</p>
+        <p className={`text-textDark ${className}`} onClick={onClick}>{children}</p>
     )
 }
 

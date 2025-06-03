@@ -78,7 +78,10 @@ const Comments: React.FC<CommentsProps> = ({ projectId, comments = [], page, tot
                   </p>
                 </div>
               </div>
-              <p className="">{comment?.message}</p>
+              <p className="break-words text-sm text-textDark whitespace-pre-line">
+                {comment?.message}
+              </p>
+
             </li>
           ))}
         </ul>

@@ -9,8 +9,11 @@ const DateField: React.FC<{
     className?: string;
     placeholderText?: string
 }> = ({ label, selected, onChange, className, placeholderText }) => (
-    <div className={clsx("mb-4 w-full", className)}>
-        <label className="block text-text mb-2">{label}</label>
+    <div className={clsx("w-full", className)}>
+        {
+            label &&
+            <label className="block text-text">{label}</label>
+        }
         <DatePicker
             selected={selected}
             onChange={onChange}

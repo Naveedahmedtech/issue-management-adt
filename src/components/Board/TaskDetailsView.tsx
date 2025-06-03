@@ -58,8 +58,6 @@ const TaskDetailsView: React.FC<{
   const [localTask, setLocalTask] = useState<ITask>(task);
 
 
-  console.log('localTask', localTask)
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [selectedUsers, setSelectedUsers] = useState<{ value: string; label: string }[]>([]);
@@ -183,7 +181,7 @@ const TaskDetailsView: React.FC<{
 
     try {
       await updateIssue({ issueId: task.id, formData }).unwrap();
-      setLocalTask((prev) => ({ ...prev, status: newStatus })); 
+      setLocalTask((prev) => ({ ...prev, status: newStatus }));
       refetch();
       toast.success(`Status updated to "${newStatus}"`);
     } catch (error: any) {
@@ -209,14 +207,34 @@ const TaskDetailsView: React.FC<{
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <h4 className="text-base font-semibold mb-1">Title</h4>
-            <p className="text-sm">{task.title}</p>
+            <h4
+              className="
+    font-semibold text-base sm:text-lg
+    break-words break-all
+    whitespace-normal
+    max-w-full
+    sm:line-clamp-2 sm:overflow-hidden
+  "
+              title={task.title}
+            >
+              {task.title}
+            </h4>
+
           </div>
           <div>
             <h4 className="text-base font-semibold mb-1">Description</h4>
-            <div
-              className="text-sm leading-relaxed max-h-40 overflow-y-auto pr-2"
-              dangerouslySetInnerHTML={{ __html: task.description }}
-            />
+            <p
+              className="
+    text-sm mb-3
+    break-words break-all
+    whitespace-normal
+    max-w-full
+  "
+            >
+              {task.description || "No description available."}
+            </p>
+
+
           </div>
 
         </div>
@@ -296,17 +314,27 @@ const TaskDetailsView: React.FC<{
             <ul className="space-y-2">
               {task.files.length === 0 && "No attachments"}
               {task.files?.map((file, index) => (
-                <li key={index} className="flex items-center gap-2 text-sm">
-                  {renderFileIcon(file.type)}
+                <li key={index} className="flex items-start gap-2 text-sm">
+                  <div className="pt-1 flex-shrink-0">
+                    {renderFileIcon(file.type)}
+                  </div>
                   <a
-                    className="hover:underline"
+                    className="
+      hover:underline
+      break-words break-all
+      whitespace-normal
+      max-w-full inline-block
+      text-sm text-textDark
+    "
                     href={`${BASE_URL}/${file.url}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    title={file.name}
                   >
                     {file.name}
                   </a>
                 </li>
+
               ))}
             </ul>
           </div>
@@ -320,7 +348,19 @@ const TaskDetailsView: React.FC<{
 
         <div>
           <h4 className="text-base font-semibold mb-1">Project</h4>
-          <p className="text-sm">{task?.project?.title}</p>
+          <p
+            className="
+    text-sm
+    break-words break-all
+    whitespace-normal
+    sm:line-clamp-1 sm:overflow-hidden
+    max-w-full
+  "
+            title={task?.project?.title}
+          >
+            {task?.project?.title || "Untitled Project"}
+          </p>
+
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
@@ -362,8 +402,13 @@ const TaskDetailsView: React.FC<{
         {isActivityLoading ? (
           <p className="text-sm">Loading activity...</p>
         ) : latestActivity?.data?.history?.length > 0 ? (
-          <div className="space-y-2 max-h-64 overflow-auto">
-            {latestActivity.data.history.map((activity: any) => (
+          <div className="space-y-2 max-h-max overflow-auto">
+            {latestActivity.data.history.filter((log: any) => {
+              // Always allow "Issue Created"
+              if (log.fieldName === "Issue Created") return true;
+              const noChange = log.oldValue == null && log.newValue == null;
+              return !noChange;
+            }).map((activity: any) => (
               <div key={activity.id} className="bg-background p-3 rounded-md">
                 <p className="text-xs font-semibold truncate">{activity.user.displayName}</p>
                 <p className="text-xs truncate">

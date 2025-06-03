@@ -65,7 +65,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ toggleSidebar }) => {
             }}
         >
           <div className="w-full">
-            <Text className="text-2xl lg:text-xl text-text font-bold">
+            <Text className="text-2xl lg:text-xl !text-text font-bold">
               {APP_NAME}
             </Text>
           </div>

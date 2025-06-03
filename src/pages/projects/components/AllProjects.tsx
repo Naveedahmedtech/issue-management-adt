@@ -1,8 +1,8 @@
 import React from "react";
-import {Link, useNavigate} from "react-router-dom";
-import {format} from "date-fns";
-import {APP_ROUTES} from "../../../constant/APP_ROUTES";
-import {PROJECT_STATUS} from "../../../constant";
+import { Link, useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES";
+import { PROJECT_STATUS } from "../../../constant";
 import PaginatedCardList from "../../../components/PaginatedCardList";
 
 interface Project {
@@ -43,7 +43,11 @@ const AllProjectsCards: React.FC<{ projects: any, error?: any, isLoading: boolea
         >
             {/* Card Header */}
             <div className="flex items-center justify-between mb-1">
-                <h3 className="text-xl font-bold">{project.title}</h3>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold truncate max-w-full" title={project.title}>
+                    {project.title}
+                </h3>
+
+
                 <div>{getStatusBadge(project.status)}</div>
             </div>
 
@@ -77,7 +81,7 @@ const AllProjectsCards: React.FC<{ projects: any, error?: any, isLoading: boolea
             <main className="">
                 <section className="mb-8">
                     {error && <p className="text-error text-lg font-semibold">Failed to load recent projects.</p>}
-                    {isLoading ? <p className="text-textDark text-lg">Loading...</p> :  projects?.length > 0 ? (
+                    {isLoading ? <p className="text-textDark text-lg">Loading...</p> : projects?.length > 0 ? (
                         <PaginatedCardList
                             data={projects}
                             renderCard={renderProjectCard}

@@ -16,14 +16,19 @@ import CheckboxField from "../../../components/form/CheckboxField.tsx";
 import DateRangePicker from "../../../components/DateRangePicker.tsx";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { addDays } from "date-fns";
 
 
 const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, mode, onSubmit, isLoading }) => {
+    const today = new Date();
+
     const [formData, setFormData] = useState<ProjectFormData>({
         title: "",
         description: "",
-        startDate: null,
-        endDate: null,
+        startDate: initialData?.startDate ? initialData.startDate : today,
+        endDate: initialData?.endDate
+            ? initialData.endDate
+            : addDays(today, 7), // 👈 7 days after today by default
         companyId: "",
         status: { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
         files: [],
@@ -157,16 +162,17 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                         value={formData.title}
                         onChange={handleChange}
                         className="w-full"
+                        maxLength={100}
                     />
                     {getError("title") && <p className="text-red-500 text-sm mt-1">{getError("title")}</p>}
                 </div>
 
-                <div>
+                <div className="mb-14">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <ReactQuill
                         value={formData.description}
                         onChange={(value) => setFormData({ ...formData, description: value })}
-                        className="bg-white"
+                        className="bg-backgroundShade2 h-40"
                     />
                     {getError("description") && (
                         <p className="text-red-500 text-sm mt-1">{getError("description")}</p>
@@ -177,6 +183,9 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                        <label className="block text-sm font-medium text-textDark mb-1">
+                            Select an existing company
+                        </label>
                         <PaginatedDropdown
                             fetchData={fetchAllCompanies}
                             renderItem={(item: any) => <span>{item.label}</span>}
@@ -187,12 +196,21 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                             selectedItem={selectedCompany}
                             placeholder="Select a company"
                         />
-                        {getError("companyId") && <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>}
+                        {getError("companyId") && (
+                            <p className="text-red-500 text-sm mt-1">{getError("companyId")}</p>
+                        )}
                     </div>
-                    <div>
-                        <Button text="Create Company" fullWidth={false} onClick={() => setCreateModalOpen(true)} />
+
+                    <div className="flex flex-col justify-end">
+                        <div className="text-center text-sm text-textLight mb-1 md:hidden">or</div>
+                        <Button
+                            text="Create New Company"
+                            fullWidth={false}
+                            onClick={() => setCreateModalOpen(true)}
+                        />
                     </div>
                 </div>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

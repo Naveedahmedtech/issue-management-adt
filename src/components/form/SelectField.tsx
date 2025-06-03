@@ -10,7 +10,7 @@ const SelectField: React.FC<{
     className?: string;
     labelColor?: string;
 }> = ({ label, options, value, onChange, className,labelColor = "text-textDark" }) => (
-    <div className={clsx("mb-4", className)}>
+    <div className={clsx("", className)}>
         <label className={`block text-sm  ${labelColor}`}>{label}</label>
         <Select
             options={options}
@@ -23,10 +23,10 @@ const SelectField: React.FC<{
                     borderColor: 'var(--color-border)',
                     backgroundColor: 'var(--color-background-shade-2)',
                     borderRadius: '8px',
-                    padding: '5px',
+                    // padding: '5px',
                     cursor: 'pointer',
                     '&:hover': {
-                        borderColor: 'var(--color-background-shade-2)',
+                        borderColor: 'var(--color-background-shade-1)',
                     },
                 }),
                 singleValue: (provided) => ({
