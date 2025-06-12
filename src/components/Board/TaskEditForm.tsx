@@ -10,6 +10,8 @@ import { useUpdateIssueMutation } from "../../redux/features/issueApi";
 import { toast } from "react-toastify";
 import { useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi";
 import { PROJECT_STATUS } from "../../constant";
+import { ErrorMessage } from "formik";
+
 
 const statusOptions = [
     { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
@@ -40,7 +42,7 @@ const TaskEditForm: React.FC<{
             }}
             validationSchema={Yup.object({
                 title: Yup.string().required("Title is required"),
-                description: Yup.string().required("Description is required"),
+                // description: Yup.string().required("Description is required"),
                 status: Yup.string().required("Status is required"),
             })}
             onSubmit={async (values) => {
@@ -128,33 +130,45 @@ const TaskEditForm: React.FC<{
         >
             {({ setFieldValue, values }) => (
                 <Form className="space-y-6 px-4 sm:px-6">
-                    <InputField
-                        label="Title"
-                        name="title"
-                        type="text"
-                        value={values.title}
-                        onChange={(e) => setFieldValue("title", e.target.value)}
-                        inputClassName="text-textDark"
-                        maxLength={100}
-                    />
+                    <div>
+                        <InputField
+                            label="Title"
+                            name="title"
+                            type="text"
+                            value={values.title}
+                            onChange={(e) => setFieldValue("title", e.target.value)}
+                            inputClassName="text-textDark"
+                            maxLength={100}
+                        />
+                        <ErrorMessage name="title" component="div" className="text-red-500 text-sm mt-1" />
+                    </div>
 
-                    <InputField
-                        label="Description"
-                        name="description"
-                        type="textarea"
-                        value={values.description}
-                        onChange={(e) => setFieldValue("description", e.target.value)}
-                        inputClassName="text-textDark"
-                    />
+
+                    <div>
+                        <InputField
+                            label="Description"
+                            name="description"
+                            type="textarea"
+                            value={values.description}
+                            onChange={(e) => setFieldValue("description", e.target.value)}
+                            inputClassName="text-textDark"
+                            maxLength={500}
+                        />
+                        {/* <ErrorMessage name="description" component="div" className="text-red-500 text-sm mt-1" /> */}
+                    </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <SelectField
-                            label="Status"
-                            options={statusOptions}
-                            value={statusOptions.find((option) => option.value === values.status) || null}
-                            onChange={(option) => setFieldValue("status", option?.value || "")}
-                        />
+                        <div>
+                            <SelectField
+                                label="Status"
+                                options={statusOptions}
+                                value={statusOptions.find((option) => option.value === values.status) || null}
+                                onChange={(option) => setFieldValue("status", option?.value || "")}
+                            />
+                            <ErrorMessage name="status" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
                     </div>
+
 
                     <FileUpload
                         label="Attachments"

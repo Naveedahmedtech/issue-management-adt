@@ -6,10 +6,14 @@ import InputField from "../../../components/InputField";
 import FormikSelect from "../../../components/dropdown/Dropdown";
 import { useCreateAzureUserMutation, usePermissionsQuery, useRolesQuery } from "../../../redux/features/authApi.ts";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 
 const CreateUser: React.FC = () => {
   const [rolesOptions, setRolesOptions] = useState<{ label: string; value: string }[]>([]);
   const [permissionsOptions, setPermissionsOptions] = useState<{ label: string; value: string }[]>([]);
+
+  const navigate = useNavigate()
 
   const [createAzureUser, { isLoading: isCreating }] = useCreateAzureUserMutation();
 
@@ -76,7 +80,7 @@ const CreateUser: React.FC = () => {
 
   const handleSubmit = async (values: any, { resetForm }: { resetForm: () => void }) => {
     try {
-      const response = await createAzureUser({
+      await createAzureUser({
         email: values.email,
         password: values.password,
         displayName: values.displayName,
@@ -86,7 +90,7 @@ const CreateUser: React.FC = () => {
       }).unwrap();
 
       toast.success(`User created successfully!`);
-      console.log("User Created:", response);
+      navigate(APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT)
       resetForm();
     } catch (error:any) {
       console.error("Error creating user:", error);

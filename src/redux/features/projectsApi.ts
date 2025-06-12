@@ -165,9 +165,9 @@ export const projectApi = createApi({
     }),
 
     getProjectActiveLogs: builder.query({
-      query: ({ projectId, page, limit, issueId }) => {
+      query: ({ projectId, page, limit, type }) => {
         const params = new URLSearchParams();
-        if (issueId) params.append("issueId", issueId);
+        if (type) params.append("type", type);
         if (page) params.append("page", page);
         if (limit) params.append("limit", limit);
 
@@ -175,7 +175,8 @@ export const projectApi = createApi({
           API_ROUTES.PROJECT.ACTIVITY_LOGS
         }?${params.toString()}`;
       },
-      providesTags: ["ActivityLogs"],
+      // providesTags: ["ActivityLogs"],
+       providesTags: [{ type: "ActivityLogs", id: "LIST" }],
     }),
 
     assignProject: builder.mutation({

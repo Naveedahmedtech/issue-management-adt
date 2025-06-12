@@ -25,7 +25,19 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
     const [selectedEntry, setSelectedEntry] = useState<any>(null);
     const [uploadedFiles, setUploadedFiles] = useState<Record<string, any>>({});
     const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>({});
+    const [showWarningModal, setShowWarningModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState<null | (() => void)>(null);
 
+    const confirmAction = (action: () => void) => {
+        setPendingAction(() => action);
+        setShowWarningModal(true);
+    };
+
+    const proceedWithAction = () => {
+        if (pendingAction) pendingAction();
+        setShowWarningModal(false);
+        setPendingAction(null);
+    };
 
     useEffect(() => {
         if (templateData.data?.length) {
@@ -74,28 +86,46 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
 
 
 
-    const handleAnswer = async (id: string, answer: boolean) => {
-        setResponses((prev) => ({
-            ...prev,
-            [id]: { ...prev[id], answer },
+    const handleAnswer = (id: string, answer: boolean) => {
+        const wasChecked = responses[id]?.answer === true;
+        if (wasChecked && !answer) {
+            return confirmAction(() => handleAnswerConfirmed(id, answer));
+        }
+        handleAnswerConfirmed(id, answer);
+    };
+
+    const handleAnswerConfirmed = async (id: string, newAnswer: boolean) => {
+        const prev = responses[id];
+        const body: Partial<ResponseItem> = {};
+
+        // Only include `answer` if it changed
+        if (prev.answer !== newAnswer) {
+            body.answer = newAnswer;
+        }
+
+        // Only include comment if it exists and is dirty
+        if (dirty[id] && prev.comment !== undefined) {
+            body.comment = prev.comment;
+        }
+
+        setResponses((prevState) => ({
+            ...prevState,
+            [id]: { ...prevState[id], answer: newAnswer },
         }));
 
-        // Use latest answer directly instead of reading stale state
-        const comment = responses[id]?.comment || "";
         try {
-
             await saveResponse({
                 projectId,
                 checklistId: selectedEntry.id,
                 itemId: id,
-                body: { answer, comment },
+                body,
             });
 
             setSaved((prev) => ({ ...prev, [id]: true }));
             setDirty((prev) => ({ ...prev, [id]: false }));
             setTimeout(() => setSaved((prev) => ({ ...prev, [id]: false })), 1500);
         } catch (error) {
-            console.log('error', error)
+            console.log("error", error);
         } finally {
             setSaving((prev) => ({ ...prev, [id]: false }));
         }
@@ -103,32 +133,49 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
 
 
     const handleComment = (id: string, comment: string) => {
+        // if (!responses[id]?.comment && comment) {
+        //     return confirmAction(() => handleCommentConfirmed(id, comment));
+        // }
+        handleCommentConfirmed(id, comment);
+    };
+
+    const handleCommentConfirmed = (id: string, comment: string) => {
         setResponses((prev) => ({ ...prev, [id]: { ...prev[id], comment } }));
         setDirty((prev) => ({ ...prev, [id]: true }));
     };
+    const handleSave = async (id: string) => {
+        const { answer, comment } = responses[id];
+        // only bail if there’s actually nothing to save
+        if (!dirty[id]) return;
 
-    const handleSave = async (id: string, passDirt = false) => {
-        const { answer, comment } = responses[id] ?? {};
-        console.log('responses[id]', responses[id])
-        if ((!dirty[id] && !passDirt) || answer == null) return;
+        const body: Partial<ResponseItem> = {};
+        // if they’ve answered, include it
+        if (answer !== null) {
+            body.answer = answer;
+        }
+        // if they’ve changed the comment, include it
+        body.comment = comment;
 
-        setSaving((prev) => ({ ...prev, [id]: true }));
+        setSaving(prev => ({ ...prev, [id]: true }));
+
         try {
             await saveResponse({
                 projectId,
-                checklistId: selectedEntry.id,
+                checklistId: selectedEntry!.id,
                 itemId: id,
-                body: { answer, comment },
+                body,
             });
-            setSaved((prev) => ({ ...prev, [id]: true }));
-            setDirty((prev) => ({ ...prev, [id]: false }));
-            setTimeout(() => setSaved((prev) => ({ ...prev, [id]: false })), 1500);
-        } catch (error) {
-            console.log('error', error)
+            setSaved(prev => ({ ...prev, [id]: true }));
+            setDirty(prev => ({ ...prev, [id]: false }));
+            setTimeout(() => setSaved(prev => ({ ...prev, [id]: false })), 1500);
+        } catch (err) {
+            console.error(err);
         } finally {
-            setSaving((prev) => ({ ...prev, [id]: false }));
+            setSaving(prev => ({ ...prev, [id]: false }));
         }
     };
+
+
 
     const handleAddItem = async () => {
         if (!newQuestion.trim() || !selectedEntry) return;
@@ -136,13 +183,18 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
         setNewQuestion("");
         setShowAddModal(false);
     };
+    const handleFileUpload = (itemId: string, file?: File) => {
+        // return confirmAction(() => handleFileUploadConfirmed(itemId, file));
+        handleFileUploadConfirmed(itemId, file);
+    };
 
-    const handleFileUpload = async (itemId: string, file?: File) => {
+    const handleFileUploadConfirmed = async (itemId: string, file?: File) => {
         if (!file) return;
 
         const formData = new FormData();
         formData.append("files", file);
         setUploadingMap(prev => ({ ...prev, [itemId]: true }));
+
         try {
             const res = await uploadFileToItem({
                 projectId,
@@ -152,7 +204,7 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
 
             const uploaded = res?.data?.createdFiles?.[0];
 
-            if (uploaded && uploaded.filePath?.endsWith(".pdf")) {
+            if (uploaded?.filePath?.endsWith(".pdf")) {
                 setUploadedFiles((prev) => ({
                     ...prev,
                     [itemId]: uploaded,
@@ -164,6 +216,7 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
             setUploadingMap(prev => ({ ...prev, [itemId]: false }));
         }
     };
+
 
     const handleDeleteItem = async (itemId: string) => {
         if (!selectedEntry) return;
@@ -211,6 +264,9 @@ const Checklist: FC<ChecklistProps> = ({ projectId, isArchived }) => {
                     isUploading={isUploading}
                     handleDeleteItem={handleDeleteItem}
                     uploadingMap={uploadingMap}
+                    showWarningModal={showWarningModal}
+                    setShowWarningModal={setShowWarningModal}
+                    proceedWithAction={proceedWithAction}
                 />
             }
         </>

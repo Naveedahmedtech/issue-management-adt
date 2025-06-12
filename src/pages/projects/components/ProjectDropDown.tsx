@@ -74,14 +74,6 @@ const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpe
                         </li>
                     </>
                 )}
-                {/*<li>*/}
-                {/*    <button*/}
-                {/*        onClick={() => setIsUploadModalOpen(true)}*/}
-                {/*        className="w-full text-left block px-4 py-2 text-sm  hover:bg-background"*/}
-                {/*    >*/}
-                {/*        Upload File*/}
-                {/*    </button>*/}
-                {/*</li>*/}
                 <li>
                     <button
                         onClick={handleGenerateReport}

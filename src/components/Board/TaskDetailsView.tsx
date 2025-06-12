@@ -18,6 +18,8 @@ import { PROJECT_STATUS } from "../../constant/index.ts";
 import { useLazyGetAllUsersQuery } from "../../redux/features/authApi.ts";
 import PaginatedDropdown from "../dropdown/PaginatedDropdown.tsx";
 import { FiX } from "react-icons/fi";
+import { format, parseISO } from "date-fns";
+import { parseNewValueToList } from "../../utils/index.ts";
 
 const statusOptions = [
   { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
@@ -138,6 +140,8 @@ const TaskDetailsView: React.FC<{
     issueId: task?.id ? task?.id : undefined,
   });
 
+  console.log('latestActivity', latestActivity)
+
   const { userData } = useAuth();
   const {
     userData: { role },
@@ -204,6 +208,17 @@ const TaskDetailsView: React.FC<{
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-textDark">
       {/* Task Details */}
       <div className="md:col-span-2 space-y-8">
+          <div className="flex justify-end gap-3">
+            {!isArchived && <Button text="Edit" onClick={onEdit} fullWidth={false}  />}
+            {/* {role !== ROLES.WORKER && !isArchived && (
+              <Button
+                text="Delete"
+                onClick={() => setIsDeleteModalOpen(true)}
+                preview="danger"
+                fullWidth={false}
+              />
+            )} */}
+          </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <h4 className="text-base font-semibold mb-1">Title</h4>
@@ -213,7 +228,6 @@ const TaskDetailsView: React.FC<{
     break-words break-all
     whitespace-normal
     max-w-full
-    sm:line-clamp-2 sm:overflow-hidden
   "
               title={task.title}
             >
@@ -363,7 +377,7 @@ const TaskDetailsView: React.FC<{
 
         </div>
 
-        <div className="flex justify-end gap-3 pt-4">
+        {/* <div className="flex justify-end gap-3 pt-4">
           {!isArchived && <Button text="Edit" onClick={onEdit} fullWidth={false} />}
           {role !== ROLES.WORKER && !isArchived && (
             <Button
@@ -373,7 +387,7 @@ const TaskDetailsView: React.FC<{
               fullWidth={false}
             />
           )}
-        </div>
+        </div> */}
 
         {isDeleteModalOpen && (
           <ModalContainer
@@ -408,24 +422,65 @@ const TaskDetailsView: React.FC<{
               if (log.fieldName === "Issue Created") return true;
               const noChange = log.oldValue == null && log.newValue == null;
               return !noChange;
-            }).map((activity: any) => (
-              <div key={activity.id} className="bg-background p-3 rounded-md">
-                <p className="text-xs font-semibold truncate">{activity.user.displayName}</p>
-                <p className="text-xs truncate">
-                  {activity.fieldName === "Issue Created"
-                    ? "Created the issue"
-                    : `Updated ${activity.fieldName}`}
-                </p>
-                {activity.fieldName !== "Issue Created" && (
-                  <p className="text-xs truncate">
-                    From: {activity.oldValue || "—"} → To: {activity.newValue || "—"}
+            }).map((log: any) => {
+              const isDateField = log.fieldName === "startDate" || log.fieldName === "endDate";
+
+              const formattedOldValue = isDateField && log.oldValue
+                ? format(parseISO(log.oldValue), "PPP")
+                : log.oldValue || "N/A";
+              const formattedNewValue = isDateField && log.newValue
+                ? format(parseISO(log.newValue), "PPP")
+                : log.newValue || "N/A";
+
+              return (
+                <div
+                  key={log.id}
+                  className="p-4 bg-backgroundShade2 text-textDark rounded-md border border-border"
+                >
+                  <p className="text-sm">
+                    <strong className="">{log.user.displayName}</strong>{" "}
+                    {
+                      log?.fieldName !== "Issue Created" ? (
+                        <>
+                          <span className="text-textSecondary">updated</span> {' '}
+                          <strong className="text-todo">{log.fieldName}</strong>
+                        </>
+                      ) : (
+                        <strong className="text-todo">created this issue</strong>
+                      )
+                    }
                   </p>
-                )}
-                <p className="text-xs truncate">
-                  {new Date(activity.createdAt).toLocaleString()}
-                </p>
-              </div>
-            ))}
+                  {
+                    log?.fieldName === "Issue Created" ? (
+                      <>
+                        <ul className="list-disc ml-6 text-sm">
+                          {parseNewValueToList(log.newValue).map(({ key, value }, index) => (
+                            <li key={index}>
+                              <strong>{key}:</strong> {value === null || value === undefined || value === '' ? 'N/A' : value}
+                            </li>
+                          ))}
+                        </ul>
+
+                        <p className="text-xs">
+                          {format(new Date(log.createdAt), "PPPpp")}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm">
+                          From:{" "}
+                          <span className="italic text-pending">{formattedOldValue}</span>{" "}
+                          To: <span className="italic text-success">{formattedNewValue}</span>
+                        </p>
+                        <p className="text-xs">
+                          {format(new Date(log.createdAt), "PPPpp")}
+                        </p>
+                      </>
+                    )
+                  }
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className="text-sm">No recent activity.</p>

@@ -27,9 +27,11 @@ const ChecklistUI = ({
     loadingItems,
     isAppendingLoading,
     loadingTemplates,
-    isUploading,
     handleDeleteItem,
-    uploadingMap
+    uploadingMap,
+    showWarningModal,
+    setShowWarningModal,
+    proceedWithAction
 }: any) => {
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
@@ -43,7 +45,7 @@ const ChecklistUI = ({
                         <h2 className="text-base font-semibold ">Checklist Templates</h2>
                         <button
                             onClick={() => setShowAddModal(true)}
-                            className="flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition"
+                            className="flex items-center gap-1 bg-backgroundShade1 text-text px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition"
                         >
                             <FiPlus className="h-4 w-4" /> Add
                         </button>
@@ -114,7 +116,8 @@ const ChecklistUI = ({
                                             />
 
                                             <div className="flex justify-between items-center text-xs text-gray-600">
-                                                <label className={`flex items-center cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : "text-blue-600 hover:underline"}`}>
+<label className={`flex items-center cursor-pointer ${uploadingMap[item.id] ? "opacity-50 pointer-events-none" : "text-blue-600 hover:underline"}`}>
+
                                                     <FiPaperclip className="text-xs" /> Attach Document
                                                     <input
                                                         type="file"
@@ -187,6 +190,7 @@ const ChecklistUI = ({
                                 fullWidth={false}
                                 isSubmitting={isAppendingLoading}
                                 type="submit"
+                                className="bg-primary hover:border-primary hover:!text-text"
                             />
                         </div>
                     </form>
@@ -218,6 +222,23 @@ const ChecklistUI = ({
                     </div>
                 </ModalContainer>
             )}
+
+            {showWarningModal && (
+                <ModalContainer
+                    isOpen={showWarningModal}
+                    onClose={() => setShowWarningModal(false)}
+                    title="Confirm Action"
+                >
+                    <p className="text-sm text-text">
+                        Are you sure you want to mark this checklist item as <strong>incomplete</strong>?
+                    </p>
+                    <div className="flex justify-end mt-4 space-x-2">
+                        <Button text="Cancel" onClick={() => setShowWarningModal(false)} fullWidth={false} className="hover:!text-text" />
+                        <Button text="Yes, proceed" onClick={proceedWithAction} fullWidth={false} preview="danger" />
+                    </div>
+                </ModalContainer>
+            )}
+
 
         </div>
     );

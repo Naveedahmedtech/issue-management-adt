@@ -13,7 +13,8 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
     const sendFileToIframe = () => {
         if (typeof window !== 'undefined' && iframeRef.current?.contentWindow) {
             const fileObj = {
-                filepath: fullFileUrl,
+                // filepath: fullFileUrl,
+                filepath: "https://backend.viewsoft.com/uploads/orders/Service%20English.pdf",
                 cacheid: fileId,
                 mime: 'application/pdf'
             };

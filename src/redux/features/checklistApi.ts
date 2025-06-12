@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "../../constant/BASE_URL";
 import { API_ROUTES } from "../../constant/API_ROUTES";
 import { REDUCER_PATHS } from "../../constant/REDUCER_PATH";
+import { projectApi } from "./projectsApi";
 
 export const checklistApi = createApi({
   reducerPath: REDUCER_PATHS.CHECKLIST_API,
@@ -9,7 +10,7 @@ export const checklistApi = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
   }),
-  tagTypes: ["Checklist"],
+  tagTypes: ["Checklist", "ActivityLogs"],
 
   endpoints: (builder) => ({
     createChecklist: builder.mutation({
@@ -18,39 +19,86 @@ export const checklistApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      invalidatesTags: [
+        { type: "Checklist", id: "LIST" },
+        { type: "ActivityLogs", id: "ActivityLogs" },
+      ],
     }),
     appendItemsToProjectChecklist: builder.mutation({
-      query: ({templateId, projectId, body}) => ({
+      query: ({ templateId, projectId, body }) => ({
         url: `${API_ROUTES.CHECKLIST.ROOT}/${templateId}/${projectId}`,
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      invalidatesTags: [
+        { type: "Checklist", id: "LIST" },
+        { type: "ActivityLogs", id: "ActivityLogs" },
+      ],
     }),
     answerToChecklistItems: builder.mutation({
-      query: ({projectId, checklistId, itemId, body}) => ({
+      query: ({ projectId, checklistId, itemId, body }) => ({
         url: `${API_ROUTES.CHECKLIST.ROOT}/${projectId}/projects/${checklistId}/${itemId}`,
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      invalidatesTags: [
+        { type: "Checklist", id: "LIST" },
+        { type: "ActivityLogs", id: "ActivityLogs" },
+      ],
+      // still invalidate your own tags:
+      // invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      // **and** on success dispatch into projectApi:
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            projectApi.util.invalidateTags([
+              // match what getProjectActiveLogs.providesTags()
+              { type: "ActivityLogs" as const, id: "LIST" },
+            ])
+          );
+        } catch {
+          // swallow
+        }
+      },
     }),
     uploadFileToChecklistItems: builder.mutation({
-      query: ({projectId, itemId, body}) => ({
+      query: ({ projectId, itemId, body }) => ({
         url: `${API_ROUTES.CHECKLIST.ROOT}/${projectId}/upload/${itemId}`,
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      invalidatesTags: [
+        { type: "Checklist", id: "LIST" },
+        { type: "ActivityLogs", id: "ActivityLogs" },
+      ],
+      // still invalidate your own tags:
+      // invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      // **and** on success dispatch into projectApi:
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            projectApi.util.invalidateTags([
+              // match what getProjectActiveLogs.providesTags()
+              { type: "ActivityLogs" as const, id: "LIST" },
+            ])
+          );
+        } catch {
+          // swallow
+        }
+      },
     }),
-        deleteChecklistItems: builder.mutation({
-      query: ({projectId, checklistId, itemId, body}) => ({
+    deleteChecklistItems: builder.mutation({
+      query: ({ projectId, checklistId, itemId, body }) => ({
         url: `${API_ROUTES.CHECKLIST.ROOT}/${projectId}/projects/${checklistId}/item/${itemId}`,
         method: "DELETE",
         body,
       }),
-      invalidatesTags: [{ type: "Checklist", id: "LIST" }],
+      invalidatesTags: [
+        { type: "Checklist", id: "LIST" },
+        { type: "ActivityLogs", id: "ActivityLogs" },
+      ],
     }),
     getAllTemplates: builder.query({
       query: ({ page, limit, projectId }) => ({
@@ -63,6 +111,13 @@ export const checklistApi = createApi({
     getProjectAllTemplates: builder.query({
       query: ({ projectId }) => ({
         url: `${API_ROUTES.CHECKLIST.ROOT}/${projectId}/projects`,
+        method: "GET",
+      }),
+      providesTags: [{ type: "Checklist", id: "LIST" }],
+    }),
+    getChecklistLogsByProject: builder.query({
+      query: ({ projectId }) => ({
+        url: `${API_ROUTES.CHECKLIST.ROOT}/${projectId}/logs`,
         method: "GET",
       }),
       providesTags: [{ type: "Checklist", id: "LIST" }],
@@ -86,6 +141,5 @@ export const {
   useGetProjectAllTemplatesQuery,
   useUploadFileToChecklistItemsMutation,
   useDeleteChecklistItemsMutation,
+  useGetChecklistLogsByProjectQuery,
 } = checklistApi;
-
-
