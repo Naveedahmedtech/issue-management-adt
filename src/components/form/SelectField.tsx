@@ -8,9 +8,10 @@ const SelectField: React.FC<{
     value: { label: string; value: string } | null;
     onChange: (option: { label: string; value: string } | null) => void;
     className?: string;
-}> = ({ label, options, value, onChange, className }) => (
-    <div className={clsx("mb-4", className)}>
-        <label className="block text-text mb-2">{label}</label>
+    labelColor?: string;
+}> = ({ label, options, value, onChange, className,labelColor = "text-textDark" }) => (
+    <div className={clsx("", className)}>
+        <label className={`block text-sm  ${labelColor}`}>{label}</label>
         <Select
             options={options}
             value={value}
@@ -20,48 +21,48 @@ const SelectField: React.FC<{
                 control: (provided) => ({
                     ...provided,
                     borderColor: 'var(--color-border)',
-                    backgroundColor: 'var(--color-background-shade-1)',
+                    backgroundColor: 'var(--color-background-shade-2)',
                     borderRadius: '8px',
-                    padding: '5px',
+                    // padding: '5px',
                     cursor: 'pointer',
                     '&:hover': {
-                        borderColor: 'var(--color-primary)',
+                        borderColor: 'var(--color-background-shade-1)',
                     },
                 }),
                 singleValue: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text)',
+                    color: 'var(--color-text-dark)',
                 }),
                 placeholder: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text-light)', // Use a lighter text color for the placeholder
+                    color: 'var(--color-text-dark)', // Use a lighter text-dark color for the placeholder
                 }),
                 input: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text)',
+                    color: 'var(--color-text-dark)',
                 }),
                 dropdownIndicator: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text)',
+                    color: 'var(--color-text-dark)',
                     cursor: 'pointer',
                 }),
                 menu: (provided) => ({
                     ...provided,
-                    backgroundColor: 'var(--color-background-shade-1)',
+                    backgroundColor: 'var(--color-background-shade-2)',
                 }),
                 option: (provided) => ({
                     ...provided,
-                    backgroundColor: 'var(--color-background-shade-1)',
-                    color: 'var(--color-text)',
+                    backgroundColor: 'var(--color-background-shade-2)',
+                    color: 'var(--color-text-dark)',
                     cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: 'var(--color-primary)',
-                        color: 'var(--color-text)',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-text-dark)',
                     },
                 }),
                 multiValueLabel: (provided) => ({
                     ...provided,
-                    color: 'var(--color-text)',
+                    color: 'var(--color-text-dark)',
                 }),
             }}
         />

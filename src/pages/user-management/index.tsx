@@ -34,7 +34,11 @@ const UserManagement: React.FC = () => {
     const [updateAzureUser, { isLoading: isUpdating }] = useUpdateAzureUserMutation();
 
     // Fetch users from API
-    const { data, isLoading, isError, refetch } = useGetAllUsersQuery({ page: currentPage, limit: 10 });
+    const { data, isLoading, isError, refetch } = useGetAllUsersQuery({
+        page: currentPage,
+        limit: 20,
+        roleName: selectedRole || undefined,
+    });
 
     // Fetch roles and permissions
     const { data: rolesData } = useRolesQuery({});
@@ -44,10 +48,14 @@ const UserManagement: React.FC = () => {
 
     // Prepare dropdown options for roles and permissions
     const rolesOptions =
-        rolesData?.data?.map((role: { id: string; name: string }) => ({
-            label: role.name.replace("_", " ").replace(/\b\w/g, (char: string) => char.toUpperCase()),
-            value: role.id,
-        })) || [];
+        rolesData?.data
+            ?.filter((role: { id: string; name: string }) => role.name !== "SUPER_ADMIN")
+            .map((role: { id: string; name: string }) => ({
+                label: role.name.replace("_", " ").replace(/\b\w/g, (char: string) => char.toUpperCase()),
+                value: role.id,
+            })) || [];
+
+    // const rolesOptions =["WORKER", "ADMIN"];
 
     const permissionsOptions =
         permissionsData?.data?.map((permission: { id: string; action: string }) => ({
@@ -67,15 +75,15 @@ const UserManagement: React.FC = () => {
         }
     }, [data]);
 
-    // Filter users by role
+    // Filter users by role (via API)
     const handleFilterChange = (role: string | null) => {
         if (role && role !== "All Roles") {
             const updatedRoleName = role === "SUPER ADMIN" ? "SUPER_ADMIN" : role;
             setSelectedRole(updatedRoleName);
-            setFilteredUsers(users.filter((user) => user.role === updatedRoleName));
         } else {
-            setFilteredUsers(users);
+            setSelectedRole("");
         }
+        setCurrentPage(1);
     };
 
     // Edit user
@@ -137,9 +145,9 @@ const UserManagement: React.FC = () => {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 text-textDark">
             <div className="flex flex-wrap gap-x-10 justify-between items-center mb-4">
-                <h1 className="text-xl font-bold text-text">User Management</h1>
+                <h1 className="text-xl font-bold">User Management</h1>
                 <div className="flex justify-center items-center space-x-4">
                     <SelectField
                         label=""

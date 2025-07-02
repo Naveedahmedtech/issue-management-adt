@@ -14,7 +14,15 @@ export const projectApi = createApi({
     },
   }),
   // ✅ Enable tagTypes
-  tagTypes: ["Project", "RecentProjects", "ActivityLogs", "Stats"],
+  tagTypes: [
+    "Project",
+    "RecentProjects",
+    "ActivityLogs",
+    "Stats",
+    "IssueFiles",
+    "Issues",
+    "ArchivedProjects"
+  ],
 
   endpoints: (builder) => ({
     // ✅ Assign tag to getProjectList query
@@ -72,7 +80,7 @@ export const projectApi = createApi({
         url: `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.TOGGLE_ARCHIVED}`,
         method: "PATCH",
       }),
-      invalidatesTags: ["Project", "RecentProjects", "Stats"],
+      invalidatesTags: ["Project", "RecentProjects", "Stats", "ArchivedProjects"],
     }),
 
     getProjectById: builder.query({
@@ -89,6 +97,17 @@ export const projectApi = createApi({
     getProjectIssues: builder.query({
       query: (projectId) =>
         `${API_ROUTES.PROJECT.ROOT}/${projectId}/${API_ROUTES.PROJECT.ISSUES}`,
+      providesTags: ["Project"],
+    }),
+
+    getAllProjectIssues: builder.query({
+      query: ({ userId }) => {
+        const params = new URLSearchParams();
+        if (userId) params.append("userId", userId);
+        return `${API_ROUTES.PROJECT.ROOT}/${
+          API_ROUTES.PROJECT.ALL_ISSUES
+        }?${params.toString()}`;
+      },
       providesTags: ["Project"],
     }),
 
@@ -133,6 +152,7 @@ export const projectApi = createApi({
     getArchivedProjects: builder.query({
       query: ({ page, limit }) =>
         `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ARCHIVED}?page=${page}&limit=${limit}`,
+      providesTags: ["ArchivedProjects"],
     }),
 
     updateIssueLogHistory: builder.mutation({
@@ -145,9 +165,9 @@ export const projectApi = createApi({
     }),
 
     getProjectActiveLogs: builder.query({
-      query: ({ projectId, page, limit, issueId }) => {
+      query: ({ projectId, page, limit, type }) => {
         const params = new URLSearchParams();
-        if (issueId) params.append("issueId", issueId);
+        if (type) params.append("type", type);
         if (page) params.append("page", page);
         if (limit) params.append("limit", limit);
 
@@ -155,8 +175,24 @@ export const projectApi = createApi({
           API_ROUTES.PROJECT.ACTIVITY_LOGS
         }?${params.toString()}`;
       },
-      providesTags: ["ActivityLogs"],
+      // providesTags: ["ActivityLogs"],
+       providesTags: [{ type: "ActivityLogs", id: "LIST" }],
     }),
+
+    assignProject: builder.mutation({
+      query: (body) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.ASSIGN_TO_USERS}`,
+        method: "POST",
+        body,
+      })
+    }),
+    UnassignProject: builder.mutation({
+      query: (body) => ({
+        url: `${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.UNASSIGN_TO_USERS}`,
+        method: "POST",
+        body,
+      })
+    })
   }),
 });
 
@@ -177,4 +213,7 @@ export const {
   useToggleArchiveMutation,
   useUpdateIssueLogHistoryMutation,
   useGetProjectActiveLogsQuery,
+  useGetAllProjectIssuesQuery,
+  useAssignProjectMutation,
+  useUnassignProjectMutation
 } = projectApi;

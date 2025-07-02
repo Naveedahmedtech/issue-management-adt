@@ -12,25 +12,25 @@ const ArchivedProjects: React.FC<any> = ({
     handlePageChange
 }) => {
 
-    const getStatusBadge = (status: string) => {
-        let color = "bg-gray-500";
+    // const getStatusBadge = (status: string) => {
+    //     let color = "bg-gray-500";
 
-        switch (status?.toLocaleLowerCase()) {
-            case "completed":
-                color = "bg-success text-white";
-                break;
-            case "in progress":
-                color = "bg-todo text-white";
-                break;
-            case "pending":
-                color = "bg-pending text-white";
-                break;
-            default:
-                color = "bg-gray-500 text-white";
-        }
+    //     switch (status?.toLocaleLowerCase()) {
+    //         case "completed":
+    //             color = "bg-success text-white";
+    //             break;
+    //         case "in progress":
+    //             color = "bg-todo text-white";
+    //             break;
+    //         case "pending":
+    //             color = "bg-pending text-white";
+    //             break;
+    //         default:
+    //             color = "bg-gray-500 text-white";
+    //     }
 
-        return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${color}`}>{status}</span>;
-    };
+    //     return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${color}`}>{status}</span>;
+    // };
 
     const columns = [
         {
@@ -38,16 +38,16 @@ const ArchivedProjects: React.FC<any> = ({
             label: "Project Title",
             render: (row: any) => <span>{row.title}</span>,
         },
-        {
-            id: "description",
-            label: "Project Description",
-            render: (row: any) => <span>{row?.description?.slice(0, 20)}</span>,
-        },
-        {
-            id: "status",
-            label: "Status",
-            render: (row: any) => getStatusBadge(row.status),
-        },
+        // {
+        //     id: "description",
+        //     label: "Project Description",
+        //     render: (row: any) => <span>{row?.description?.slice(0, 20)}</span>,
+        // },
+        // {
+        //     id: "status",
+        //     label: "Status",
+        //     render: (row: any) => getStatusBadge(row.status),
+        // },
         {
             id: "action",
             label: "Action",
@@ -67,10 +67,10 @@ const ArchivedProjects: React.FC<any> = ({
 
     return (
         <div>
-            <main className="p-4">
+            <main className="p-4 text-textDark">
                 <section className="mb-6">
-                    <h3 className="text-xl font-semibold text-text mb-4">Archived Projects</h3>
-                    {isLoading && <p className="text-text">Loading...</p>}
+                    <h3 className="text-xl font-semibold  mb-4">Archived Projects</h3>
+                    {isLoading && <p className="">Loading...</p>}
                     {error && <p className="text-red-500">Failed to load archived projects.</p>}
                     {projects && (
                         <Table

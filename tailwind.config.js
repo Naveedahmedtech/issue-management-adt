@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss';
+import typography from '@tailwindcss/typography';
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
@@ -10,6 +13,7 @@ export default {
         backgroundShade1: "var(--color-background-shade-1)",
         backgroundShade2: "var(--color-background-shade-2)",
         text: "var(--color-text)",
+        textDark: "var(--color-text-dark)",
         hover: "var(--color-hover)",
         textHover: "var(--color-text-hover)",
         textSecondary: "var(--color-text-secondary)",
@@ -31,5 +35,5 @@ export default {
     },
   },
 
-  plugins: [],
+  plugins: [typography],
 };

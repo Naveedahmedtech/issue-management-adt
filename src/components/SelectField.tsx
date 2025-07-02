@@ -8,57 +8,62 @@ interface Option {
 
 interface ISelectFieldProps {
     label: string;
-    options: Option[];
     name: string;
     value: Option | null;
+    options: Option[];  // Initial and dynamically loaded options
+    loadOptions?: (inputValue: string, callback: (options: Option[]) => void) => void;
     onChange: (option: Option | null) => void;
 }
 
-const SelectField: React.FC<ISelectFieldProps> = ({ label, options, name, value, onChange }) => {
+const SelectField: React.FC<ISelectFieldProps> = ({ label, name, value, options, onChange }) => {
     const handleChange = (selectedOption: Option | null) => {
         onChange(selectedOption);
     };
 
+    // Handle infinite scroll
+    const handleMenuScrollToBottom = () => {
+        // loadOptions('', () => {});  // Trigger loading more users when scrolled to bottom
+    };
+
     return (
-        <div className="">
-            <label htmlFor={name} className="block text-sm font-medium text-text mb-1">
+        <div>
+            <label htmlFor={name} className="block text-sm font-medium text-textDark mb-1">
                 {label}
             </label>
             <Select
                 id={name}
                 name={name}
-                value={value || null} // Ensure value defaults to null if undefined
+                value={value || null}
                 options={options}
                 onChange={handleChange}
-                menuPortalTarget={document.body} // Render dropdown outside parent container
+                onMenuScrollToBottom={handleMenuScrollToBottom}  // Trigger when scroll reaches bottom
+                menuPortalTarget={document.body}
                 classNamePrefix="react-select"
                 className="react-select-container"
                 styles={{
                     control: (base) => ({
                         ...base,
-                        borderColor: 'var(--color-primary)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        '&:hover': { borderColor: 'var(--color-primary)' },
-                        minWidth: "150px"
-                    }),
-                    singleValue: (base) => ({
-                        ...base,
-                        color: 'var(--color-text)',
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
                     }),
                     menu: (base) => ({
                         ...base,
-                        zIndex: 9999, // Ensure dropdown is above other elements
-                        backgroundColor: 'var(--color-background)',
+                        zIndex: 9999,
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        maxHeight: 200,
+                        overflowY: 'auto'
                     }),
-                    menuPortal: (base) => ({
-                        ...base,
-                        zIndex: 9999, // Ensure the portal has the highest z-index
-                    }),
-                    option: (base, state) => ({
-                        ...base,
-                        color: state.isSelected ? 'var(--color-text-primary)' : 'var(--color-text)',
-                        backgroundColor: state.isFocused ? 'var(--color-primary)' : 'var(--color-background)',
+                    option: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'var(--color-background-shade-2)',
+                        color: 'var(--color-text-dark)',
+                        cursor: 'pointer',
+                        ':hover': {
+                            backgroundColor: 'var(--color-background)',
+                            color: 'var(--color-text-dark)',
+                        },
                     }),
                 }}
             />

@@ -41,7 +41,7 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
             <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
             <div
                 ref={modalRef}
-                className={`relative bg-background p-6 rounded-lg shadow-xl w-full ${width} transition-all transform duration-300 scale-95`}
+                className={`relative bg-backgroundShade1 p-6 rounded-lg shadow-xl w-full ${width} transition-all transform duration-300 scale-95`}
             >
                 {/* Modal Header */}
                 <div className="flex justify-between items-center mb-4">

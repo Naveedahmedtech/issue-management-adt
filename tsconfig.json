@@ -19,8 +19,9 @@
     // "noFallthroughCasesInSwitch": true,
     // "skipLibCheck": true,
     // "noEmitOnError": false,
-    "noEmit": true
+    "noEmit": true,
+    "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": ["src", "public/assets/scripts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

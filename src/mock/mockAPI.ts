@@ -14,7 +14,7 @@ export const fetchMockProject = (): Promise<any> => {
                 columns: [
                     {
                         id: "column-1",
-                        name: "To Do",
+                        name: "Active",
                         tasks: [
                             {
                                 id: "task-1",
@@ -44,7 +44,7 @@ export const fetchMockProject = (): Promise<any> => {
                     },
                     {
                         id: "column-2",
-                        name: "In Progress",
+                        name: "On Going",
                         tasks: [
                             {
                                 id: "task-3",

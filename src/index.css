@@ -7,23 +7,30 @@
 
 
 :root {
-    --color-primary: #7a22fe;
+    /*--color-primary: #7a22fe;31BD59*/
+    --color-primary: #32a5e2;
     /* --color-primary: #FFC107; */
     --color-text-hover: #ffffff;
-    --color-hover: #5808d1;
+    --color-hover: #194157;
     --color-text-secondary: #0202029d;
     /* Primary brand color */
-    --color-background: #ffffff;
+    --color-background: #ededed8c;
     /* Background for light theme */
-    --color-background-shade-1: #f8f9fa;
+    /*--color-background-shade-1: #f8f9fa;*/
+    /* --color-background-shade-1: #F0F7F9; */
+    --color-background-shade-1: #0D2938;
+
     /* Slightly darker for card backgrounds or sections */
-    --color-background-shade-2: #e9ecef;
+    /*#F0F7F9*/
+    /* --color-background-shade-2: #ddecf0; */
+    --color-background-shade-2: #ffffff;
     /* Lighter shadow or divider */
-    --color-text: #212529;
+    --color-text: #ffff;
+    --color-text-dark: #0D2938;
     /* Main text color, dark gray for readability */
     --color-text-muted: #6c757d;
     /* Muted text for secondary information */
-    --color-border: #000000;
+    --color-border: #0D2938;
     /* Light gray for borders */
     --color-shadow: rgba(0, 0, 0, 0.1);
     /* Light shadow for depth */
@@ -37,14 +44,16 @@
 }
 
 .dark {
-    --color-primary: #FFC107;
+    /*--color-primary: #FFC107;*/
+    --color-primary: #d9f1f3;
+
     --color-text-hover: #ffffff;
     --color-text-secondary: #ffffff6c;
-    --color-hover: #4200a4;
+    --color-hover: #052c65;
     /* Primary brand color (same as light theme, but it will glow more) */
     --color-background: #121212;
     /* Deep dark background for the entire layout */
-    --color-background-shade-1: #1c1c1c;
+    /* --color-background-shade-1: #1c1c1c; */
     /* Slightly lighter for card backgrounds */
     --color-background-shade-2: #252525;
     /* For dividers, sections, or shadows */

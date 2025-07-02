@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { APP_ROUTES } from '../../../constant/APP_ROUTES';
-import { ROLES } from '../../../constant/ROLES';
-import { API_ROUTES } from '../../../constant/API_ROUTES';
-import { BASE_URL } from '../../../constant/BASE_URL';
+import {useState} from 'react';
+import {Link} from 'react-router-dom';
+import {APP_ROUTES} from '../../../constant/APP_ROUTES';
+import {ROLES} from '../../../constant/ROLES';
+import {API_ROUTES} from '../../../constant/API_ROUTES';
+import {BASE_URL} from '../../../constant/BASE_URL';
 
-const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpen, setIsUploadModalOpen, role }: any) => {
+const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpen, role }: any) => {
     const [isLoading, setIsLoading] = useState(false); // Loading state
 
     // Function to handle report download using fetch
@@ -44,14 +44,14 @@ const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpe
     };
 
     return (
-        <div className="absolute right-0 mt-2 w-56 bg-background rounded-md shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-backgroundShade2 text-textDark rounded-md shadow-lg z-50">
             <ul className="py-2">
                 {role !== ROLES.WORKER && (
                     <>
                         <li>
                             <Link
                                 to={`${APP_ROUTES.APP.PROJECTS.EDIT}/${projectId}`}
-                                className="block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
+                                className="block px-4 py-2 text-sm  hover:bg-background"
                             >
                                 Edit Project
                             </Link>
@@ -59,7 +59,7 @@ const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpe
                         <li>
                             <button
                                 onClick={() => setIsDeleteModalOpen(true)}
-                                className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
+                                className="w-full text-left block px-4 py-2 text-sm  hover:bg-background"
                             >
                                 Delete Project
                             </button>
@@ -67,7 +67,7 @@ const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpe
                         <li>
                             <button
                                 onClick={() => setIsArchiveModalOpen(true)}
-                                className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
+                                className="w-full text-left block px-4 py-2 text-sm  hover:bg-background"
                             >
                                 Archive Project
                             </button>
@@ -76,17 +76,9 @@ const ProjectDropDown = ({ projectId, setIsDeleteModalOpen, setIsArchiveModalOpe
                 )}
                 <li>
                     <button
-                        onClick={() => setIsUploadModalOpen(true)}
-                        className="w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1"
-                    >
-                        Upload File
-                    </button>
-                </li>
-                <li>
-                    <button
                         onClick={handleGenerateReport}
                         disabled={isLoading} // Disable button while loading
-                        className={`w-full text-left block px-4 py-2 text-sm text-text hover:bg-backgroundShade1 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full text-left block px-4 py-2 text-sm hover:bg-background  ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {isLoading ? 'Downloading...' : 'Generate Report'}
                     </button>

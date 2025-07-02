@@ -4,45 +4,75 @@ import clsx from "clsx";
 const InputField: React.FC<{
     label: string;
     type: string;
-    name: string; // Ensure name is required
-    value?: string | number | null; // Accept both string and number
+    name: string;
+    value?: string | number | null;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     required?: boolean;
     className?: string;
-    [x: string]: any; // For additional props
-}> = ({ label, type, name, value, onChange, required = false, className, ...props }) => (
-    <div className={clsx("mb-4", className)}>
-        <label htmlFor={name} className="block text-text mb-2">
-            {label}
-        </label>
-        {type === "textarea" ? (
-            <textarea
-                id={name}
-                name={name}
-                value={value as string} // Ensure textarea only takes string values
-                onChange={onChange}
-                className={clsx(
-                    "w-full p-2 border bg-background border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                )}
-                required={required}
-                rows={4}
-                {...props}
-            />
-        ) : (
-            <input
-                id={name}
-                name={name}
-                type={type}
-                value={value !== undefined ? String(value) : ""} // Convert number to string
-                onChange={onChange}
-                className={clsx(
-                    "w-full p-2 border border-border bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                )}
-                required={required}
-                {...props}
-            />
-        )}
-    </div>
-);
+    labelColor?: string;
+    inputClassName?: string;
+    maxLength?: number;
+    [x: string]: any;
+}> = ({
+    label,
+    type,
+    name,
+    value,
+    onChange,
+    required = false,
+    className,
+    inputClassName,
+    labelColor = "text-textDark",
+    maxLength,
+    ...props
+}) => {
+    const currentLength = value ? String(value).length : 0;
+
+    return (
+        <div className={clsx("", className)}>
+            <label htmlFor={name} className={`block text-sm font-medium ${labelColor}`}>
+                {label}
+            </label>
+
+            {type === "textarea" ? (
+                <textarea
+                    id={name}
+                    name={name}
+                    value={value as string}
+                    onChange={onChange}
+                    className={clsx(
+                        "w-full p-2 border bg-backgroundShade2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary",
+                        inputClassName
+                    )}
+                    required={required}
+                    rows={4}
+                    maxLength={maxLength}
+                    {...props}
+                />
+            ) : (
+                <input
+                    id={name}
+                    name={name}
+                    type={type}
+                    value={value !== undefined ? String(value) : ""}
+                    onChange={onChange}
+                    className={clsx(
+                        "w-full p-2 border border-border bg-backgroundShade2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary",
+                        inputClassName
+                    )}
+                    required={required}
+                    maxLength={maxLength}
+                    {...props}
+                />
+            )}
+
+            {maxLength && (
+                <div className="text-right text-xs text-gray-500 mt-1">
+                    {currentLength} / {maxLength}
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default InputField;

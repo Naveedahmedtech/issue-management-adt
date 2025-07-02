@@ -1,0 +1,73 @@
+/* Dark theme overrides for react-date-range picker */
+
+.date-range-picker.rdr-picker-dark .rdrCalendarWrapper {
+  background-color: #2b2b2b !important;
+}
+
+/* Month/year selectors and header inputs */
+.date-range-picker.rdr-picker-dark .rdrMonthAndYearPickers select,
+.date-range-picker.rdr-picker-dark .rdrDateDisplayItem input {
+  background-color: #3a3a3a !important;
+  color: #e0e0e0 !important;
+  border-color: #555 !important;
+}
+
+/* In-month day numbers forced white */
+.date-range-picker.rdr-picker-dark .rdrDay:not(.rdrDayDisabled) .rdrDayNumber {
+  color: #ffffff !important;
+}
+
+/* Out-of-month days dimmed */
+.date-range-picker.rdr-picker-dark .rdrDayDisabled .rdrDayNumber {
+  color: #666666 !important;
+}
+
+/* Highlight "today" */
+.date-range-picker.rdr-picker-dark .rdrDayToday .rdrDayNumber {
+  border-color: #777777 !important;
+}
+
+/* Selected/in-range days background */
+.date-range-picker.rdr-picker-dark .rdrDayInRange,
+.date-range-picker.rdr-picker-dark .rdrDaySelected {
+  background-color: #555555 !important;
+}
+
+.date-range-picker.rdr-picker-dark .rdrDaySelected .rdrDayNumber,
+.date-range-picker.rdr-picker-dark .rdrDayInSelection .rdrDayNumber {
+  background-color: #1a73e8 !important;
+  color: #ffffff !important;
+}
+
+/* Weekday and month labels */
+.date-range-picker.rdr-picker-dark .rdrMonthName,
+.date-range-picker.rdr-picker-dark .rdrWeekDay {
+  color: #cccccc !important;
+}
+
+/* Sidebar (defined ranges) and date-display header */
+.date-range-picker.rdr-picker-dark .rdrDefinedRangesWrapper,
+.date-range-picker.rdr-picker-dark .rdrDateDisplayWrapper {
+  background-color: #333333 !important;
+  border-color: #444444 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Scrollbar styling */
+.date-range-picker.rdr-picker-dark .rdrMonthsVertical,
+.date-range-picker.rdr-picker-dark .rdrMonthsHorizontal {
+  scrollbar-color: #555555 #2b2b2b !important;
+  scrollbar-width: thin !important;
+}
+
+.date-range-picker.rdr-picker-dark .rdrMonthsVertical::-webkit-scrollbar,
+.date-range-picker.rdr-picker-dark .rdrMonthsHorizontal::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.date-range-picker.rdr-picker-dark .rdrMonthsVertical::-webkit-scrollbar-thumb,
+.date-range-picker.rdr-picker-dark .rdrMonthsHorizontal::-webkit-scrollbar-thumb {
+  background-color: #555555 !important;
+  border-radius: 3px !important;
+}

@@ -9,6 +9,9 @@ const PERMISSION_BASE = `${API_BASE}/permission`;
 const PROJECT_BASE = `${API_BASE}/project`;
 const ISSUE_BASE = `${API_BASE}/issue`;
 const ORDER_BASE = `${API_BASE}/order`;
+const COMPANY_BASE = `${API_BASE}/company`;
+const COMMENTS_BASE = `${API_BASE}/comments`;
+const CHECKLIST_BASE = `${API_BASE}/checklist-templates`;
 
 export const API_ROUTES = {
   AUTH: {
@@ -59,7 +62,10 @@ export const API_ROUTES = {
     ARCHIVED: `archived`,
     TOGGLE_ARCHIVED: `toggle-archive`,
     ISSUE_LOG_HISTORY: 'update-log-history',
-    ACTIVITY_LOGS: 'activity-logs'
+    ACTIVITY_LOGS: 'activity-logs',
+    ALL_ISSUES: 'all-issues',
+    ASSIGN_TO_USERS: 'assign-to-users',
+    UNASSIGN_TO_USERS: 'unassign-to-users',
   },
   ORDER: {
     ROOT: `${ORDER_BASE}`,
@@ -71,7 +77,19 @@ export const API_ROUTES = {
     TOGGLE_ARCHIVED: `toggle-archive`,
   },
   ISSUE: {
-    ROOT: `${ISSUE_BASE}`
+    ROOT: `${ISSUE_BASE}`,
+    ASSIGN_TO_USER: `assign-to-user`,
+    REMOVE_USER: `remove-user`
+  },
+  COMPANY: {
+    ROOT: `${COMPANY_BASE}`,
+  },
+  COMMENTS: {
+    ROOT: `${COMMENTS_BASE}`,
+    LATEST: `${COMMENTS_BASE}/latest`,
+  },
+  CHECKLIST: {
+    ROOT: `${CHECKLIST_BASE}`,
   }
 };
 

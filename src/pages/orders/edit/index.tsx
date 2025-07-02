@@ -1,69 +1,70 @@
 import React from "react";
 import CreateOrEdit from "../components/CreateOrEdit.tsx";
-import { useNavigate, useParams } from "react-router-dom";
-import { useGetOrderByIdQuery, useUpdateOrderMutation } from "../../../redux/features/orderApi.ts";
-import { toast } from "react-toastify";
-import { OrderFormData } from "../../../types/types.ts";
-import { format } from "date-fns";
+import {useNavigate, useParams} from "react-router-dom";
+import {useGetOrderByIdQuery, useUpdateOrderMutation} from "../../../redux/features/orderApi.ts";
+import {toast} from "react-toastify";
+import {OrderFormData} from "../../../types/types.ts";
+import {format} from "date-fns";
+import {APP_ROUTES} from "../../../constant/APP_ROUTES.ts";
 
 
 const EditOrder: React.FC = () => {
 
     const params = useParams();
-    const navigate= useNavigate();
+    const navigate = useNavigate();
 
-    const { orderId } = params;
+    const {orderId} = params;
 
-    const { data: orderData, isLoading: isOrderDataLoading } = useGetOrderByIdQuery(orderId);
-  // ✅ Use the updateProject mutation
-  const [updateProject, { isLoading: isUpdating }] = useUpdateOrderMutation();
+    const {data: orderData, isLoading: isOrderDataLoading} = useGetOrderByIdQuery(orderId);
+    // ✅ Use the updateProject mutation
+    const [updateProject, {isLoading: isUpdating}] = useUpdateOrderMutation();
 
-  // ✅ Handle form submission for updating the project
-  const handleSubmit = async (formData: OrderFormData) => {
-    const formDataToSend = new FormData();
-  
-    // Append form fields
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("companyName", formData.companyName || '');
-    formDataToSend.append("location", formData.location);
-    formDataToSend.append("price", formData.price?.toString() ||  "");
-    formDataToSend.append(
-      "startDate",
-      formData.startDate ? format(formData.startDate, "yyyy-MM-dd") : ""
-    );
-    formDataToSend.append(
-      "endDate",
-      formData.endDate ? format(formData.endDate, "yyyy-MM-dd") : ""
-    );
-    formDataToSend.append("status", formData.status?.value || "");
-  
-    // ✅ Check if new files are uploaded
-    if (formData.files && formData.files.length > 0) {
-      const hasNewFiles = formData.files.some((file) => file instanceof File);
-      if (hasNewFiles) {
-        formData.files.forEach((file: File) => {
-          formDataToSend.append("files", file);
-        });
-      }
+    // ✅ Handle form submission for updating the project
+    const handleSubmit = async (formData: OrderFormData) => {
+        const formDataToSend = new FormData();
+
+        // Append form fields
+        formDataToSend.append("name", formData.name);
+        formDataToSend.append("description", formData.description);
+        formDataToSend.append("companyId", formData.companyId || "");
+        formDataToSend.append("location", formData.location);
+        formDataToSend.append("price", formData.price?.toString() || "");
+        formDataToSend.append(
+            "startDate",
+            formData.startDate ? format(formData.startDate, "yyyy-MM-dd") : ""
+        );
+        formDataToSend.append(
+            "endDate",
+            formData.endDate ? format(formData.endDate, "yyyy-MM-dd") : ""
+        );
+        formDataToSend.append("status", formData.status?.value || "");
+
+        // ✅ Check if new files are uploaded
+        if (formData.files && formData.files.length > 0) {
+            const hasNewFiles = formData.files.some((file) => file instanceof File);
+            if (hasNewFiles) {
+                formData.files.forEach((file: File) => {
+                    formDataToSend.append("files", file);
+                });
+            }
+        }
+
+        try {
+            // ✅ Call the updateProject mutation
+            await updateProject({orderId, formData: formDataToSend}).unwrap();
+            if (orderId) {
+                navigate(APP_ROUTES.APP.ORDERS.DETAILS.replace(":orderId", orderId));
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Failed to update order. Please try again.");
+        }
+    };
+
+
+    // ✅ Show loading state while fetching project data
+    if (isOrderDataLoading) {
+        return <p>Loading order data...</p>;
     }
-  
-    try {
-      // ✅ Call the updateProject mutation
-      await updateProject({ orderId, formData: formDataToSend }).unwrap();
-      toast.success("Order updated successfully!");
-      navigate(`/orders/${orderId}`);
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to update order. Please try again.");
-    }
-  };
-  
-  
-
-  // ✅ Show loading state while fetching project data
-  if (isOrderDataLoading) {
-    return <p>Loading order data...</p>;
-  }
 
     return (
         <CreateOrEdit
@@ -72,8 +73,8 @@ const EditOrder: React.FC = () => {
                 name: orderData?.data?.name,
                 description: orderData?.data?.description,
                 location: orderData?.data?.location,
-                companyName: orderData?.data?.companyName,
-                status: { label: orderData?.data?.status, value: orderData?.data?.status },
+                companyId: orderData?.data?.company?.id || "",
+                status: {label: orderData?.data?.status, value: orderData?.data?.status},
                 price: orderData?.data?.price,
                 files: orderData?.data?.files || [],
                 startDate: orderData?.data?.startDate,

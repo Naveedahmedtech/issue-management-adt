@@ -6,6 +6,9 @@ export const REDUCER_PATHS = {
   PROJECT_API: "projectAPI",
   ISSUE_API: "issueAPI",
   ORDER_API: "orderAPI",
+  COMPANY_API: "companyAPI",
+    COMMENTS_API: "commentsApi",
+  CHECKLIST_API: "checklistApi",
 };
 
 export const SLICES_PATH = {

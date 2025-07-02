@@ -13,10 +13,10 @@ const RecentProjects: React.FC<any> = ({ recentProjects, error, isLoading }) => 
             case "completed":
                 color = "bg-success text-white";
                 break;
-            case "in progress":
+            case "on going":
                 color = "bg-todo text-white";
                 break;
-            case "pending":
+            case "active":
                 color = "bg-pending text-white";
                 break;
             default:

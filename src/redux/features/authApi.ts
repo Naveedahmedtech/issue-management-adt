@@ -9,6 +9,7 @@ export const authApi = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
   }),
+  tagTypes: ['UserList'],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (body) => ({
@@ -64,6 +65,7 @@ export const authApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["UserList"],
     }),
     updateAzureUser: builder.mutation({
       query: ({ body, userId }) => ({
@@ -82,9 +84,17 @@ export const authApi = createApi({
       query: () => API_ROUTES.USER.AZURE_LOGIN,
     }),
     getAllUsers: builder.query({
-      query: ({ page, limit }: { page: number; limit: number }) =>
-        `${API_ROUTES.USER.ROOT}?page=${page}&limit=${limit}`,
-    }),
+      query: ({ page, limit, roleName }: { page: number; limit: number; roleName?: string }) => {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (roleName) params.append("roleName", roleName);
+    
+        // Ensure proper template string syntax with backticks
+        return `${API_ROUTES.USER.ROOT}?${params.toString()}`;
+      },
+       providesTags: ['UserList'],
+    }),    
     roles: builder.query({
       query: () => API_ROUTES.ROLES.ROOT,
     }),
@@ -108,5 +118,6 @@ export const {
   usePermissionsQuery,
   useCreateAzureUserMutation,
   useUpdateAzureUserMutation,
-  useDeleteAzureUserMutation
+  useDeleteAzureUserMutation,
+  useLazyGetAllUsersQuery
 } = authApi;

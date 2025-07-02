@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const NotFound = () => {
     return (
-        <div className="flex items-center justify-center h-screen bg-backgroundShade1">
+        <div className="flex items-center text-textDark justify-center h-screen bg-backgroundShade1">
             <div className="text-center">
                 {/* Error Icon */}
                 <div className="flex justify-center mb-4">
@@ -27,7 +27,7 @@ const NotFound = () => {
                 {/* Go Home Button */}
                 <Link
                     to="/"
-                    className="inline-flex items-center px-4 py-2 border border-text bg-text text-base font-medium rounded-md text-background hover:bg-transparent hover:text-text transition-all duration-300"
+                    className="inline-flex items-center px-4 py-2 border border-text bg-textDark text-base font-medium rounded-md text-background hover:bg-transparent hover:text-text transition-all duration-300"
                 >
                     <AiOutlineHome className="mr-2 -ml-1 h-5 w-5" />
                     Go Home

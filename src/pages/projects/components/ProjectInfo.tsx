@@ -1,112 +1,245 @@
-import React from "react";
-import { FaCalendarAlt, FaRegClock, FaBuilding, FaUser } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaBuilding, FaCalendarAlt, FaRegClock, FaUser } from "react-icons/fa";
+import { FiInfo, FiX } from "react-icons/fi";
 import { format } from "date-fns";
+import { useAssignProjectMutation, useUnassignProjectMutation } from "../../../redux/features/projectsApi";
+import { ProjectInfoProps } from "../../../types/types";
+import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown";
+import { getStatusBadge } from "../../../utils/Common";
+import { useLazyGetAllUsersQuery } from "../../../redux/features/authApi";
+import { useAuth } from "../../../hooks/useAuth";
+import { ROLES } from "../../../constant/ROLES.ts";
+import Button from "../../../components/buttons/Button.tsx";
+import { toast } from "react-toastify";
+import ModalContainer from "../../../components/modal/ModalContainer.tsx";
 
-interface ProjectInfoProps {
-  projectId: string | undefined;
-  projectData: {
-    id: string;
-    title: string;
-    description: string | null;
-    status: string;
-    startDate: string | null;
-    endDate: string | null;
-    archived: boolean;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    companyName: string | null;
-    user: {
-      email: string;
-      displayName: string;
+const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
+    const [selectedUser, setSelectedUser] = useState<{ value: string; label: string } | null>(null);
+    const [selectedUsers, setSelectedUsers] = useState<{ value: string; label: string }[]>([]);
+    const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+
+
+    const { userData } = useAuth();
+    const { role } = userData;
+
+    const [assignToUser, { isLoading }] = useAssignProjectMutation();
+    const [unassignUser] = useUnassignProjectMutation();
+    const [triggerGetUsers] = useLazyGetAllUsersQuery();
+
+    // Initialize selected users from projectData
+    useEffect(() => {
+        if (projectData?.assignedUsers) {
+            setSelectedUsers(
+                projectData.assignedUsers.map(({ user }) => ({ value: user.id, label: user.displayName }))
+            );
+        }
+    }, [projectData]);
+
+    // Handle assigning a new user
+    const handleAssignProject = async () => {
+        if (!selectedUser || selectedUsers.some(user => user.value === selectedUser.value)) return;
+
+        try {
+            await assignToUser({
+                projectId: projectData.id,
+                userIds: [...selectedUsers.map(user => user.value), selectedUser.value],
+            }).unwrap();
+            refetch()
+            setSelectedUsers((prev) => [...prev, selectedUser]);
+            setSelectedUser(null);
+        } catch (error: any) {
+            console.error("Error assigning project:", error);
+            toast.error(error?.data?.error?.message || "Failed to update project. Please try again.");
+
+        }
     };
-  };
-}
 
-const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData }) => {
-  // Function to get the status badge with a dynamic color
-  const getStatusBadge = (status: string) => {
-    let badgeColor = "bg-yellow-500"; // Default color
-    if (status.toLocaleLowerCase() === "completed") badgeColor = "bg-success";
-    if (status.toLocaleLowerCase() === "in progress") badgeColor = "bg-todo";
-    if (status.toLocaleLowerCase() === "pending") badgeColor = "bg-pending";
+    // Handle unassigning a user
+    const handleRemoveUser = async (userId: string) => {
+        try {
+            await unassignUser({
+                projectId: projectData.id,
+                userId,
+            }).unwrap();
+            refetch()
+            setSelectedUsers((prev) => prev.filter((user) => user.value !== userId));
+        } catch (error) {
+            console.error("Error unassigning user:", error);
+        }
+    };
+
+    // Fetch users for dropdown
+    const fetchUsers = async (page: number) => {
+        try {
+            const response = await triggerGetUsers({ page, limit: 200, roleName: ROLES.WORKER }).unwrap();
+            const users = response?.data?.users ?? [];
+            const pagination = response?.data?.pagination ?? {};
+
+            const userOptions = users.map((user: any) => ({
+                value: user.id,
+                label: user.displayName || user.email,
+            }));
+
+            return {
+                data: page === 1 && userOptions,
+                hasMore: (pagination.page * pagination.limit) < pagination.total,
+            };
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            return { data: [], hasMore: false };
+        }
+    };
+
+    // Format Dates
+    const formattedStartDate = projectData?.startDate
+        ? format(new Date(projectData.startDate), "MMM dd, yyyy")
+        : "N/A";
+
+    const formattedEndDate = projectData?.endDate
+        ? format(new Date(projectData.endDate), "MMM dd, yyyy")
+        : "N/A";
 
     return (
-      <span
-        className={`inline-block px-3 py-1 text-sm text-white font-semibold rounded-md ${badgeColor}`}
-      >
-        {status}
-      </span>
+        <div className="relative bg-backgroundShade2 text-textDark px-6 py-5 rounded-lg shadow-md mb-6">
+            {/* Badge and Title: Professional Inline Pill Style */}
+            <div className="mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                    {/* Title + Badge */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-start gap-2">
+                            {projectData?.isOrder && (
+                                <span className="bg-primary text-text px-2 py-0.5 text-xs font-semibold uppercase rounded">
+                                    Order
+                                </span>
+                            )}
+                            <h3
+                                className="
+            text-base sm:text-lg md:text-xl font-bold
+            break-words break-all whitespace-normal max-w-full
+            sm:line-clamp-2 sm:overflow-hidden
+          "
+                                title={projectData?.title}
+                            >
+                                {projectData?.title}
+                            </h3>
+                        </div>
+                    </div>
+
+                    {/* View Description Button */}
+                    {projectData?.description && (
+                        <div className="sm:ml-4 sm:flex-shrink-0">
+                            <button
+                                onClick={() => setShowDescriptionModal(true)}
+                                className="flex items-center text-sm text-primary hover:underline gap-1"
+                            >
+                                <FiInfo className="w-4 h-4" />
+                                View Description
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm text-text mb-4 text-textDark">
+                {/* Status */}
+                <div className="flex items-center space-x-2">
+                    <FaRegClock className="text-primary" />
+                    <div>
+                        <span className="block text-xs text-textLight">Status</span>
+                        {getStatusBadge(projectData?.status)}
+                    </div>
+                </div>
+
+                {/* Dates */}
+                <div className="flex items-center space-x-2">
+                    <FaCalendarAlt className="text-primary" />
+                    <div>
+                        <span className="block text-xs text-textLight">Start - End</span>
+                        <span>{formattedStartDate} → {formattedEndDate}</span>
+                    </div>
+                </div>
+
+                {/* Company */}
+                <div className="flex items-center space-x-2">
+                    <FaBuilding className="text-primary" />
+                    <div>
+                        <span className="block text-xs text-textLight">Company</span>
+                        <span>{projectData?.company?.name || "N/A"}</span>
+                    </div>
+                </div>
+
+                {/* Created By */}
+                <div className="flex items-center space-x-2">
+                    <FaUser className="text-primary" />
+                    <div>
+                        <span className="block text-xs text-textLight">Created By</span>
+                        <span>{projectData?.user?.displayName || "Unknown"}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Assignment Section for Non-Worker Roles */}
+            {role !== ROLES.WORKER && (
+                <div className="flex flex-wrap gap-3 items-center mb-4">
+                    <PaginatedDropdown
+                        fetchData={fetchUsers}
+                        renderItem={(item: any) => <span>{item.label}</span>}
+                        onSelect={setSelectedUser}
+                        placeholder={selectedUser ? selectedUser.label : "Select a worker"}
+                    />
+                    <Button
+                        text={isLoading ? "Assigning..." : "Assign"}
+                        onClick={handleAssignProject}
+                        isSubmitting={isLoading}
+                        type={'button'}
+                        fullWidth={false}
+                        className="text-text bg-backgroundShade1 border-backgroundShade1"
+                    />
+                </div>
+            )}
+
+            {/* Assigned Users List */}
+            {selectedUsers.length > 0 && (
+                <div>
+                    <p className="text-sm font-medium text-textDark mb-2">Assigned Users:</p>
+                    <div className="flex flex-wrap gap-2">
+                        {selectedUsers.map(user => (
+                            <div
+                                key={user.value}
+                                className="flex items-center px-3 py-1 rounded-full text-sm border border-border"
+                            >
+                                {user.label}
+                                <FiX
+                                    className="ml-2 text-red-500 cursor-pointer hover:text-red-700"
+                                    onClick={() => handleRemoveUser(user.value)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {showDescriptionModal && (
+                <ModalContainer
+                    isOpen={showDescriptionModal}
+                    onClose={() => setShowDescriptionModal(false)}
+                    title="Project Description"
+                >
+                    <div className="prose prose-sm max-w-none text-text prose-headings:text-text  prose-strong:text-text">
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: projectData?.description || "<p>No description available.</p>",
+                            }}
+                        />
+                    </div>
+                </ModalContainer>
+            )}
+
+        </div>
+
     );
-  };
-
-  // Format dates using date-fns
-  const formattedStartDate = projectData?.startDate
-    ? format(new Date(projectData.startDate), "yyyy-MM-dd")
-    : "N/A";
-
-  const formattedEndDate = projectData?.endDate
-    ? format(new Date(projectData.endDate), "yyyy-MM-dd")
-    : "N/A";
-
-  return (
-    <div className="p-6 bg-backgroundShade1 rounded-lg shadow-lg">
-      <h3 className="text-2xl font-bold text-primary mb-4">{projectData?.title}</h3>
-      <p className="text-text text-lg mb-6">{projectData?.description}</p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {/* Status */}
-        <div className="flex items-center space-x-4">
-          <FaRegClock className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Status</p>
-            {getStatusBadge(projectData?.status)}
-          </div>
-        </div>
-
-        {/* Start Date */}
-        <div className="flex items-center space-x-4">
-          <FaCalendarAlt className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Start Date</p>
-            <p className="text-text font-medium">{formattedStartDate}</p>
-          </div>
-        </div>
-
-        {/* End Date */}
-        <div className="flex items-center space-x-4">
-          <FaCalendarAlt className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">End Date</p>
-            <p className="text-text font-medium">{formattedEndDate}</p>
-          </div>
-        </div>
-
-        {/* Company Name */}
-        <div className="flex items-center space-x-4">
-          <FaBuilding className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Company</p>
-            <p className="text-text font-medium">
-              {projectData?.companyName || "N/A"}
-            </p>
-          </div>
-        </div>
-
-        {/* Created By */}
-        <div className="flex items-center space-x-4">
-          <FaUser className="text-primary text-lg" />
-          <div>
-            <p className="text-sm text-textLight font-medium">Created By</p>
-            <p className="text-text font-medium">
-              {projectData?.user?.displayName || "Unknown"} 
-              {/* ({projectData?.user?.email || "N/A"}) */}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export default ProjectInfo;

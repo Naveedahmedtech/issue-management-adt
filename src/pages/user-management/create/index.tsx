@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Formik, Form } from "formik";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import Button from "../../../components/buttons/Button";
 import InputField from "../../../components/InputField";
 import FormikSelect from "../../../components/dropdown/Dropdown";
 import { useCreateAzureUserMutation, usePermissionsQuery, useRolesQuery } from "../../../redux/features/authApi.ts";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
 
 const CreateUser: React.FC = () => {
   const [rolesOptions, setRolesOptions] = useState<{ label: string; value: string }[]>([]);
   const [permissionsOptions, setPermissionsOptions] = useState<{ label: string; value: string }[]>([]);
+
+  const navigate = useNavigate()
 
   const [createAzureUser, { isLoading: isCreating }] = useCreateAzureUserMutation();
 
@@ -49,15 +53,15 @@ const CreateUser: React.FC = () => {
           "EDIT_ISSUE",
           "READ_ISSUE"
         ].map((action) =>
-          permissionsData.data.find((perm:any) => perm.action === action)?.id
+          permissionsData.data.find((perm: any) => perm.action === action)?.id
         ).filter(Boolean) as string[],
         ADMIN: permissionsData.data
           .filter(
-            (perm:any) =>
+            (perm: any) =>
               !["MANAGE_USERS", "MANAGE_ROLES", "MANAGE_PERMISSIONS"].includes(perm.action)
           )
-          .map((perm:any) => perm.id),
-        SUPER_ADMIN: permissionsData.data.map((perm:any) => perm.id),
+          .map((perm: any) => perm.id),
+        SUPER_ADMIN: permissionsData.data.map((perm: any) => perm.id),
       };
 
       const selectedRole = rolesOptions.find((r) => r.value === role)?.label;
@@ -76,7 +80,7 @@ const CreateUser: React.FC = () => {
 
   const handleSubmit = async (values: any, { resetForm }: { resetForm: () => void }) => {
     try {
-      const response = await createAzureUser({
+      await createAzureUser({
         email: values.email,
         password: values.password,
         displayName: values.displayName,
@@ -86,17 +90,18 @@ const CreateUser: React.FC = () => {
       }).unwrap();
 
       toast.success(`User created successfully!`);
-      console.log("User Created:", response);
+      navigate(APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT)
       resetForm();
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error creating user:", error);
-      toast.error("Failed to create user. Please try again.");
+      toast.error(error?.data?.message || error?.data?.error?.message || "Failed to create user. Please try again.");
+
     }
   };
 
   return (
-    <div className="p-10 bg-backgroundShade1 rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6">
-      <h1 className="text-3xl font-bold text-center text-text mb-6">Create User</h1>
+    <div className="p-10 bg-backgroundShade2 text-textDark rounded-lg shadow-lg mx-auto max-w-4xl grid grid-cols-1 gap-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Create User</h1>
       <Formik
         initialValues={{
           email: "",
@@ -107,14 +112,14 @@ const CreateUser: React.FC = () => {
         }}
         validationSchema={Yup.object({
           email: Yup.string().email("Invalid email address").required("Required"),
-          password: Yup.string()
-          .min(8, "Password must be at least 8 characters long")
-          .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-          .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-          .matches(/[0-9]/, "Password must contain at least one number")
-          .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
-          .required("Password is required"),
-        
+          // password: Yup.string()
+          // .min(8, "Password must be at least 8 characters long")
+          // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+          // .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+          // .matches(/[0-9]/, "Password must contain at least one number")
+          // .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
+          // .required("Password is required"),
+
           displayName: Yup.string().required("Required"),
           role: Yup.string().required("Required"),
           permissions: Yup.array().of(Yup.string()).required("Required"),
@@ -123,9 +128,9 @@ const CreateUser: React.FC = () => {
       >
         {({ setFieldValue }) => (
           <Form>
-            <InputField label="Email" name="email" type="email" />
-            <InputField label="Password" name="password" type="password" />
-            <InputField label="Display Name" name="displayName" type="text" />
+            <InputField label="Email" name="email" type="email" labelColor="text-textDark" />
+            {/*<InputField label="Password" name="password" type="password" />*/}
+            <InputField label="Display Name" name="displayName" type="text" labelColor="text-textDark" />
 
             {rolesLoading ? (
               <p>Loading roles...</p>
@@ -141,6 +146,7 @@ const CreateUser: React.FC = () => {
                   setFieldValue("role", option.value);
                   handleRoleChange(option.value, setFieldValue);
                 }}
+                label="Role"
               />
             )}
 
@@ -155,6 +161,7 @@ const CreateUser: React.FC = () => {
                 placeholder="Select Permissions"
                 className="my-4"
                 isMulti
+                label="Permissions"
               />
             )}
 

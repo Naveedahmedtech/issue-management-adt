@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { DragDropContext, DropResult } from "@hello-pangea/dnd";
-import { fetchMockProject } from "../../mock/mockAPI";
+import React, {useEffect, useState} from "react";
+import {DragDropContext, DropResult} from "@hello-pangea/dnd";
+import {fetchMockProject} from "../../mock/mockAPI";
 import Column from "./Column";
-import { useUpdateIssueMutation } from "../../redux/features/issueApi";
-import { toast } from "react-toastify";
-import { ColumnType, Task } from "../../types/types";
-import { useUpdateIssueLogHistoryMutation } from "../../redux/features/projectsApi";
+import {useUpdateIssueMutation} from "../../redux/features/issueApi";
+import {toast} from "react-toastify";
+import {ColumnType, Task} from "../../types/types";
+import {projectApi, useUpdateIssueLogHistoryMutation} from "../../redux/features/projectsApi";
+import {useAppDispatch} from "../../redux/store.ts";
 
-const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, projectId, setActiveTab, setIssueId, refetchFiles }) => {
+const Board: React.FC<any> = ({ projectIssues, refetch, isArchived, projectId, setActiveTab, setIssueId, refetchFiles }) => {
     const [, setProject] = useState<any | null>(null);
     const [localProjectIssues, setLocalProjectIssues] = useState<ColumnType[]>(projectIssues);
 
     const [updateIssue] = useUpdateIssueMutation();
     const [updateIssueLogHistory] = useUpdateIssueLogHistoryMutation();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const loadProject = async () => {
@@ -27,8 +29,8 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
     }, [projectIssues]);
 
     const statusMapping: Record<string, string> = {
-        "To Do": "TO DO",
-        "In Progress": "IN PROGRESS",
+        "Active": "ACTIVE",
+        "On Going": "ON GOING",
         "Completed": "COMPLETED",
     };
 
@@ -97,7 +99,7 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
                         newValue: newStatus,
                     }
                 ]
-
+                dispatch(projectApi.util.invalidateTags(['Stats']));
                 try {
                     await updateIssue({ issueId: updatedTask.id, formData }).unwrap();
                     refetch();
@@ -119,14 +121,14 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isLoading, isArchived, p
     };
 
 
-    if (isLoading) return (
-        <div className="flex justify-center items-center min-h-[200px]">
-            <div className="text-primary text-lg font-semibold">Loading issues...</div>
-        </div>
-    );
+    // if (isLoading) return (
+    //     <div className="flex justify-center items-center min-h-[200px]">
+    //         <div className="text-textDark text-lg font-semibold">Loading issues...</div>
+    //     </div>
+    // );
 
     return (
-        <div className="p-6 bg-background min-h-screen">
+        <div className="bg-backgroundShade2 min-h-screen">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4">
                     {localProjectIssues?.map((column) => (

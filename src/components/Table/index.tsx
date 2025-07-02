@@ -27,7 +27,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 <button
                     key="first"
                     onClick={() => onPageChange(1)}
-                    className="px-3 py-2 border border-border rounded-md bg-backgroundShade1 text-text hover:bg-primary hover:text-white transition-colors duration-200"
+                    className="px-3 py-2  rounded-md bg-backgroundShade2  hover:bg-primary hover:text-white transition-colors duration-200"
                 >
                     1
                 </button>
@@ -36,7 +36,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 pageButtons.push(
                     <span
                         key="ellipsis-start"
-                        className="px-3 py-2 text-textSecondary"
+                        className="px-3 py-2 Secondary"
                     >
                         ...
                     </span>
@@ -49,9 +49,8 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 <button
                     key={i}
                     onClick={() => onPageChange(i)}
-                    className={`px-4 py-2 border border-border rounded-md mx-1 transition-colors duration-200 ${
-                        i === currentPage ? "bg-primary text-white" : "bg-backgroundShade1 text-text hover:bg-primary hover:text-white"
-                    }`}
+                    className={`px-4 py-2  rounded-md mx-1 transition-colors duration-200 ${i === currentPage ? "bg-primary text-text" : "bg-backgroundShade2 border-background border  hover:bg-primary hover:text-text"
+                        }`}
                 >
                     {i}
                 </button>
@@ -63,7 +62,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 pageButtons.push(
                     <span
                         key="ellipsis-end"
-                        className="px-3 py-2 text-textSecondary"
+                        className="px-3 py-2 Secondary"
                     >
                         ...
                     </span>
@@ -73,7 +72,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 <button
                     key="last"
                     onClick={() => onPageChange(totalPages)}
-                    className="px-3 py-2 border border-border rounded-md bg-backgroundShade1 text-text hover:bg-primary hover:text-white transition-colors duration-200"
+                    className="px-3 py-2  rounded-md bg-backgroundShade2  hover:bg-primary hover:text-text transition-colors duration-200"
                 >
                     {totalPages}
                 </button>
@@ -85,7 +84,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 {currentPage > 1 && (
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
-                        className="px-3 py-2 border border-border rounded-md bg-backgroundShade1 text-text hover:bg-primary hover:text-white transition-colors duration-200"
+                        className="px-3 py-2  rounded-md border border-background bg-backgroundShade2  hover:bg-primary hover:text-text transition-colors duration-200"
                     >
                         Prev
                     </button>
@@ -94,7 +93,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                 {currentPage < totalPages && (
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
-                        className="px-3 py-2 border border-border rounded-md bg-backgroundShade1 text-text hover:bg-primary hover:text-white transition-colors duration-200"
+                        className="px-3 py-2  rounded-md border border-background bg-backgroundShade2  hover:bg-primary hover:text-text transition-colors duration-200"
                     >
                         Next
                     </button>
@@ -104,14 +103,14 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
     };
 
     return (
-        <div className="overflow-x-auto w-full">
-            <table className="min-w-full bg-backgroundShade1 border border-border rounded-md">
-                <thead>
+        <div className="overflow-x-auto w-full bg-backgroundShade2 text-textDark rounded-lg shadow-md border border-borderLight">
+            <table className="min-w-full text-sm text-left text-gray-700">
+                <thead className="bg-gray-100 text-xs uppercase tracking-wider text-gray-600">
                     <tr>
                         {columns.map((column) => (
                             <th
                                 key={column.id}
-                                className="text-left px-4 py-2 border-b border-border text-text font-semibold"
+                                className="px-4 py-3 font-semibold border-b border-borderLight"
                                 style={{ minWidth: "120px" }}
                             >
                                 {column.label}
@@ -119,21 +118,25 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                         ))}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-borderLight">
                     {data.length > 0 ? (
                         data.map((row, rowIndex) => (
                             <tr
                                 key={row.id || rowIndex}
-                                className="hover:bg-backgroundShade2 transition-colors"
+                                className="hover:bg-gray-50 transition-colors"
                             >
                                 {columns.map((column) => (
                                     <td
                                         key={column.id}
-                                        className="px-4 py-2 border-b border-border text-text"
+                                        className={`px-4 py-3 text-sm ${column.id === "permissions"
+                                                ? "max-w-[250px] whitespace-normal break-words"
+                                                : ""
+                                            }`}
                                         style={{ minWidth: "150px" }}
                                     >
                                         {column.render(row)}
                                     </td>
+
                                 ))}
                             </tr>
                         ))
@@ -141,7 +144,7 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                         <tr>
                             <td
                                 colSpan={columns.length}
-                                className="text-center px-4 py-6 text-textSecondary italic"
+                                className="text-center px-4 py-6 text-gray-500 italic"
                             >
                                 No data available
                             </td>
@@ -149,8 +152,9 @@ const Table: React.FC<TableProps> = ({ columns, data, currentPage = 1, totalPage
                     )}
                 </tbody>
             </table>
-            {renderPagination()}
+            <div className="p-4 border-t border-borderLight">{renderPagination()}</div>
         </div>
+
     );
 };
 

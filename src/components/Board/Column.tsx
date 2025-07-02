@@ -25,17 +25,24 @@ const Column: React.FC<any> = ({ column, refetch, isArchived, projectId, setActi
 
 
     return (
-        <div className="bg-backgroundShade1 rounded-md shadow-md p-4 flex-grow">
+        <div
+            className="
+    bg-backgroundShade2 rounded-lg shadow-md p-4
+    flex-1 min-w-[250px] max-w-full
+    transition-all duration-200
+  "
+        >
+
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-text mr-2">{column.name}</h3>
-                <FiFolder className="text-border" />
+                <h3 className="text-lg font-semibold text-textDark mr-2">{column.name}</h3>
+                <FiFolder className="text-textDark" />
             </div>
             <Droppable droppableId={column.id}>
                 {(provided) => (
                     <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className="min-h-[200px] bg-backgroundShade2 p-2 rounded-md"
+                        className="min-h-[200px] bg-backgroundShade2 p-2 rounded-xl"
                     >
                         {column.tasks.map((task: any, index: number) => (
                             <Task
@@ -43,6 +50,7 @@ const Column: React.FC<any> = ({ column, refetch, isArchived, projectId, setActi
                                 task={task}
                                 index={index}
                                 onClick={handleTaskClick}
+                                refetch={refetch}
                             />
                         ))}
                         {provided.placeholder}
