@@ -136,7 +136,7 @@ export default function PaginatedDropdown<T>({
 
                     {!loading && hasMore && (
                         <button
-                            className="w-full text-textHover p-3 border-t border-border bg-backgroundShade2 hover:bg-backgroundShade2 transition-all flex justify-center items-center gap-2"
+                            className="w-full text-textDark p-3 border-t border-border bg-backgroundShade2 hover:bg-backgroundShade2 transition-all flex justify-center items-center gap-2"
                             type="button"
                             onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();

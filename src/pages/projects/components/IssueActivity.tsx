@@ -70,7 +70,9 @@ const { data, isLoading, isFetching, isError } = useGetProjectActiveLogsQuery(qu
             </div>
 
             {history.length === 0 ? (
-                <div className="text-text">No activity logs found for this project or issue.</div>
+                <div className="text-textDark h-64 flex justify-center items-center">
+                    <p>No activity logs found for this project or issue.</p>
+                </div>
             ) : (
                 <div className="space-y-4">
                     {history.map((log: any) => {

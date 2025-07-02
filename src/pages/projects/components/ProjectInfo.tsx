@@ -71,7 +71,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
     // Fetch users for dropdown
     const fetchUsers = async (page: number) => {
         try {
-            const response = await triggerGetUsers({ page, limit: 10, roleName: ROLES.WORKER }).unwrap();
+            const response = await triggerGetUsers({ page, limit: 200, roleName: ROLES.WORKER }).unwrap();
             const users = response?.data?.users ?? [];
             const pagination = response?.data?.pagination ?? {};
 
@@ -102,43 +102,43 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
     return (
         <div className="relative bg-backgroundShade2 text-textDark px-6 py-5 rounded-lg shadow-md mb-6">
             {/* Badge and Title: Professional Inline Pill Style */}
-<div className="mb-4">
-  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-    {/* Title + Badge */}
-    <div className="flex-1 min-w-0">
-      <div className="flex flex-wrap items-start gap-2">
-        {projectData?.isOrder && (
-          <span className="bg-primary text-text px-2 py-0.5 text-xs font-semibold uppercase rounded">
-            Order
-          </span>
-        )}
-        <h3
-          className="
+            <div className="mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                    {/* Title + Badge */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-start gap-2">
+                            {projectData?.isOrder && (
+                                <span className="bg-primary text-text px-2 py-0.5 text-xs font-semibold uppercase rounded">
+                                    Order
+                                </span>
+                            )}
+                            <h3
+                                className="
             text-base sm:text-lg md:text-xl font-bold
             break-words break-all whitespace-normal max-w-full
             sm:line-clamp-2 sm:overflow-hidden
           "
-          title={projectData?.title}
-        >
-          {projectData?.title}
-        </h3>
-      </div>
-    </div>
+                                title={projectData?.title}
+                            >
+                                {projectData?.title}
+                            </h3>
+                        </div>
+                    </div>
 
-    {/* View Description Button */}
-    {projectData?.description && (
-      <div className="sm:ml-4 sm:flex-shrink-0">
-        <button
-          onClick={() => setShowDescriptionModal(true)}
-          className="flex items-center text-sm text-primary hover:underline gap-1"
-        >
-          <FiInfo className="w-4 h-4" />
-          View Description
-        </button>
-      </div>
-    )}
-  </div>
-</div>
+                    {/* View Description Button */}
+                    {projectData?.description && (
+                        <div className="sm:ml-4 sm:flex-shrink-0">
+                            <button
+                                onClick={() => setShowDescriptionModal(true)}
+                                className="flex items-center text-sm text-primary hover:underline gap-1"
+                            >
+                                <FiInfo className="w-4 h-4" />
+                                View Description
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
 
 
 

@@ -36,7 +36,7 @@ const UserManagement: React.FC = () => {
     // Fetch users from API
     const { data, isLoading, isError, refetch } = useGetAllUsersQuery({
         page: currentPage,
-        limit: 5,
+        limit: 20,
         roleName: selectedRole || undefined,
     });
 
