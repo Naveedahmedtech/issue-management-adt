@@ -27,8 +27,8 @@ const Button = ({
             className={clsx(
                 "btn px-2 py-2 rounded-[7px] transition-all min-w-[80px] font-bold",
                 fullWidth ? 'w-full' : '',
-                preview === "primary" && "border-2 bg-backgroundShade1 border-backgroundShade1 text-text hover:bg-transparent hover:text-textDark font-bold",
-                preview === "danger" && "border-2 border-error bg-error text-white hover:bg-transparent hover:text-error",
+                preview === "primary" && "border-2 bg-backgroundShade1 border-backgroundShade1 text-text font-bold",
+                preview === "danger" && "border-2 border-error bg-error text-white",
                 preview === 'secondary' && 'bg-backgroundShade2',
                 className
             )}

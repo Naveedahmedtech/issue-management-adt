@@ -128,7 +128,7 @@ const Board: React.FC<any> = ({ projectIssues, refetch, isArchived, projectId, s
     // );
 
     return (
-        <div className="bg-backgroundShade2 min-h-screen">
+        <div className="min-h-screen">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4">
                     {localProjectIssues?.map((column) => (

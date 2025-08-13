@@ -4,7 +4,17 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import '../assets/css/date-range-picker-dark.css';
 import { useTheme } from '../context/ThemeContext';
-import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfDay,
+  endOfDay,
+  isAfter,
+  isBefore,
+  min as dateMin,
+  max as dateMax,
+  format,
+} from 'date-fns';
 import { FaCalendarAlt, FaCalendarCheck } from 'react-icons/fa';
 
 interface DateRangePickerProps {
@@ -13,21 +23,41 @@ interface DateRangePickerProps {
   onChange: (start: Date, end: Date) => void;
 }
 
+const normalizeStart = (d: Date) => startOfDay(d);
+const normalizeEnd = (d: Date) => endOfDay(d);
+
+// Inclusive week range [Mon..Sun] with times normalized.
+const weekRange = (d: Date) => {
+  const ws = startOfWeek(d, { weekStartsOn: 1 });
+  const we = endOfWeek(d, { weekStartsOn: 1 });
+  return { start: normalizeStart(ws), end: normalizeEnd(we) };
+};
+
+// Make sure start <= end, and normalize time boundaries.
+const makeRange = (a: Date, b: Date) => {
+  const s = normalizeStart(a);
+  const e = normalizeEnd(b);
+  return isAfter(s, e) ? { start: e, end: s } : { start: s, end: e };
+};
+
 const DateRangePicker: React.FC<DateRangePickerProps> = ({
   startDate,
   endDate,
   onChange,
 }) => {
   const { theme } = useTheme();
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
 
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
 
   const [weekMode, setWeekMode] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
+  const [anchorWeekStart, setAnchorWeekStart] = useState<Date | null>(null);
+
   const [selection, setSelection] = useState<Range[]>([
     {
-      startDate: startDate || new Date(),
-      endDate: endDate || new Date(),
+      startDate: startDate ? normalizeStart(startDate) : normalizeStart(new Date()),
+      endDate: endDate ? normalizeEnd(endDate) : normalizeEnd(new Date()),
       key: 'selection',
     },
   ]);
@@ -35,22 +65,30 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // Resize listener (SSR-safe)
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 640);
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
-  // Sync props → internal selection
+  // Sync props → internal selection (normalized)
   useEffect(() => {
     if (startDate && endDate) {
-      setSelection([{ startDate, endDate, key: 'selection' }]);
+      const { start, end } = makeRange(startDate, endDate);
+      setSelection([{ startDate: start, endDate: end, key: 'selection' }]);
     }
   }, [startDate, endDate]);
 
-  // Reset clickCount each time the picker opens
+  // Reset anchor when opening to make the first click intuitive
   useEffect(() => {
-    if (open) setClickCount(0);
+    if (open) setAnchorWeekStart(null);
   }, [open]);
 
   // Close on outside click
@@ -60,97 +98,69 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         setOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () =>
-      document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
+  const applyRange = (start: Date, end: Date) => {
+    const { start: s, end: e } = makeRange(start, end);
+    setSelection([{ startDate: s, endDate: e, key: 'selection' }]);
+    onChange(s, e);
+  };
+
   const handleSelect = (ranges: RangeKeyDict): void => {
-    // the two dates from the picker
     const rawStart = ranges.selection.startDate!;
     const rawEnd = ranges.selection.endDate!;
 
-    // figure out exactly which day was clicked
-    const clickedDate =
-      rawStart.getTime() === rawEnd.getTime() ? rawStart : rawEnd;
+    // Determine which date was actually clicked (react-date-range toggles between these).
+    const clicked =
+      rawStart && rawEnd && rawStart.getTime() === rawEnd.getTime() ? rawStart : rawEnd;
 
-    // week boundaries for that click
-    const clickedStart = startOfWeek(clickedDate, { weekStartsOn: 1 });
-    const clickedEnd = endOfWeek(clickedDate, { weekStartsOn: 1 });
-
-    // ── HERE ARE THE NON-NULL ASSERTIONS ──
-    const curStart = selection[0].startDate!;
-    const curEnd = selection[0].endDate!;
-
-    // Day-range mode stays exactly as before
     if (!weekMode) {
-      setSelection([{ startDate: rawStart, endDate: rawEnd, key: 'selection' }]);
-      onChange(rawStart, rawEnd);
+      // Day mode: just normalize and apply.
+      applyRange(rawStart, rawEnd);
       return;
     }
 
-    // === Week-mode multi-week logic ===
+    // Week mode: click selects the week of the clicked date
+    const { start: wStart, end: wEnd } = weekRange(clicked);
 
-    // 1) first click in Week Mode: append/prepend around the default
-    if (clickCount === 0) {
-      let newStart = curStart;
-      let newEnd = curEnd;
-
-      if (clickedEnd < curStart) {
-        newStart = clickedStart; // prepend
-      } else if (clickedStart > curEnd) {
-        newEnd = clickedEnd; // append
-      }
-      // otherwise leave as the default
-
-      setSelection([{ startDate: newStart, endDate: newEnd, key: 'selection' }]);
-      onChange(newStart, newEnd);
-      setClickCount(1);
+    if (!anchorWeekStart) {
+      // First click after opening / or after switching to week mode
+      setAnchorWeekStart(wStart);
+      applyRange(wStart, wEnd);
       return;
     }
 
-    // 2) subsequent clicks: extend, shrink, or reset
-    let newStart = curStart;
-    let newEnd = curEnd;
+    // Subsequent clicks: select all weeks between anchor and clicked
+    const { start: aStart } = weekRange(anchorWeekStart);
+    const start = isBefore(wStart, aStart) ? wStart : aStart;
+    const end = isAfter(wEnd, endOfDay(aStart)) ? wEnd : endOfDay(aStart);
 
-    if (clickedEnd < curStart) {
-      newStart = clickedStart; // extend backwards
-    } else if (clickedStart > curEnd) {
-      newEnd = clickedEnd; // extend forwards
-    } else if (clickedStart.getTime() === curStart.getTime()) {
-      newStart = addWeeks(curStart, 1); // shrink front boundary
-    } else if (clickedEnd.getTime() === curEnd.getTime()) {
-      newEnd = addWeeks(curEnd, -1); // shrink back boundary
-    } else {
-      newStart = clickedStart; // reset to that single week
-      newEnd = clickedEnd;
-    }
-
-    setSelection([{ startDate: newStart, endDate: newEnd, key: 'selection' }]);
-    onChange(newStart, newEnd);
-    setClickCount(c => c + 1);
+    applyRange(start, end);
   };
 
   const toggleMode = () => {
     const next = !weekMode;
     setWeekMode(next);
-    setClickCount(0);
+    setAnchorWeekStart(null);
 
     if (next) {
-      const today = new Date();
-      const ws = startOfWeek(today, { weekStartsOn: 1 });
-      const we = endOfWeek(today, { weekStartsOn: 1 });
-      setSelection([{ startDate: ws, endDate: we, key: 'selection' }]);
-      onChange(ws, we);
+      // Entering week mode: snap current (or today) to this week
+      const base = selection[0].startDate ?? new Date();
+      const { start, end } = weekRange(base);
+      applyRange(start, end);
+    } else {
+      // Exiting week mode: keep the same visible range but normalize to day precision
+      const curStart = selection[0].startDate ?? new Date();
+      const curEnd = selection[0].endDate ?? new Date();
+      applyRange(curStart, curEnd);
     }
   };
 
   const d1 = selection[0].startDate!;
   const d2 = selection[0].endDate!;
-  const label = weekMode
-    ? `Selected Weeks: ${format(d1, 'MMM d')} – ${format(d2, 'MMM d')}`
-    : `Selected Dates: ${format(d1, 'MMM d, yyyy')} – ${format(d2, 'MMM d, yyyy')}`;
-
+  const label =  `Selected Dates: ${format(d1, 'MMM d, yyyy')} – ${format(d2, 'MMM d, yyyy')}`;
 
   return (
     <div ref={ref} className="relative inline-block w-full">
@@ -164,11 +174,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         `}
       >
         <div className="flex items-center space-x-2 text-gray-800 dark:text-gray-200">
-          {weekMode ? (
-            <FaCalendarCheck size={20} />
-          ) : (
-            <FaCalendarAlt size={20} />
-          )}
+          {weekMode ? <FaCalendarCheck size={20} /> : <FaCalendarAlt size={20} />}
           <span>{label}</span>
         </div>
         <button
@@ -177,8 +183,11 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             e.stopPropagation();
             toggleMode();
           }}
-          title={weekMode ? 'Switch to Day Mode (custom date selection)' : 'Switch to Week Mode (auto group by week)'}
-
+          title={
+            weekMode
+              ? 'Switch to Day Mode (custom date selection)'
+              : 'Switch to Week Mode (auto group by week)'
+          }
           className="
             relative inline-flex items-center h-6 w-12
             bg-gray-200 dark:bg-gray-700
@@ -201,10 +210,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
       {open && (
         <div
           className={`mt-2 bg-white dark:bg-gray-800
-    border rounded-lg shadow-lg p-4
-    ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-    overflow-x-auto max-w-full
-  `}
+            border rounded-lg shadow-lg p-4
+            ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
+            overflow-x-auto max-w-full
+          `}
         >
           <div className="min-w-[300px] sm:min-w-[600px]">
             <DateRange

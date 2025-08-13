@@ -138,6 +138,49 @@ const UserManagement: React.FC = () => {
         }
     };
 
+    // Normalize server role names like "SUPER_ADMIN" -> "Super Admin"
+    const toLabelCase = (raw: string) =>
+        raw.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+    // Build permissions map from permissionsData (IDs) keyed by ROLE LABELS
+    const buildPermissionsMap = () => {
+        if (!permissionsData?.data) return {};
+        const all = permissionsData.data;
+
+        const idFor = (action: string) => all.find((p: any) => p.action === action)?.id;
+
+        return {
+            [toLabelCase("WORKER")]: [
+                "READ_PROJECT",
+                "READ_ORDER",
+                "CREATE_ISSUE",
+                "EDIT_ISSUE",
+                "READ_ISSUE",
+            ].map(idFor).filter(Boolean),
+
+            [toLabelCase("ADMIN")]: all
+                .filter((p: any) => !["MANAGE_USERS", "MANAGE_ROLES", "MANAGE_PERMISSIONS"].includes(p.action))
+                .map((p: any) => p.id),
+
+            [toLabelCase("SUPER_ADMIN")]: all.map((p: any) => p.id),
+        } as Record<string, string[]>;
+    };
+
+    const handleRoleChange = (
+        roleValue: string,
+        setFieldValue: (field: string, value: any) => void
+    ) => {
+        // Find role label for the selected value
+        const roleLabel = rolesOptions.find((r) => r.value === roleValue)?.label;
+        if (!roleLabel) return;
+
+        const map = buildPermissionsMap();
+        if (map[roleLabel]) {
+            setFieldValue("permissions", map[roleLabel]);
+        }
+    };
+
+
     const columns = getUserManagementColumns(handleEditUser, handleDeleteClick);
 
     const handlePageChange = (newPage: number) => {
@@ -184,12 +227,14 @@ const UserManagement: React.FC = () => {
                         initialValues={{
                             email: selectedUser.email,
                             displayName: selectedUser.displayName,
-                            role: rolesOptions.find((role: any) => role.label === selectedUser.role)?.value || "",
+                            role: (() => {
+                                const normalized = toLabelCase(selectedUser.role ?? "");
+                                return rolesOptions.find((r: any) => r.label === normalized)?.value || "";
+                            })(),
                             permissions: selectedUser.permissions
                                 .map((permission) =>
                                     permissionsOptions.find(
-                                        (option: any) =>
-                                            option.label.toUpperCase().replace(/\s/g, "_") === permission
+                                        (opt: any) => opt.label.toUpperCase().replace(/\s/g, "_") === permission
                                     )?.value
                                 )
                                 .filter(Boolean),
@@ -201,33 +246,65 @@ const UserManagement: React.FC = () => {
                         })}
                         onSubmit={handleModalSubmit}
                     >
-                        <Form>
-                            <InputField label="Email" name="email" type="email" disabled />
-                            <InputField label="Display Name" name="displayName" type="text" />
-                            <FormikSelect
-                                name="role"
-                                options={rolesOptions}
-                                placeholder="Select Role"
-                                className="mb-4"
-                            />
-                            <FormikSelect
-                                name="permissions"
-                                options={permissionsOptions}
-                                placeholder="Select Permissions"
-                                className="mb-4"
-                                isMulti
-                            />
-                            <div className="flex justify-end space-x-4 mt-4">
-                                <Button
-                                    text={isUpdating ? "Updating..." : "Update"}
-                                    type="submit"
-                                    isSubmitting={isUpdating}
+                        {({ setFieldValue }) => (
+                            <Form>
+                                <InputField
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    disabled
+                                    labelColor="text-text"
+                                    className="!bg-hover !text-text"
                                 />
-                            </div>
-                        </Form>
+                                <InputField
+                                    label="Display Name"
+                                    name="displayName"
+                                    type="text"
+                                    labelColor="text-text"
+                                    className="!bg-hover !text-text"
+                                />
+
+                                {/* Role: single-arg onChange, uses setFieldValue from Formik scope */}
+                                <FormikSelect
+                                    name="role"
+                                    options={rolesOptions}
+                                    placeholder="Select Role"
+                                    className="mb-4"
+                                    light
+                                    label="Role"
+                                    isDisabled={!permissionsData?.data}  // optional: avoid race
+                                    onChange={(option: any) => {
+                                        if (!option || Array.isArray(option)) return; // guard
+                                        const roleValue = option.value;               // role id
+                                        setFieldValue("role", roleValue);
+                                        handleRoleChange(roleValue, setFieldValue);   // ⬅️ sets default permission IDs
+                                    }}
+                                />
+
+                                <FormikSelect
+                                    name="permissions"
+                                    options={permissionsOptions}
+                                    placeholder="Select Permissions"
+                                    isMulti
+                                    className="mb-4"
+                                    light
+                                    label="Permissions"
+                                />
+
+                                <div className="flex justify-end space-x-4 mt-4">
+                                    <Button
+                                        text={isUpdating ? "Updating..." : "Update"}
+                                        type="submit"
+                                        isSubmitting={isUpdating}
+                                        className="bg-primary hover:border-primary hover:!text-text"
+                                    />
+                                </div>
+                            </Form>
+                        )}
                     </Formik>
                 </ModalContainer>
             )}
+
 
             {isDeleteModalOpen && (
                 <ModalContainer

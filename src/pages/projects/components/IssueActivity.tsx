@@ -3,6 +3,7 @@ import { format, parseISO } from "date-fns";
 import { useGetProjectActiveLogsQuery } from "../../../redux/features/projectsApi";
 import { parseNewValueToList } from "../../../utils";
 import SelectField from "../../../components/form/SelectField";
+import { BASE_URL } from "../../../constant/BASE_URL";
 
 const IssueActivity = ({ projectId }: any) => {
     const [page, setPage] = useState(1);
@@ -123,7 +124,7 @@ const { data, isLoading, isFetching, isError } = useGetProjectActiveLogsQuery(qu
                                             {isFile ? (
                                                 log.oldFilePath ? (
                                                     <a
-                                                        href={`/${log.oldFilePath}`}
+                                                        href={`${BASE_URL}/${log.oldFilePath}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         className="underline text-red-600"
@@ -144,7 +145,7 @@ const { data, isLoading, isFetching, isError } = useGetProjectActiveLogsQuery(qu
                                             {isFile ? (
                                                 log.newFilePath ? (
                                                     <a
-                                                        href={`/${log.newFilePath}`}
+                                                        href={`${BASE_URL}/${log.newFilePath}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         className="underline text-green-600"
