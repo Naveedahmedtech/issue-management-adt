@@ -171,7 +171,7 @@ const UserManagement: React.FC = () => {
         setFieldValue: (field: string, value: any) => void
     ) => {
         // Find role label for the selected value
-        const roleLabel = rolesOptions.find((r) => r.value === roleValue)?.label;
+        const roleLabel = rolesOptions.find((r:any) => r.value === roleValue)?.label;
         if (!roleLabel) return;
 
         const map = buildPermissionsMap();
@@ -272,7 +272,7 @@ const UserManagement: React.FC = () => {
                                     className="mb-4"
                                     light
                                     label="Role"
-                                    isDisabled={!permissionsData?.data}  // optional: avoid race
+                                    // isDisabled={!permissionsData?.data}  // optional: avoid race
                                     onChange={(option: any) => {
                                         if (!option || Array.isArray(option)) return; // guard
                                         const roleValue = option.value;               // role id
