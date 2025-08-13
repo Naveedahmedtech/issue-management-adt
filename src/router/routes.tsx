@@ -26,6 +26,9 @@ import {
 } from '../pages';
 import {APP_ROUTES} from '../constant/APP_ROUTES';
 import ErrorBoundary from "../ErrorBoundry.tsx";
+import CompareFiles from '../mock/PDFAnnotator.tsx';
+import FileListViewer from '../mock/FileList';
+import PdfREADER from '../mock/PDFReader.tsx';
 // import AnnotationIframe from '../components/iframe/AnnotationIframe.tsx';
 
 export const router = createBrowserRouter(
@@ -58,6 +61,9 @@ export const router = createBrowserRouter(
             <Route element={<PublicRouteWrapper />} errorElement={<ErrorBoundary />}>
                 <Route path={APP_ROUTES.AUTH.SIGN_IN} element={<SignIn />} errorElement={<ErrorBoundary />} />
                 <Route path={APP_ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPassword />} errorElement={<ErrorBoundary />} />
+                <Route path={'testing'} element={<FileListViewer />} errorElement={<ErrorBoundary />} />
+                <Route path={'compare-viewer'} element={<CompareFiles />} errorElement={<ErrorBoundary />} />
+                <Route path={'compare-d'} element={<PdfREADER />} errorElement={<ErrorBoundary />} />
             </Route>
             <Route path={APP_ROUTES.NOT_FOUND} element={<NotFound />} errorElement={<ErrorBoundary />} />
         </>

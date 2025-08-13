@@ -237,20 +237,25 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                         onChange={(userIds) => setFormData({ ...formData, userIds })}
                     />
                 </div>
-                <div className="hidden">
-                    <SelectField
-                        label="Status"
-                        options={[
-                            { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
-                            { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
-                            { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
-                        ]}
-                        value={formData.status}
-                        onChange={handleSelectChange}
-                        className="w-full"
-                    />
-                    {getError("status") && <p className="text-red-500 text-sm mt-1">{getError("status")}</p>}
-                </div>
+                {
+                    mode !== "create" && (
+                        <div>
+                            <SelectField
+                                label="Status"
+                                options={[
+                                    { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
+                                    { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
+                                    { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
+                                ]}
+                                value={formData.status}
+                                onChange={handleSelectChange}
+                                className="w-full"
+                            />
+                            {getError("status") && <p className="text-red-500 text-sm mt-1">{getError("status")}</p>}
+                        </div>
+                    )
+                }
+
 
                 {/* <div>
                     <FileUpload
@@ -280,6 +285,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                         text={mode === "create" ? "Create Project" : "Update Project"}
                         type="submit"
                         isSubmitting={isLoading}
+                        className=""
                     />
                 </div>
             </form>
