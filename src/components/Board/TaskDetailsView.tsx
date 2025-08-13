@@ -182,15 +182,15 @@ const AssigneesModal: React.FC<{
             renderItem={(item) => <span>{item.label}</span>}
             onSelect={onAdd}
             placeholder={isFetching ? "Loading..." : "Add assignee"}
-            buttonRenderer={() => (
-              <button
-                type="button"
-                className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg bg-white ring-1 ring-border/60 hover:ring-hover/40 shadow-sm transition-all"
-              >
-                <span className="text-base leading-none">＋</span>
-                Add assignee
-              </button>
-            )}
+            // buttonRenderer={() => (
+            //   <button
+            //     type="button"
+            //     className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg bg-white ring-1 ring-border/60 hover:ring-hover/40 shadow-sm transition-all"
+            //   >
+            //     <span className="text-base leading-none">＋</span>
+            //     Add assignee
+            //   </button>
+            // )}
           />
         )}
       </div>
@@ -394,7 +394,7 @@ const TaskDetailsView: React.FC<{
               </h1>
             </div>
             {!isArchived && (
-              <Button text="Edit" onClick={onEdit} fullWidth={false} iconLeft={<FiEdit2 />} />
+              <Button text="Edit" onClick={onEdit} fullWidth={false}  />
             )}
           </div>
         </div>
@@ -434,14 +434,14 @@ const TaskDetailsView: React.FC<{
                 renderItem={(item) => <span>{item.label}</span>}
                 onSelect={handleUserSelect}
                 placeholder={isFetching ? "Loading..." : "Add assignee"}
-                buttonRenderer={({ open }) => (
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 px-2.5 py-1.5 text-xs rounded-md border border-border hover:bg-hover"
-                  >
-                    <FiUserPlus /> {open ? "Select user..." : "Add assignee"}
-                  </button>
-                )}
+                // buttonRenderer={({ open }) => (
+                //   <button
+                //     type="button"
+                //     className="inline-flex items-center gap-2 px-2.5 py-1.5 text-xs rounded-md border border-border hover:bg-hover"
+                //   >
+                //     <FiUserPlus /> {open ? "Select user..." : "Add assignee"}
+                //   </button>
+                // )}
               />
             )}
           </div>
