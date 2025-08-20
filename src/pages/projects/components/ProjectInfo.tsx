@@ -69,9 +69,9 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
     };
 
     // Fetch users for dropdown
-    const fetchUsers = async (page: number) => {
+    const fetchUsers = async (page: number, query = "") => {
         try {
-            const response = await triggerGetUsers({ page, limit: 200, roleName: ROLES.WORKER }).unwrap();
+            const response = await triggerGetUsers({ page, limit: 200, roleName: ROLES.WORKER, q: query }).unwrap();
             const users = response?.data?.users ?? [];
             const pagination = response?.data?.pagination ?? {};
 

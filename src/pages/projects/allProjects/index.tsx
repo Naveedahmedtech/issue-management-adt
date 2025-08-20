@@ -49,6 +49,7 @@ const AllProjects = () => {
           value={search}
           placeholder="Search by title..."
           onChange={(e) => setSearch(e.target.value)}
+          className="!text-textDark"
         />
       </div>
       <div className="md:col-span-1">
@@ -68,11 +69,11 @@ const AllProjects = () => {
         <SelectField
           label=""
           options={[
-            { label: "Newest First", value: "desc" },
-            { label: "Oldest First", value: "asc" },
+            { label: "Recently added first", value: "desc" },
+            { label: "Oldest added first", value: "asc" },
           ]}
           value={{
-            label: sortOrder === "desc" ? "Newest First" : "Oldest First",
+            label: sortOrder === "desc" ? "Recently added first" : "Oldest added first",
             value: sortOrder,
           }}
           onChange={(option) => setSortOrder(option?.value || "desc")}

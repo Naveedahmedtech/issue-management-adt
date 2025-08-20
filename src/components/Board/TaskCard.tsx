@@ -31,9 +31,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onView }) => {
       <p className="text-sm">
         <strong>Status:</strong> {task.status}
       </p>
-      <p className="text-sm">
+      {/* <p className="text-sm">
         <strong>Due:</strong> {format(new Date(task.endDate), "MMM dd, yyyy")}
-      </p>
+      </p> */}
       <button
         className="mt-2 text-primary hover:underline flex items-center"
         onClick={() => onView(task)}

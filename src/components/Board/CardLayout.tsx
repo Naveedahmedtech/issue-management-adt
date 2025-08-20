@@ -24,11 +24,11 @@ const CardLayout = ({
     // Determine sections to show based on the active filter
     const sectionsToShow = activeFilter === "All" ? Object.keys(groupedTasks) : [activeFilter];
 
-    if (isLoading) return (
-        <div className="flex justify-center items-center min-h-[200px]">
-            <div className="text-textDark text-lg font-semibold">Loading issues...</div>
-        </div>
-    );
+    // if (isLoading) return (
+    //     <div className="flex justify-center items-center min-h-[200px]">
+    //         <div className="text-textDark text-lg font-semibold">Loading issues...</div>
+    //     </div>
+    // );
     return (
         <div className="text-textDark">
             {/* Filter Buttons */}

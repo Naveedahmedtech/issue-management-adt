@@ -20,3 +20,42 @@ export const parseNewValueToList = (value: string) => {
   });
 };
 
+/**
+ * Convert snake_case to "Label Case" (e.g., SUPER_ADMIN -> Super Admin)
+ */
+export const toLabelCase = (raw: string) =>
+  raw.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+/**
+ * Build a role → permissions map, based on server-provided permissions.
+ *
+ * @param permissionsData - API response object with permissions
+ * @returns Record<string, string[]> mapping role labels to permission IDs
+ */
+export const buildPermissionsMap = (permissionsData: any) => {
+  if (!permissionsData?.data) return {};
+  const all = permissionsData.data;
+
+  const idFor = (action: string) => all.find((p: any) => p.action === action)?.id;
+
+  return {
+    [toLabelCase("WORKER")]: [
+      "READ_PROJECT",
+      "READ_ORDER",
+      "CREATE_ISSUE",
+      "EDIT_ISSUE",
+      "READ_ISSUE",
+      "UPLOAD_PROJECT_FILES",
+    ]
+      .map(idFor)
+      .filter(Boolean),
+
+    [toLabelCase("ADMIN")]: all
+      .filter(
+        (p: any) => !["MANAGE_USERS", "MANAGE_ROLES", "MANAGE_PERMISSIONS"].includes(p.action)
+      )
+      .map((p: any) => p.id),
+
+    [toLabelCase("SUPER_ADMIN")]: all.map((p: any) => p.id),
+  } as Record<string, string[]>;
+};

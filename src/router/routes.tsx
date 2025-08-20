@@ -18,7 +18,6 @@ import {
     ExcelViewer,
     NotFound,
     OrderDashboard,
-    OrderDetails,
     PdfViewer,
     ProjectDashboard,
     ProjectDetails,
@@ -48,7 +47,6 @@ export const router = createBrowserRouter(
                     <Route path={`${APP_ROUTES.SUPERADMIN.USERS.MANAGEMENT}`} element={<UserManagement />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.SUPERADMIN.USERS.CREATE}`} element={<CreateUser />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.DASHBOARDS.ORDER}`} element={<OrderDashboard />} errorElement={<ErrorBoundary />} />
-                    <Route path={APP_ROUTES.APP.ORDERS.DETAILS} element={<OrderDetails />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.ALL} element={<AllOrders />} errorElement={<ErrorBoundary />} />
                     <Route path={APP_ROUTES.APP.ORDERS.CREATE} element={<CreateOrder />} errorElement={<ErrorBoundary />} />
                     <Route path={`${APP_ROUTES.APP.ORDERS.EDIT}/:orderId`} element={<EditOrder />} errorElement={<ErrorBoundary />} />

@@ -19,17 +19,17 @@ import {
 import { PROJECT_STATUS } from "../../constant/index.ts";
 import { useLazyGetAllUsersQuery } from "../../redux/features/authApi.ts";
 import PaginatedDropdown from "../dropdown/PaginatedDropdown.tsx";
-import { FiX, FiChevronDown, FiEdit2, FiUserPlus } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import { format, parseISO } from "date-fns";
 import { parseNewValueToList } from "../../utils/index.ts";
 import StatusDropdown from "./StatusDropdown.tsx";
 
 /**
- * Single-file TaskDetailsView with inline subcomponents (Jira/ClickUp style)
- * - Full-width Description & Assignees
- * - Compact metadata grid
- * - Right column: Activity timeline
- * - Clean, rounded cards and improved modal
+ * Fixes:
+ * - Body scroll lock when modal open (prevents background scroll).
+ * - overscroll-behavior containment on scroll areas (no scroll chaining).
+ * - Removed negative z-index that caused layering issues.
+ * - Stable scrollbars to avoid layout shift when modal opens.
  */
 
 // -----------------------------
@@ -41,16 +41,39 @@ const PANEL =
 const SUBTLE = "text-xs text-textSecondary";
 
 // -----------------------------
+// Helpers
+// -----------------------------
+const lockBodyScroll = (lock: boolean) => {
+  const body = document.body;
+  if (!body) return;
+
+  // Compute scrollbar width to avoid layout shift
+  const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+  if (lock) {
+    body.dataset.scrollLock = "1";
+    body.style.overflow = "hidden";
+    body.style.touchAction = "none";
+    if (scrollBarWidth > 0) {
+      body.style.paddingRight = `${scrollBarWidth}px`;
+    }
+  } else {
+    if (body.dataset.scrollLock) {
+      delete body.dataset.scrollLock;
+    }
+    body.style.overflow = "";
+    body.style.touchAction = "";
+    body.style.paddingRight = "";
+  }
+};
+
+// -----------------------------
 // Inline components
 // -----------------------------
-
-// StatusDropdown
-
 
 // AvatarChip
 const AvatarChip: React.FC<{ label: string; onRemove?: () => void }> = ({ label, onRemove }) => {
   const initials = useMemo(() => {
-    const parts = label.split(" ").filter(Boolean);
+    const parts = label.split("").length ? label.split(" ").filter(Boolean) : [];
     return parts.length >= 2
       ? (parts[0][0] + parts[1][0]).toUpperCase()
       : (parts[0]?.slice(0, 2) || "U").toUpperCase();
@@ -88,6 +111,7 @@ const MetaField: React.FC<{ title: string; className?: string; children?: React.
 }) => (
   <div className={`${PANEL} ${className}`}
     style={{ zIndex: "-1" }}
+  
   >
     <h4 className="text-sm font-semibold mb-1">{title}</h4>
     <div className="text-sm">{children}</div>
@@ -109,9 +133,9 @@ const ActivityTimeline: React.FC<{ isLoading: boolean; history?: any[] }> = ({ i
         .map((log: any) => {
           const isDateField = log.fieldName === "startDate" || log.fieldName === "endDate";
           const formattedOldValue =
-            isDateField && log.oldValue ? format(parseISO(log.oldValue), "PPP") : log.oldValue || "N/A";
+            isDateField && log.oldValue ? format(parseISO(log.oldValue), "PPP") : log.oldValue || "Empty";
           const formattedNewValue =
-            isDateField && log.newValue ? format(parseISO(log.newValue), "PPP") : log.newValue || "N/A";
+            isDateField && log.newValue ? format(parseISO(log.newValue), "PPP") : log.newValue || "Empty";
           return (
             <div key={log.id} className="relative pl-6">
               <div className="absolute left-0 top-2 h-full w-px bg-border" />
@@ -134,7 +158,7 @@ const ActivityTimeline: React.FC<{ isLoading: boolean; history?: any[] }> = ({ i
                       {parseNewValueToList(log.newValue).map(({ key, value }: any, idx: number) => (
                         <li key={idx}>
                           <strong>{key}:</strong>{" "}
-                          {value === null || value === undefined || value === "" ? "N/A" : value}
+                          {value === null || value === undefined || value === "" ? "Empty" : value}
                         </li>
                       ))}
                     </ul>
@@ -157,7 +181,7 @@ const ActivityTimeline: React.FC<{ isLoading: boolean; history?: any[] }> = ({ i
   );
 };
 
-// AssigneesModal
+// AssigneesModal (now with body scroll lock & overscroll guard)
 type Assignee = { value: string; label: string };
 const AssigneesModal: React.FC<{
   isOpen: boolean;
@@ -168,71 +192,81 @@ const AssigneesModal: React.FC<{
   onAdd: (u: Assignee) => void;
   onRemove: (id: string) => void;
   fetchUsers: (page: number) => Promise<{ data: Assignee[]; hasMore: boolean }>;
-}> = ({ isOpen, isArchived, isFetching, assignees, onClose, onAdd, onRemove, fetchUsers }) => (
-  <ModalContainer isOpen={isOpen} onClose={onClose} title="Manage Assignees" bgClass="bg-white">
-    <div className="space-y-5">
-      {/* Add/Search panel */}
-      <div className="rounded-xl p-4 bg-white ring-1 ring-border/60 shadow-sm ">
-        <p className="text-sm text-textSecondary mb-3">
-          Search and assign team members responsible for this issue.
-        </p>
-        {!isArchived && (
-          <PaginatedDropdown
-            fetchData={fetchUsers}
-            renderItem={(item) => <span>{item.label}</span>}
-            onSelect={onAdd}
-            placeholder={isFetching ? "Loading..." : "Add assignee"}
-            // buttonRenderer={() => (
-            //   <button
-            //     type="button"
-            //     className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg bg-white ring-1 ring-border/60 hover:ring-hover/40 shadow-sm transition-all"
-            //   >
-            //     <span className="text-base leading-none">＋</span>
-            //     Add assignee
-            //   </button>
-            // )}
-          />
+}> = ({ isOpen, isArchived, isFetching, assignees, onClose, onAdd, onRemove, fetchUsers }) => {
+  useEffect(() => {
+    lockBodyScroll(isOpen);
+    return () => lockBodyScroll(false);
+  }, [isOpen]);
+
+  return (
+    <ModalContainer
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Manage Assignees"
+      bgClass="bg-white"
+      // prevent scroll chaining into body on touch/wheel
+      // @ts-ignore - allow custom props to pass to root in your ModalContainer
+      className="overscroll-contain"
+    >
+      <div
+        className="space-y-5 overscroll-contain"
+        onWheelCapture={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        style={{ scrollbarGutter: "stable both-edges" }}
+      >
+        {/* Add/Search panel */}
+        <div className="rounded-xl p-4 bg-white ring-1 ring-border/60 shadow-sm ">
+          <p className="text-sm text-textSecondary mb-3">
+            Search and assign team members responsible for this issue.
+          </p>
+          {!isArchived && (
+            <PaginatedDropdown
+              fetchData={fetchUsers}
+              renderItem={(item) => <span>{item.label}</span>}
+              onSelect={onAdd}
+              placeholder={isFetching ? "Loading..." : "Add assignee"}
+            />
+          )}
+        </div>
+
+        {/* List / Empty state */}
+        {assignees.length === 0 ? (
+          <div className="py-10 text-center text-sm text-textSecondary rounded-xl bg-white ring-1 ring-border/60 shadow-sm">
+            No assignees yet
+          </div>
+        ) : (
+          <ul className="rounded-xl overflow-hidden bg-white ring-1 ring-border/60 shadow-sm divide-y divide-border/60">
+            {assignees.map((u) => (
+              <li
+                key={u.value}
+                className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white hover:bg-gray-50 transition-colors text-textDark"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100  font-semibold shrink-0">
+                    {u.label.slice(0, 1).toUpperCase()}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{u.label}</div>
+                    <div className="text-xs text-textSecondary">Assignee</div>
+                  </div>
+                </div>
+
+                {!isArchived && (
+                  <button
+                    className="px-3 py-1.5 text-xs rounded-md bg-white ring-1 ring-border/60 hover:bg-red-50 hover:ring-red-200 text-red-600 transition-all"
+                    onClick={() => onRemove(u.value)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
-
-      {/* List / Empty state */}
-      {assignees.length === 0 ? (
-        <div className="py-10 text-center text-sm text-textSecondary rounded-xl bg-white ring-1 ring-border/60 shadow-sm">
-          No assignees yet
-        </div>
-      ) : (
-        <ul className="rounded-xl overflow-hidden bg-white ring-1 ring-border/60 shadow-sm divide-y divide-border/60">
-          {assignees.map((u) => (
-            <li
-              key={u.value}
-              className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white hover:bg-gray-50 transition-colors text-textDark"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100  font-semibold shrink-0">
-                  {u.label.slice(0, 1).toUpperCase()}
-                </span>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">{u.label}</div>
-                  <div className="text-xs text-textSecondary">Assignee</div>
-                </div>
-              </div>
-
-              {!isArchived && (
-                <button
-                  className="px-3 py-1.5 text-xs rounded-md bg-white ring-1 ring-border/60 hover:bg-red-50 hover:ring-red-200 text-red-600 transition-all"
-                  onClick={() => onRemove(u.value)}
-                >
-                  Remove
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  </ModalContainer>
-);
-
+    </ModalContainer>
+  );
+};
 
 // -----------------------------
 // Main container export
@@ -264,7 +298,7 @@ const TaskDetailsView: React.FC<{
   const { data: latestActivity, isLoading: isActivityLoading } = useGetProjectActiveLogsQuery({
     projectId,
     page: 1,
-    limit: 5,
+    limit: 3,
     issueId: task?.id ? task?.id : undefined,
   });
 
@@ -393,9 +427,7 @@ const TaskDetailsView: React.FC<{
                 {localTask.title || "Untitled Issue"}
               </h1>
             </div>
-            {!isArchived && (
-              <Button text="Edit" onClick={onEdit} fullWidth={false}  />
-            )}
+            {!isArchived && <Button text="Edit" onClick={onEdit} fullWidth={false} />}
           </div>
         </div>
 
@@ -404,18 +436,7 @@ const TaskDetailsView: React.FC<{
           <h4 className="text-sm font-semibold">Description</h4>
           <div className="mt-2 text-sm leading-relaxed break-words whitespace-pre-wrap">
             {localTask.description ? (
-              <>
-                <p className={descExpanded ? "" : "line-clamp-6"}>{localTask.description}</p>
-                {/* {localTask.description.length > 140 && (
-                  <button
-                    type="button"
-                    className="mt-2 text-xs underline text-textSecondary"
-                    onClick={() => setDescExpanded((s) => !s)}
-                  >
-                    {descExpanded ? "Show less" : "Show more"}
-                  </button>
-                )} */}
-              </>
+              <p className={descExpanded ? "" : "line-clamp-6"}>{localTask.description}</p>
             ) : (
               <p className="text-textSecondary italic">No description provided.</p>
             )}
@@ -423,10 +444,10 @@ const TaskDetailsView: React.FC<{
         </section>
 
         {/* FULL-WIDTH: Assignees */}
-        <section className={PANEL}>
-          <div className="flex items-center justify-between gap-2 !z-[100px]"
-            style={{ zIndex: "10" }}
-          >
+        <section className={PANEL} 
+      style={{ zIndex: "100px" }}
+        >
+          <div className="flex items-center justify-between gap-2">
             <h4 className="text-sm font-semibold">Assignees</h4>
             {!isArchived && (
               <PaginatedDropdown
@@ -434,22 +455,12 @@ const TaskDetailsView: React.FC<{
                 renderItem={(item) => <span>{item.label}</span>}
                 onSelect={handleUserSelect}
                 placeholder={isFetching ? "Loading..." : "Add assignee"}
-                // buttonRenderer={({ open }) => (
-                //   <button
-                //     type="button"
-                //     className="inline-flex items-center gap-2 px-2.5 py-1.5 text-xs rounded-md border border-border hover:bg-hover"
-                //   >
-                //     <FiUserPlus /> {open ? "Select user..." : "Add assignee"}
-                //   </button>
-                // )}
               />
             )}
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            {selectedUsers.length === 0 && (
-              <span className={SUBTLE}>Unassigned</span>
-            )}
+            {selectedUsers.length === 0 && <span className={SUBTLE}>Unassigned</span>}
 
             {selectedUsers.slice(0, visibleChips).map((user) => (
               <AvatarChip
@@ -472,28 +483,26 @@ const TaskDetailsView: React.FC<{
           </div>
         </section>
 
-        {/* META GRID: like Jira fields block */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Project */}
+        {/* META GRID */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        style={{ zIndex: "-1" }}
+        >
           <MetaField title="Project">
             <p className="text-sm break-words whitespace-normal" title={task?.project?.title}>
               {task?.project?.title || "Untitled Project"}
             </p>
           </MetaField>
 
-          {/* Created */}
           <MetaField title="Created">
             <p className="text-sm">{task?.createdAt ? formatDate(task.createdAt) : "—"}</p>
           </MetaField>
 
-          {/* Created By */}
           {createdEntry && (
             <MetaField title="Created By">
               <p className="text-sm">{createdEntry?.user?.displayName || "—"}</p>
             </MetaField>
           )}
 
-          {/* Attachments */}
           <MetaField title="Attachments" className="sm:col-span-2">
             <ul className="space-y-2">
               {(task.files?.length ?? 0) === 0 && (
@@ -523,17 +532,20 @@ const TaskDetailsView: React.FC<{
 
       {/* Right: activity timeline */}
       <aside className="space-y-3 md:col-span-1"
-      
-    style={{ zIndex: "-1" }}
+      style={{ zIndex: "-1" }}
       >
         <h4 className="text-base font-semibold">Latest Activity</h4>
-        <div className="max-h-[70vh] overflow-y-auto pr-1" 
+        <div
+          className="max-h-[70vh] pr-1"
+          style={{ scrollbarGutter: "stable both-edges" }}
+          onWheelCapture={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <ActivityTimeline isLoading={isActivityLoading} history={latestActivity?.data?.history} />
         </div>
       </aside>
 
-      {/* Assignees modal (redesigned) */}
+      {/* Assignees modal */}
       <AssigneesModal
         isOpen={showAllAssignees}
         onClose={() => setShowAllAssignees(false)}

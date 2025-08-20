@@ -11,7 +11,7 @@ export { default as AllProjects } from "./projects/allProjects";
 export { default as UserManagement } from "./user-management/";
 export { default as CreateUser } from "./user-management/create/";
 export { default as OrderDashboard } from "./orders/dashboard";
-export { default as OrderDetails } from "./orders/details/";
+// export { default as OrderDetails } from "./orders/details/";
 export { default as AllOrders } from "./orders/allOrders";
 export { default as CreateOrder } from "./orders/create/";
 export { default as EditOrder } from "./orders/edit/";

@@ -1,7 +1,7 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {BASE_URL} from "../../constant/BASE_URL";
-import {API_ROUTES} from "../../constant/API_ROUTES";
-import {REDUCER_PATHS} from "../../constant/REDUCER_PATH";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { BASE_URL } from "../../constant/BASE_URL";
+import { API_ROUTES } from "../../constant/API_ROUTES";
+import { REDUCER_PATHS } from "../../constant/REDUCER_PATH";
 
 export const companyApi = createApi({
   reducerPath: REDUCER_PATHS.COMPANY_API,
@@ -35,12 +35,18 @@ export const companyApi = createApi({
         method: "GET",
       }),
     }),
-    getAllCompanies: builder.query({
-      query: ({ page, limit }) => ({
-        url: API_ROUTES.COMPANY.ROOT,
-        method: "GET",
-        params: { page, limit },
-      }),
+    getAllCompanies: builder.query<any, any>({
+      query: ({ page = 1, limit = 10, q } = {}) => {
+        const params: Record<string, string | number> = { page, limit };
+        const qTrim = q?.trim();
+        if (qTrim) params.q = qTrim; // only include when non-empty
+
+        return {
+          url: API_ROUTES.COMPANY.ROOT,
+          method: "GET",
+          params,
+        };
+      },
       providesTags: [{ type: "Company", id: "LIST" }],
     }),
 
@@ -49,8 +55,15 @@ export const companyApi = createApi({
         url: `${API_ROUTES.COMPANY.ROOT}/${id}`,
         method: "DELETE",
       }),
-    }), 
+    }),
   }),
 });
 
-export const { useCreateCompanyMutation, useUpdateCompanyMutation, useGetCompanyByIdQuery, useGetAllCompaniesQuery, useDeleteCompanyMutation, useLazyGetAllCompaniesQuery } = companyApi;
+export const {
+  useCreateCompanyMutation,
+  useUpdateCompanyMutation,
+  useGetCompanyByIdQuery,
+  useGetAllCompaniesQuery,
+  useDeleteCompanyMutation,
+  useLazyGetAllCompaniesQuery,
+} = companyApi;

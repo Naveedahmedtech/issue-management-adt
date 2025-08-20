@@ -12,6 +12,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Button from "../../../components/buttons/Button.tsx";
 import CardLayout from "../../../components/Board/CardLayout.tsx";
 import {
+    useDeleteFileMutation,
     useDeleteProjectMutation,
     useGetProjectByIdQuery,
     useGetProjectFilesQuery,
@@ -36,6 +37,7 @@ import Comments from "../components/Comments.tsx";
 import { offCommentCreated, onCommentCreated } from "../../../utils/socketClient.ts";
 import CheckboxField from "../../../components/form/CheckboxField.tsx";
 import Checklist from "../components/Checklist.tsx";
+import { API_ROUTES } from "../../../constant/API_ROUTES.ts";
 
 
 const useWindowSize = () => {
@@ -76,6 +78,8 @@ const ProjectDetails = () => {
     const [isFileView, setIsFileView] = useState(false);
 
     const [openExcelModal, setOpenExcelModal] = useState(false);
+    const [deleteConfModal, setDeleteConfModal] = useState(false);
+    const [tempFiles, setTempFile] = useState<any>();
 
     const [isOpenComments, setIsOpenComments] = useState(false);
     const [commentPage, setCommentPage] = useState(1);
@@ -140,6 +144,7 @@ const ProjectDetails = () => {
     // ✅ Use the deleteProject mutation
     const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
     const [archiveProject, { isLoading: isArchiveProject }] = useToggleArchiveMutation();
+    const [deleteFile, { isLoading: isDeletingProjectFile }] = useDeleteFileMutation();
 
     useEffect(() => {
         if (onBackReset) {
@@ -173,7 +178,7 @@ const ProjectDetails = () => {
                 const dateObj = new Date(file.updatedAt);
 
                 return {
-                    id: file.type === "issueFile" ? file.fileId : file.id,
+                    id: file.id,
                     fileName: file.filePath.split("/").pop(),
                     extension: file.filePath.split(".").pop(),
                     filePath: file.filePath,
@@ -250,8 +255,80 @@ const ProjectDetails = () => {
     //     // setIsFileViewModalOpen(true)
     // }
 
-    const documentColumns = projectDocumentColumns(handleAnnotateFile, isArchived);
-    const orderColumns = orderDocumentColumns(handleSignFile, isArchived);
+    const handleDownloadFile = async (file: DocumentDataRow) => {
+        let type;
+        if (file.isOrder) {
+            type = "order"
+        } else {
+            type = file.type === 'Project File' ? 'project' : 'issue';
+        }
+        try {
+            const response = await fetch(
+                `${BASE_URL}${API_ROUTES.PROJECT.ROOT}/${API_ROUTES.PROJECT.FILES}/${file.id}/${API_ROUTES.PROJECT.DOWNLOAD}?type=${type}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include'
+                }
+            );
+
+            if (!response.ok) {
+                console.log("ERRR!!!", response)
+                throw new Error("Failed to download file");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            // Create an anchor and trigger the download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = file.fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            toast.success("File downloaded successfully!");
+        } catch (error) {
+            console.error("Download error:", error);
+            toast.error("Failed to download the file.");
+        }
+    };
+
+    const deleteProjectFile = async () => {
+        let type;
+        if (tempFiles) {
+
+            if (tempFiles.isOrder) {
+                type = "order"
+            } else {
+                type = tempFiles.type === 'Project File' ? 'project' : 'issue';
+            }
+            try {
+                await deleteFile({ fileId: tempFiles.id, type: type }).unwrap();
+
+                toast.success("File deleted successfully!");
+                refetchProjectFiles()
+                refetchIssues();
+                setDeleteConfModal(false);
+
+            } catch (error: any) {
+                console.error("Failed to delete project:", error);
+                toast.error("Failed to delete project. Please try again.");
+            }
+        }
+
+    }
+
+    const handleDeleteFileModal = (row: any) => {
+        setTempFile(row)
+        setDeleteConfModal(!deleteConfModal)
+    }
+
+    const documentColumns = projectDocumentColumns(handleAnnotateFile, isArchived, handleDownloadFile, handleDeleteFileModal);
+    const orderColumns = orderDocumentColumns(handleSignFile, isArchived, handleDownloadFile, handleDeleteFileModal);
 
     const [windowWidth] = useWindowSize();
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
@@ -511,7 +588,7 @@ const ProjectDetails = () => {
                     }
                     {
                         isOpenComments &&
-                        <Drawer isOpen={isOpenComments} onClose={() => setIsOpenComments(false)} 
+                        <Drawer isOpen={isOpenComments} onClose={() => setIsOpenComments(false)}
                             title={`Comments (${commentData?.data?.total ?? commentData?.data?.comments.length}) `}>
                             {
                                 !isArchived &&
@@ -569,6 +646,25 @@ const ProjectDetails = () => {
                         preview={'danger'}
                         fullWidth={false}
                         isSubmitting={isDeletingProject}
+                    />
+                </div>
+            </ModalContainer>
+
+            <ModalContainer
+                isOpen={deleteConfModal}
+                onClose={() => setDeleteConfModal(false)}
+                title="Delete File Confirmation"
+            >
+                <p className="text-text">
+                    Are you sure you want to delete this file? This action cannot be undone.
+                </p>
+                <div className="flex justify-end mt-6 space-x-4">
+                    <Button
+                        text={'Delete'}
+                        onClick={deleteProjectFile}
+                        preview={'danger'}
+                        fullWidth={false}
+                        isSubmitting={isDeletingProjectFile}
                     />
                 </div>
             </ModalContainer>

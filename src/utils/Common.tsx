@@ -36,7 +36,9 @@ export const getFileIcon = (type: FileType) => {
 
 export const projectDocumentColumns = (
     handleAnnotateFile: (file: DocumentDataRow) => void,
-    isArchived: boolean
+    isArchived: boolean,
+    handleDownloadFile: (file: DocumentDataRow) => void,
+    handleDeleteFileModal: (file: DocumentDataRow) => void,
 ) => [
         // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
         {
@@ -60,12 +62,26 @@ export const projectDocumentColumns = (
                     <>
                         {
                             !isArchived &&
-                            <div className="flex space-x-2">
+                            <div className="flex flex-wrap space-x-2">
                                 <button
-                                    className="text-primary hover:underline"
+                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
+
                                     onClick={() => handleAnnotateFile(row)}
                                 >
                                     View
+                                </button>
+                                <button
+                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
+
+                                    onClick={() => handleDownloadFile(row)}
+                                >
+                                    Download
+                                </button>
+                                <button
+                                className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
+                                    onClick={() => handleDeleteFileModal(row)}
+                                >
+                                    Delete
                                 </button>
                             </div>
                         }
@@ -78,6 +94,8 @@ export const projectDocumentColumns = (
 export const orderDocumentColumns = (
     handleSignFile: (file: DocumentDataRow) => void,
     isArchived: boolean,
+    handleDownloadFile: (file: DocumentDataRow) => void,
+    handleDeleteFileModal: (file: DocumentDataRow) => void,
 ) => [
         {
             id: "fileName", label: "File Name", render: (row: DocumentDataRow) => (
@@ -91,7 +109,6 @@ export const orderDocumentColumns = (
         },
         { id: "date", label: "Created At", render: (row: DocumentDataRow) => row.date },
         { id: "time", label: "Time", render: (row: DocumentDataRow) => row.time },
-        // {id: "type", label: "Type", render: (row: DocumentDataRow) => row.type},
         {
             id: "signature",
             label: "Signature",
@@ -110,25 +127,38 @@ export const orderDocumentColumns = (
             render: (row: DocumentDataRow) => (
                 <>
                     {!isArchived && (
-                        <div className="flex space-x-2">
+                        <div className="flex flex-wrap gap-2">
                             <button
-                                className="text-primary hover:underline"
+                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
                                 onClick={() => handleSignFile(row)}
                             >
-                                {row.isSigned ? "View" : "Sign document"}
+                                {row.isSigned ? "View" : "Sign"}
                             </button>
-
+                            <button
+                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
+                                onClick={() => handleDownloadFile(row)}
+                            >
+                                Download
+                            </button>
+                            <button
+                                className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
+                                onClick={() => handleDeleteFileModal(row)}
+                            >
+                                Delete
+                            </button>
                         </div>
                     )}
                 </>
             )
-        },
+        }
+
     ];
 
 
 export const getUserManagementColumns = (
     handleEditUser: (user: User) => void,
-    handleDeleteUser: (userId: string) => void
+    handleDeleteUser: (userId: string) => void,
+    openAccessModal: (user: User) => void,
 ) => [
         {
             id: "email",
@@ -143,25 +173,66 @@ export const getUserManagementColumns = (
         {
             id: "role",
             label: "Role",
-            render: (row: User) => <span>{row.role}</span>,
+            render: (row: User) => (
+                <span
+                    className={`
+        inline-flex px-2 py-0.5 rounded-full text-xs font-medium
+        ${row.role === "SUPER_ADMIN"
+                            ? "bg-red-100 text-red-700"
+                            : row.role === "ADMIN"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-green-100 text-green-700"}
+      `}
+                >
+                    {row.role.replace("_", " ")}
+                </span>
+            ),
         },
         {
             id: "permissions",
             label: "Permissions",
-            render: (row: User) => <span>{row.permissions.join(", ") || "---"}</span>,
+            render: (row: User) =>
+                row.permissions && row.permissions.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                        {row.permissions.map((perm, idx) => (
+                            <span
+                                key={idx}
+                                className="inline-flex px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700"
+                            >
+                                {perm.replace(/_/g, " ")}
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <span className="text-gray-400">---</span>
+                ),
         },
+
         {
             id: "actions",
             label: "Actions",
             render: (row: User) => (
-                <div className="flex space-x-2">
-                    <button className="text-primary" onClick={() => handleEditUser(row)}>
-                        Edit
-                    </button>
-                    <button className="text-error" onClick={() => handleDeleteUser(row.id)}>
-                        Delete
-                    </button>
-                </div>
+<div className="flex gap-3">
+    <button
+        className="px-2 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded transition"
+        onClick={() => openAccessModal(row)}
+    >
+        Manage Access
+    </button>
+    <button
+        className="px-2 py-1 text-sm font-medium text-green-600 hover:bg-green-50 rounded transition"
+        onClick={() => handleEditUser(row)}
+    >
+        Edit
+    </button>
+    <button
+        className="px-2 py-1 text-sm font-medium text-red-600 hover:bg-red-50 rounded transition"
+        onClick={() => handleDeleteUser(row.id)}
+    >
+        Delete
+    </button>
+</div>
+
             ),
         },
     ];

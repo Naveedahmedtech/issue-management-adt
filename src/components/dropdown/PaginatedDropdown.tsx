@@ -2,11 +2,13 @@ import React, {useEffect, useRef, useState} from "react";
 import {AiOutlineDown, AiOutlineReload} from "react-icons/ai";
 
 interface PaginatedDropdownProps<T> {
-  fetchData: (page: number) => Promise<{ data: T[]; hasMore: boolean }>;
+  fetchData: (page: number, query?: string) => Promise<{ data: T[]; hasMore: boolean }>;
   renderItem: (item: T) => React.ReactNode;
   onSelect: (item: T) => void;
   placeholder?: string;
-  selectedItem?: T | null;  // Accept selected item from parent
+  selectedItem?: T | null;
+  searchablePlaceholder?: string;
+  debounceMs?: number;
 }
 
 export default function PaginatedDropdown<T>({
@@ -14,84 +16,114 @@ export default function PaginatedDropdown<T>({
   renderItem,
   onSelect,
   placeholder = "Select an item",
-  selectedItem, // Use this to preselect an item
+  selectedItem,
+  searchablePlaceholder = "Search…",
+  debounceMs = 300,
 }: PaginatedDropdownProps<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // **Close dropdown when clicking outside**
+  // Search state
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const mountedRef = useRef(false);
+
+  // ✅ Keep the latest fetchData without re-triggering effects
+  const fetchRef = useRef<PaginatedDropdownProps<T>["fetchData"]>(fetchData);
+  useEffect(() => {
+    fetchRef.current = fetchData;
+  }, [fetchData]);
+
+  // Debounce search
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(search.trim()), debounceMs);
+    return () => clearTimeout(id);
+  }, [search, debounceMs]);
+
+  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  // **Fetch Data when Dropdown Opens (Initial Load)**
+  // Reset list when opening or when query changes
   useEffect(() => {
     if (!open) return;
+    let cancelled = false;
 
-    const loadInitialItems = async () => {
+    const loadInitial = async () => {
       setLoading(true);
       try {
-        const result = await fetchData(1);
+        const result = await fetchRef.current(1, debounced);
+        if (cancelled) return;
         setItems(result?.data || []);
         setHasMore(result.hasMore);
-        setPage(2);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        setPage(2); // set to 2 so the next "Load more" fetches page 2
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        if (!cancelled) {
+          setItems([]);
+          setHasMore(false);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
     };
 
-    loadInitialItems();
-  }, [open]);
+    loadInitial();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, debounced]); // ❌ removed fetchData
 
-  // **Load More Data on Pagination**
+  // Load more
   useEffect(() => {
     if (!open || page === 1) return;
+    let cancelled = false;
 
-    const loadMoreItems = async () => {
+    const loadMore = async () => {
       setLoading(true);
       try {
-        const result = await fetchData(page);
+        const result = await fetchRef.current(page, debounced);
+        if (cancelled) return;
         if (result.data) {
-          setItems((prev) => [...prev, ...result.data]);
+          setItems(prev => [...prev, ...result.data]);
           setHasMore(result.hasMore);
         }
-      } catch (error) {
-        console.error("Error fetching more data:", error);
+      } catch (err) {
+        console.error("Error fetching more data:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
     };
 
-    loadMoreItems();
-  }, [page]);
+    loadMore();
+    return () => {
+      cancelled = true;
+    };
+  }, [page, open, debounced]); // ❌ removed fetchData
 
   const handleSelect = (e: React.MouseEvent, item: T) => {
     e.stopPropagation();
-    onSelect(item); // Let parent component handle selected item
+    onSelect(item);
     setOpen(false);
   };
 
   return (
-    <div className="relative inline-block !z-[100px]" ref={dropdownRef}
-    style={{ zIndex: "10" }}
+    <div
+      className="relative inline-block !z-[100]"
+      ref={dropdownRef}
+      style={{ zIndex: "10" }}
     >
       <button
         className="w-full h-10 px-3.5 rounded-xl border border-border/80 bg-background text-textDark
@@ -101,7 +133,13 @@ export default function PaginatedDropdown<T>({
         type="button"
         onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
-          setOpen(!open);
+          setOpen(o => {
+            const next = !o;
+            // Reset search when reopening to show full list
+            if (!o && mountedRef.current) setSearch("");
+            mountedRef.current = true;
+            return next;
+          });
         }}
       >
         <span className="truncate">
@@ -112,44 +150,57 @@ export default function PaginatedDropdown<T>({
           )}
         </span>
         <span className="shrink-0 opacity-80">
-          {loading ? (
-            <AiOutlineReload className="animate-spin" />
-          ) : (
-            <AiOutlineDown />
-          )}
+          {loading ? <AiOutlineReload className="animate-spin" /> : <AiOutlineDown />}
         </span>
       </button>
 
       {open && (
         <div
           className="absolute mt-2 min-w-full w-[22rem] max-w-[80vw]
-                     rounded-xl border border-border/80 bg-white text-textDark shadow-xl !z-[100px]
+                     rounded-xl border border-border/80 bg-white text-textDark shadow-xl !z-[100]
                      ring-1 ring-black/5 animate-[fadeIn_120ms_ease-out]"
         >
-          {/* Top divider accent */}
           <div className="h-[2px] w-full bg-gradient-to-r from-primary/30 via-primary/10 to-transparent rounded-t-xl" />
 
+          {/* Search bar */}
+          <div className="p-2 border-b border-border/70">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={searchablePlaceholder}
+              className="w-full h-9 px-3 rounded-lg bg-backgroundShade2/60 focus:bg-white
+                         border border-border/70 focus:outline-none focus:ring-2 focus:ring-primary/30
+                         text-sm"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+
           <ul className="max-h-60 overflow-auto py-1 custom-scroll">
-            {/* Loading skeletons (initial) */}
+            {/* Initial loading skeletons */}
             {loading && items.length === 0 ? (
               <div className="px-3 py-2 space-y-2">
                 {[...Array(4)].map((_, i) => (
                   <div key={i} className="h-7 rounded-md bg-backgroundShade2/80 animate-pulse" />
                 ))}
               </div>
-            ) : (
+            ) : items.length > 0 ? (
               items.map((item, index) => (
                 <li
                   key={index}
                   className="px-3.5 py-2 text-sm cursor-pointer
                              hover:bg-background active:bg-backgroundShade2
-                             transition-colors rounded-md mx-1 my-0.5 !z-[9999px]"
+                             transition-colors rounded-md mx-1 my-0.5"
                   onClick={(e) => handleSelect(e, item)}
                   title={typeof item === "object" ? undefined : String(item)}
                 >
                   <div className="min-w-0 truncate">{renderItem(item)}</div>
                 </li>
               ))
+            ) : (
+              <div className="px-3 py-3 text-sm text-textSecondary">
+                {debounced ? "No results found" : "No items"}
+              </div>
             )}
           </ul>
 
@@ -161,7 +212,7 @@ export default function PaginatedDropdown<T>({
             </div>
           )}
 
-          {!loading && hasMore && (
+          {!loading && hasMore && items.length > 0 && (
             <button
               className="w-full px-3 py-2 text-sm rounded-b-xl
                          hover:bg-backgroundShade2 transition-colors
@@ -169,7 +220,7 @@ export default function PaginatedDropdown<T>({
               type="button"
               onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
-                setPage((prev) => prev + 1);
+                setPage(prev => prev + 1);
               }}
             >
               <AiOutlineReload className="opacity-80" /> Load more
@@ -184,7 +235,6 @@ export default function PaginatedDropdown<T>({
         </div>
       )}
 
-      {/* optional: subtle custom scrollbar (Tailwind plugin or global CSS) */}
       <style>{`
         .custom-scroll::-webkit-scrollbar { height: 10px; width: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(100,100,100,0.25); border-radius: 8px; }

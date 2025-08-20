@@ -52,6 +52,7 @@ export const API_ROUTES = {
   PROJECT: {
     ROOT: `${PROJECT_BASE}`,
     LIST: `${PROJECT_BASE}/list`,
+    DELETE_FILE: `${PROJECT_BASE}/delete/file`,
     FILES: 'files',
     DOWNLOAD: 'download',
     UPDATE_FILE: 'update-file',

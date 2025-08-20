@@ -109,7 +109,8 @@ export type FileType =
   | "Text"
   | "XLSX"
   | "issueFile"
-  | "projectFile";
+  | "projectFile"
+  | "Project File";
 
 export interface DocumentDataRow {
   id: string;

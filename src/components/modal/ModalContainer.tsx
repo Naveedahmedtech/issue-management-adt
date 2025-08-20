@@ -39,7 +39,7 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center z-50">
+    <div className="fixed inset-0 flex justify-center items-center z-[100000]">
       {/* Background with blur */}
       <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
 

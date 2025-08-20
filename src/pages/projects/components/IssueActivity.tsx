@@ -96,7 +96,7 @@ const { data, isLoading, isFetching, isError } = useGetProjectActiveLogsQuery(qu
                                 className="p-4 bg-backgroundShade2 text-textDark rounded-md border border-border"
                             >
                                 <p className="text-sm font-medium">
-                                    {log.user.displayName} updated{" "}
+                                    {log.user.displayName} {log.fieldName === "Issue Created" ? "created" : "updated"}{" "}
                                     <span className="text-todo font-semibold">
                                         {isChecklist
                                             ? log.checklistItem?.question || "Checklist item"

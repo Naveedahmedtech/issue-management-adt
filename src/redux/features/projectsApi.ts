@@ -192,7 +192,17 @@ export const projectApi = createApi({
         method: "POST",
         body,
       })
-    })
+    }),
+
+    deleteFile: builder.mutation({
+      query: (body) => ({
+        url: `${API_ROUTES.PROJECT.DELETE_FILE}`,
+        method: "DELETE",
+        body,
+      })
+    }),
+
+
   }),
 });
 
@@ -215,5 +225,6 @@ export const {
   useGetProjectActiveLogsQuery,
   useGetAllProjectIssuesQuery,
   useAssignProjectMutation,
-  useUnassignProjectMutation
+  useUnassignProjectMutation,
+  useDeleteFileMutation
 } = projectApi;

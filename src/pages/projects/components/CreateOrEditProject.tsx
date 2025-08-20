@@ -62,9 +62,9 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
             }
         }
     }, [initialData, triggerAllCompanies]);
-    const fetchAllCompanies = async (page: number) => {
+    const fetchAllCompanies = async (page: number, q?: string) => {
         try {
-            const response = await triggerAllCompanies({ page, limit: 20 }).unwrap();
+            const response = await triggerAllCompanies({ page, limit: 20, q }).unwrap();
             const companies = response?.data?.companies ?? [];
             const pagination = response?.data ?? {};
 
@@ -212,7 +212,7 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                 </div>
 
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid  gap-4">
                     <div>
                         <p className="mb-2">Set Planning Timeframe</p>
                         <DateRangePicker

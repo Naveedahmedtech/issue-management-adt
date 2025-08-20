@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ANGULAR_URL, BASE_URL } from '../../constant/BASE_URL.ts';
+import { ANGULAR_URL, BASE_URL, ENV } from '../../constant/BASE_URL.ts';
 import { IAnnotationProps, Metadata } from "../../types/types.ts";
 
 const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, orderId, isSigned }: IAnnotationProps) => {
@@ -13,8 +13,8 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
     const sendFileToIframe = () => {
         if (typeof window !== 'undefined' && iframeRef.current?.contentWindow) {
             const fileObj = {
-                 filepath: fullFileUrl,
-//                filepath: "https://backend.viewsoft.com/uploads/orders/Service%20English.pdf",
+                 filepath: ENV ? fullFileUrl : "https://backend.viewsoft.com/uploads/projects/Project_Report_38c1ff87-923b-4054-bad2-0aa145713abe%20(11).pdf",
+            //    filepath: "https://backend.viewsoft.com/uploads/projects/Project_Report_38c1ff87-923b-4054-bad2-0aa145713abe%20(11).pdf",
                 cacheid: fileId,
                 mime: 'application/pdf'
             };
