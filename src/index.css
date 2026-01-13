@@ -203,3 +203,14 @@ button:hover {
           transform: translateX(150%);
       }
   }
+
+
+  /* Bold AG Grid header labels */
+.ag-theme-alpine .ag-header-cell.ag-bold-header .ag-header-cell-text {
+  font-weight: 600; /* or 700 */
+}
+
+
+/* somewhere global */
+.invalid-cell { outline: 2px solid #f59e0b; }
+

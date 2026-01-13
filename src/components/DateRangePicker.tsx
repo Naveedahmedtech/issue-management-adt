@@ -86,6 +86,12 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const ref = useRef<HTMLDivElement>(null);
   const [lastClickedWeekStart, setLastClickedWeekStart] = useState<Date | null>(null);
 
+  const [focusedRange, setFocusedRange] = useState<any>([0, 0]);
+
+  useEffect(() => {
+    if (weekMode) setFocusedRange([0, 0]); // always start-focus in week mode 
+  }, [weekMode]);
+
   // Resize listener (SSR-safe)
   useEffect(() => {
     const handleResize = () => {
@@ -134,53 +140,63 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   };
 
   const handleSelect = (ranges: RangeKeyDict): void => {
-    const rawStart = ranges.selection.startDate;
-    const rawEnd = ranges.selection.endDate;
-    if (!rawStart || !rawEnd) return;
+  const rawStart = ranges.selection.startDate;
+  const rawEnd = ranges.selection.endDate;
+  if (!rawStart || !rawEnd) return;
 
-    if (!weekMode) {
-      applyRange(rawStart, rawEnd);
+  if (!weekMode) {
+    applyRange(rawStart, rawEnd);
+    return;
+  }
+
+  // Keep every click acting like a "start" click in week mode.
+  const selectingStart = focusedRange[1] === 0; // 0 = start, 1 = end
+  const clicked = weekRange(selectingStart ? rawStart : rawEnd);
+
+  const curStart = selection[0].startDate ?? clicked.start;
+  const curEnd = selection[0].endDate ?? clicked.end;
+  const current = spanToWholeWeeks(curStart, curEnd);
+
+  const isAtStart = isEqual(clicked.start, current.start);
+  const isAtEnd = isEqual(clicked.end, current.end);
+  const hasMultipleWeeks = countWeeksIncl(current.start, current.end) > 1;
+
+  // Edge trim: single click trims one week from the side you click.
+  if (hasMultipleWeeks && (isAtStart || isAtEnd)) {
+    if (isAtStart) {
+      const newStart = weekRange(addWeeks(current.start, 1)).start;
+      applyRange(newStart, current.end);
+      setFocusedRange([0, 0]);
       return;
     }
-
-    const picked = spanToWholeWeeks(rawStart, rawEnd);
-    const curStart = selection[0].startDate ?? picked.start;
-    const curEnd = selection[0].endDate ?? picked.end;
-    const current = spanToWholeWeeks(curStart, curEnd);
-
-    const pickedIsSingleWeek = countWeeksIncl(picked.start, picked.end) === 1;
-    const currentWeekCount = countWeeksIncl(current.start, current.end);
-
-    const sameAsLastClick =
-      lastClickedWeekStart && isEqual(lastClickedWeekStart, picked.start);
-
-    setLastClickedWeekStart(picked.start);
-
-    if (pickedIsSingleWeek) {
-      const isAtStart = isEqual(picked.start, current.start);
-      const isAtEnd = isEqual(picked.end, current.end);
-      const hasMultipleWeeks = currentWeekCount > 1;
-
-      // Toggle off edge week (existing behavior)
-      if (hasMultipleWeeks && (isAtStart || isAtEnd) && !sameAsLastClick) {
-        if (isAtStart) {
-          const newStart = weekRange(addWeeks(current.start, 1)).start;
-          applyRange(newStart, current.end);
-          return;
-        }
-        if (isAtEnd) {
-          const newEnd = weekRange(addWeeks(current.end, -1)).end;
-          applyRange(current.start, newEnd);
-          return;
-        }
-      }
+    if (isAtEnd) {
+      const newEnd = weekRange(addWeeks(current.end, -1)).end;
+      applyRange(current.start, newEnd);
+      setFocusedRange([0, 0]);
+      return;
     }
+  }
 
-    // Merge/expand (existing behavior)
-    const mergedStart = dateMin([current.start, picked.start]);
-    const mergedEnd = dateMax([current.end, picked.end]);
-    applyRange(mergedStart, mergedEnd);
-  };
+  // Interior trim (your 1..7 then click 5 => 1..4)
+  const inside =
+    clicked.start.getTime() >= current.start.getTime() &&
+    clicked.end.getTime() <= current.end.getTime();
+
+  if (hasMultipleWeeks && inside && !isAtStart && !isAtEnd) {
+    const newEnd = weekRange(addWeeks(clicked.start, -1)).end;
+    applyRange(current.start, newEnd);
+    setFocusedRange([0, 0]);
+    return;
+  }
+
+  // Otherwise expand/merge to include the clicked week.
+  const mergedStart = dateMin([current.start, clicked.start]);
+  const mergedEnd = dateMax([current.end, clicked.end]);
+  applyRange(mergedStart, mergedEnd);
+  setFocusedRange([0, 0]);
+};
+
+
 
   const toggleMode = (next?: boolean) => {
     const newMode = typeof next === 'boolean' ? next : !weekMode;
@@ -228,7 +244,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             className="inline-flex rounded-md border overflow-hidden"
           >
             <button
-             type="button" 
+              type="button"
               role="tab"
               aria-selected={!weekMode}
               onClick={() => toggleMode(false)}
@@ -242,7 +258,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
               Day mode
             </button>
             <button
-             type="button" 
+              type="button"
               role="tab"
               aria-selected={weekMode}
               onClick={() => toggleMode(true)}
@@ -339,6 +355,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 months={isMobile ? 1 : 2}
                 direction="horizontal"
                 className="rounded-lg overflow-hidden"
+                focusedRange={focusedRange}
+                onRangeFocusChange={(r) => setFocusedRange(r as [number, number])}
+                dragSelectionEnabled={false}     // optional: avoids accidental drags 
+                retainEndDateOnFirstSelection
               />
             </div>
           </div>

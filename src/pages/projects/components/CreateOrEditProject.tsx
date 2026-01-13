@@ -244,8 +244,8 @@ const CreateOrEditProject: React.FC<CreateOrEditProjectProps> = ({ initialData, 
                                 label="Status"
                                 options={[
                                     { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
-                                    { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
                                     { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
+                                    { label: PROJECT_STATUS.ARCHIVE, value: PROJECT_STATUS.ARCHIVE.toUpperCase() },
                                 ]}
                                 value={formData.status}
                                 onChange={handleSelectChange}

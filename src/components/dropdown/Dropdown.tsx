@@ -131,11 +131,11 @@ const FormikSelect: React.FC<FormikSelectProps> = (props) => {
             ...base,
             backgroundColor: pick('var(--color-hover)', 'var(--color-text)'),
             // Make sure the menu beats your modal (increase if your modal uses higher values)
-            zIndex: 100001,
+            zIndex: 1000010,
           }),
           menuPortal: (base) => ({
             ...base,
-            zIndex: 100001,
+            zIndex: 1000010,
           }),
           option: (base, { isFocused, isSelected }) => ({
             ...base,

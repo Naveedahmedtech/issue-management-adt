@@ -473,7 +473,7 @@ const TaskDetailsView: React.FC<{
             {overflowCount > 0 && (
               <button
                 type="button"
-                className="inline-flex items-center justify-center h-[30px] px-2 text-xs rounded-full border border-border bg-backgroundShade2 hover:bg-hover"
+                className="inline-flex items-center justify-center h-[30px] px-2 text-xs rounded-full border border-border bg-backgroundShade2"
                 onClick={() => setShowAllAssignees(true)}
                 aria-label={`View all ${selectedUsers.length} assignees`}
               >

@@ -4,6 +4,7 @@ import { Company, DocumentDataRow, FileType, ITitleText, User, } from "../types/
 import { FaFileAlt, FaFileExcel, FaFilePdf, FaFileWord, } from "react-icons/fa";
 import React from "react";
 import { PERMISSIONS, ROLES } from "../constant/ROLES.ts";
+import { FiInfo } from "react-icons/fi";
 
 const Hello = () => {
     return (
@@ -39,6 +40,7 @@ export const projectDocumentColumns = (
     isArchived: boolean,
     handleDownloadFile: (file: DocumentDataRow) => void,
     handleDeleteFileModal: (file: DocumentDataRow) => void,
+    downloadPDFAnnotation: (file: DocumentDataRow) => void,
 ) => [
         // { id: "icon", label: "File", render: (row: DocumentDataRow) => getFileIcon(row.type) },
         {
@@ -64,21 +66,29 @@ export const projectDocumentColumns = (
                             !isArchived &&
                             <div className="flex flex-wrap space-x-2">
                                 <button
-                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
+                                    className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
 
                                     onClick={() => handleAnnotateFile(row)}
                                 >
                                     View
                                 </button>
+
                                 <button
-                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
+                                    className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
+                                    onClick={() => downloadPDFAnnotation(row)}
+                                >
+                                    Download
+                                </button>
+
+                                {/* <button
+                                    className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
 
                                     onClick={() => handleDownloadFile(row)}
                                 >
                                     Download
-                                </button>
+                                </button> */}
                                 <button
-                                className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
+                                    className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
                                     onClick={() => handleDeleteFileModal(row)}
                                 >
                                     Delete
@@ -96,6 +106,8 @@ export const orderDocumentColumns = (
     isArchived: boolean,
     handleDownloadFile: (file: DocumentDataRow) => void,
     handleDeleteFileModal: (file: DocumentDataRow) => void,
+    handleViewSignatureDetails: (file: DocumentDataRow) => void,
+    downloadPDFAnnotation: (file: DocumentDataRow) => void,
 ) => [
         {
             id: "fileName", label: "File Name", render: (row: DocumentDataRow) => (
@@ -127,25 +139,39 @@ export const orderDocumentColumns = (
             render: (row: DocumentDataRow) => (
                 <>
                     {!isArchived && (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 items-center">
                             <button
                                 className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
                                 onClick={() => handleSignFile(row)}
                             >
                                 {row.isSigned ? "View" : "Sign"}
                             </button>
-                            <button
-                                className="px-2 py-1 text-sm font-medium text-primary rounded hover:bg-primary/10 transition"
-                                onClick={() => handleDownloadFile(row)}
-                            >
-                                Download
-                            </button>
+
                             <button
                                 className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
                                 onClick={() => handleDeleteFileModal(row)}
                             >
                                 Delete
                             </button>
+
+
+                            <button
+                                className="px-2 py-1 text-sm font-medium text-red-600 rounded hover:bg-red-50 transition"
+                                onClick={() => downloadPDFAnnotation(row)}
+                            >
+                                Download
+                            </button>
+
+                            {/* 👇 Show details icon only if signed */}
+                            {row.isSigned && (
+                                <button
+                                    className="p-1 text-gray-600 hover:text-primary transition"
+                                    onClick={() => handleViewSignatureDetails(row)}
+                                    title="View signer details"
+                                >
+                                    <FiInfo className="w-4 h-4" />
+                                </button>
+                            )}
                         </div>
                     )}
                 </>
@@ -212,26 +238,26 @@ export const getUserManagementColumns = (
             id: "actions",
             label: "Actions",
             render: (row: User) => (
-<div className="flex gap-3">
-    <button
-        className="px-2 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded transition"
-        onClick={() => openAccessModal(row)}
-    >
-        Manage Access
-    </button>
-    <button
-        className="px-2 py-1 text-sm font-medium text-green-600 hover:bg-green-50 rounded transition"
-        onClick={() => handleEditUser(row)}
-    >
-        Edit
-    </button>
-    <button
-        className="px-2 py-1 text-sm font-medium text-red-600 hover:bg-red-50 rounded transition"
-        onClick={() => handleDeleteUser(row.id)}
-    >
-        Delete
-    </button>
-</div>
+                <div className="flex gap-3">
+                    <button
+                        className="px-2 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded transition"
+                        onClick={() => openAccessModal(row)}
+                    >
+                        Manage Access
+                    </button>
+                    <button
+                        className="px-2 py-1 text-sm font-medium text-green-600 hover:bg-green-50 rounded transition"
+                        onClick={() => handleEditUser(row)}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        className="px-2 py-1 text-sm font-medium text-red-600 hover:bg-red-50 rounded transition"
+                        onClick={() => handleDeleteUser(row.id)}
+                    >
+                        Delete
+                    </button>
+                </div>
 
             ),
         },

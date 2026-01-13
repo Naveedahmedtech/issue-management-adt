@@ -23,9 +23,9 @@ const AllProjectsCards: React.FC<{ projects: any, error?: any, isLoading: boolea
             case PROJECT_STATUS.COMPLETED.toUpperCase():
                 color = "bg-success text-white";
                 break;
-            case PROJECT_STATUS.ON_GOING.toUpperCase():
-                color = "bg-todo text-white";
-                break;
+            // case PROJECT_STATUS.ON_GOING.toUpperCase():
+            //     color = "bg-todo text-white";
+            //     break;
             case PROJECT_STATUS.ACTIVE.toUpperCase():
                 color = "bg-pending text-white";
                 break;

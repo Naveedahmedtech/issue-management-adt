@@ -21,7 +21,7 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children, title }) => 
 
             {/* Drawer Panel */}
             <div
-                className={`fixed top-0 right-0 h-full bg-backgroundShade2 shadow-lg transform transition-transform duration-300 z-50 overflow-auto border-l border-border
+                className={`fixed top-0 right-0 h-full bg-backgroundShade2 shadow-lg transform transition-transform duration-300 z-[1000] overflow-auto border-l border-border
                     ${isOpen ? "translate-x-0" : "translate-x-full"}
                     w-full lg:w-[30vw] min-w-[250px] max-w-[100vw]
                 `}

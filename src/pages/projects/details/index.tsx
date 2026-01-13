@@ -79,13 +79,15 @@ const ProjectDetails = () => {
 
     const [openExcelModal, setOpenExcelModal] = useState(false);
     const [deleteConfModal, setDeleteConfModal] = useState(false);
-    const [tempFiles, setTempFile] = useState<any>();
+    const [tempFile, setTempFile] = useState<any>();
 
     const [isOpenComments, setIsOpenComments] = useState(false);
     const [commentPage, setCommentPage] = useState(1);
 
 
     const [uploadToOrder, setUploadToOrder] = useState(false)
+    const [isSignerModalOpen, setIsSignerModalOpen] = useState(false);
+
 
 
     const { userData } = useAuth();
@@ -104,6 +106,11 @@ const ProjectDetails = () => {
 
 
     const { data: latestCommentData, isLoading: isLoadingLatestComments, refetch: refetchLatestComments } = useGetLatestCommentQuery({ projectId });
+
+
+
+
+
 
     useEffect(() => {
         // 1) Define your two callbacks
@@ -182,11 +189,15 @@ const ProjectDetails = () => {
                     fileName: file.filePath.split("/").pop(),
                     extension: file.filePath.split(".").pop(),
                     filePath: file.filePath,
+                    signerName: file?.signerName,
+                    signerEmail: file?.signerEmail,
                     date: format(dateObj, "EEEE, MMMM do yyyy"),
                     time: format(dateObj, "hh:mm a"),
                     type: `${file.type === "issueFile" ? `${"Issue File"} (${file?.issue?.title})` : `${file.isOrder ? "Order File" : "Project File"}`}` || "UNKNOWN",
                     isOrder: file.isOrder,
                     isSigned: file?.isSigned || false,
+                    signedAt: file?.signedAt,
+                    downloadUrl: file?.annotationDownloadUrl,
                 };
             });
 
@@ -204,13 +215,21 @@ const ProjectDetails = () => {
         }
     }, [projectIssues]);
 
+    useEffect(() => {
+        refetchProjectFiles()
+        refetchIssues();
+    }, [])
+
 
     const handleFilterChange = (status: string) => {
         setActiveFilter(status);
         if (status === "All") {
             setFilteredTasks(tasks);
         } else {
+            console.log('task.status?.toUpperCase()', status?.toUpperCase())
             setFilteredTasks(tasks.filter((task: any) => task.status?.toUpperCase() === status?.toUpperCase()));
+            console.log("TASKS", tasks)
+            console.log("Filtered Taks", filteredTasks)
         }
     };
 
@@ -299,15 +318,15 @@ const ProjectDetails = () => {
 
     const deleteProjectFile = async () => {
         let type;
-        if (tempFiles) {
+        if (tempFile) {
 
-            if (tempFiles.isOrder) {
+            if (tempFile.isOrder) {
                 type = "order"
             } else {
-                type = tempFiles.type === 'Project File' ? 'project' : 'issue';
+                type = tempFile.type === 'Project File' ? 'project' : 'issue';
             }
             try {
-                await deleteFile({ fileId: tempFiles.id, type: type }).unwrap();
+                await deleteFile({ fileId: tempFile.id, type: type }).unwrap();
 
                 toast.success("File deleted successfully!");
                 refetchProjectFiles()
@@ -327,8 +346,55 @@ const ProjectDetails = () => {
         setDeleteConfModal(!deleteConfModal)
     }
 
-    const documentColumns = projectDocumentColumns(handleAnnotateFile, isArchived, handleDownloadFile, handleDeleteFileModal);
-    const orderColumns = orderDocumentColumns(handleSignFile, isArchived, handleDownloadFile, handleDeleteFileModal);
+    const handleViewSignatureDetails = (file: DocumentDataRow) => {
+        console.log("FILE --> ", file)
+        setTempFile(file);
+        setIsSignerModalOpen(true);
+    };
+
+    const downloadPDFAnnotation = async (row: DocumentDataRow) => {
+
+        if (!row?.downloadUrl) {
+            handleDownloadFile(row)
+        }
+        else {
+            try {
+                const response = await fetch(row.downloadUrl, {
+                    method: "GET",
+                    headers: {
+                        // add auth headers if needed
+                        // Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to download file");
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = row.fileName || "document.pdf"; // fallback filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Download error:", error);
+            }
+        }
+
+    };
+
+
+
+
+    const documentColumns = projectDocumentColumns(handleAnnotateFile, isArchived, handleDownloadFile, handleDeleteFileModal, downloadPDFAnnotation);
+    const orderColumns = orderDocumentColumns(handleSignFile, isArchived, handleDownloadFile, handleDeleteFileModal, handleViewSignatureDetails, downloadPDFAnnotation);
 
     const [windowWidth] = useWindowSize();
     const isSmallScreen = windowWidth <= 768; // Small screens (e.g., tablets or mobile)
@@ -351,6 +417,26 @@ const ProjectDetails = () => {
     };
 
 
+    const sanitizeFileName = (fileName: string) => {
+        // Remove diacritics and allow only alphanumerics, dash, underscore, and dot
+        const normalized = fileName.normalize("NFKD");
+        const lastDot = normalized.lastIndexOf(".");
+        const base = lastDot !== -1 ? normalized.slice(0, lastDot) : normalized;
+        const extension = lastDot !== -1 ? normalized.slice(lastDot) : "";
+
+        const cleanBase = base.replace(/[^a-zA-Z0-9_-]/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "") || "file";
+        const cleanExt = extension.replace(/[^a-zA-Z0-9.]/g, "");
+        const safeExt = cleanExt.startsWith(".") ? cleanExt : cleanExt ? `.${cleanExt}` : "";
+
+        return `${cleanBase}${safeExt}`;
+    };
+
+    const sanitizeFile = (file: File) => {
+        const sanitizedName = sanitizeFileName(file.name);
+        if (sanitizedName === file.name) return file;
+        return new File([file], sanitizedName, { type: file.type });
+    };
+
     const handleFileUpload = (uploadedFiles: File[]) => {
         const allowedFileTypes = [".pdf", ".xlsx"]; // Allowed file extensions
         const validFiles = uploadedFiles.filter((file) =>
@@ -369,7 +455,9 @@ const ProjectDetails = () => {
             );
         }
 
-        setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+        const sanitizedFiles = validFiles.map(sanitizeFile);
+        setFiles(sanitizedFiles);
+
     };
 
 
@@ -379,11 +467,30 @@ const ProjectDetails = () => {
             return;
         }
 
+        const MAX_FILES = 10;
+        const MAX_FILE_SIZE_MB = 1000;
+
+        console.log("file length", files)
+
+        if (files.length > MAX_FILES) {
+            toast.error(`You can only upload up to ${MAX_FILES} files.`);
+            return;
+        }
+
+        for (const file of files) {
+            if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                toast.error(`${file.name} is too large. Max size is ${MAX_FILE_SIZE_MB} MB.`);
+                return;
+            }
+        }
+
+
         const formData = new FormData();
         files.forEach((file) => {
-            formData.append("files", file);
-            formData.append("isOrder", isOrder ? "true" : "false");
+            formData.append("files", file); // just the files
         });
+        formData.append("isOrder", isOrder ? "true" : "false"); // only once
+
 
         try {
             const response = await uploadFilesToProject({ projectId, formData }).unwrap();
@@ -419,8 +526,8 @@ const ProjectDetails = () => {
     }, [dropdownOpen]);
     const groupedTasks = {
         "Active": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === PROJECT_STATUS.ACTIVE.toUpperCase()),
-        "On Going": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === PROJECT_STATUS.ON_GOING.toUpperCase()),
         "Completed": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === PROJECT_STATUS.COMPLETED.toUpperCase()),
+        "On Going": filteredTasks?.filter((task: any) => task.status?.toUpperCase() === "ON GOING"),
     };
 
     const refetchData = () => {
@@ -504,7 +611,7 @@ const ProjectDetails = () => {
         try {
             await archiveProject(projectId);
             toast.success(`Project ${isArchived ? "unarchived" : "archived"} successfully!`);
-            navigate(APP_ROUTES.APP.PROJECTS.CREATE)
+            navigate(APP_ROUTES.APP.PROJECTS.ARCHIVED)
         } catch (error) {
             toast.error("Failed to archive project. Please try again.");
 
@@ -750,6 +857,45 @@ const ProjectDetails = () => {
                     <img src={`${BASE_URL}/${selectedFile.filePath}`} alt={"file"} />
                 </ModalContainer>
             }
+
+            <ModalContainer
+                isOpen={isSignerModalOpen}
+                onClose={() => setIsSignerModalOpen(false)}
+                title="Signature Details"
+            >
+                {tempFile ? (
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-sm">
+                            <span className="text-textMuted">Name</span>
+                            <span className="font-medium text-text">
+                                {tempFile.signerName || "N/A"}
+                            </span>
+                        </div>
+
+                        <div className="flex flex-col rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-sm">
+                            <span className="text-textMuted">Email</span>
+                            <span className="font-medium text-text">
+                                {tempFile.signerEmail || "N/A"}
+                            </span>
+                        </div>
+
+                        <div className="flex flex-col rounded-lg border border-border bg-card px-4 py-3 text-sm shadow-sm col-span-2">
+                            <span className="text-textMuted">Signed At</span>
+                            <span className="font-medium text-text">
+                                {tempFile.signedAt
+                                    ? format(new Date(tempFile.signedAt), "PPpp")
+                                    : "Not available"}
+                            </span>
+                        </div>
+                    </div>
+                ) : (
+                    <p className="text-sm text-textMuted">No signer details available.</p>
+                )}
+            </ModalContainer>
+
+
+
+
 
             {
                 openExcelModal &&

@@ -17,6 +17,7 @@ export default {
         hover: "var(--color-hover)",
         textHover: "var(--color-text-hover)",
         textSecondary: "var(--color-text-secondary)",
+        textMuted: "var(--color-text-muted)",
         border: "var(--color-border)",
         pending: "var(--color-pending)",
         success: "var(--color-success)",

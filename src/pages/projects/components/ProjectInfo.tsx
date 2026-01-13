@@ -2,29 +2,43 @@ import React, { useEffect, useState } from "react";
 import { FaBuilding, FaCalendarAlt, FaRegClock, FaUser } from "react-icons/fa";
 import { FiInfo, FiX } from "react-icons/fi";
 import { format } from "date-fns";
-import { useAssignProjectMutation, useUnassignProjectMutation } from "../../../redux/features/projectsApi";
+import { useAssignProjectMutation, useToggleArchiveMutation, useUnassignProjectMutation, useUpdateProjectMutation } from "../../../redux/features/projectsApi";
 import { ProjectInfoProps } from "../../../types/types";
 import PaginatedDropdown from "../../../components/dropdown/PaginatedDropdown";
-import { getStatusBadge } from "../../../utils/Common";
+// import { getStatusBadge } from "../../../utils/Common";
 import { useLazyGetAllUsersQuery } from "../../../redux/features/authApi";
 import { useAuth } from "../../../hooks/useAuth";
 import { ROLES } from "../../../constant/ROLES.ts";
 import Button from "../../../components/buttons/Button.tsx";
 import { toast } from "react-toastify";
 import ModalContainer from "../../../components/modal/ModalContainer.tsx";
+import ProjectStatusDropDown from "../../../components/Board/ProjectStatusDropDown.tsx";
+import { PROJECT_STATUS } from "../../../constant/index.ts";
+import { APP_ROUTES } from "../../../constant/APP_ROUTES.ts";
+import { useNavigate } from "react-router-dom";
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
     const [selectedUser, setSelectedUser] = useState<{ value: string; label: string } | null>(null);
     const [selectedUsers, setSelectedUsers] = useState<{ value: string; label: string }[]>([]);
     const [showDescriptionModal, setShowDescriptionModal] = useState(false);
 
+    const [confirmStatus, setConfirmStatus] = useState<{ open: boolean; newStatus: string | null }>({
+        open: false,
+        newStatus: null,
+    });
+
 
     const { userData } = useAuth();
     const { role } = userData;
 
+    const navigate = useNavigate()
     const [assignToUser, { isLoading }] = useAssignProjectMutation();
     const [unassignUser] = useUnassignProjectMutation();
     const [triggerGetUsers] = useLazyGetAllUsersQuery();
+    const [updateProject] = useUpdateProjectMutation();
+    const [archiveProject] = useToggleArchiveMutation();
+
+
 
     // Initialize selected users from projectData
     useEffect(() => {
@@ -90,6 +104,30 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
         }
     };
 
+    // ✅ Handle form submission for updating the project
+    const handleStatusUpdate = async (status: string) => {
+        const formDataToSend = new FormData();
+
+        // Append form fields
+        formDataToSend.append("title", projectData?.title);
+        formDataToSend.append("status", status || "");
+
+        try {
+            // ✅ Call the updateProject mutation
+            if (status === PROJECT_STATUS.ARCHIVE?.toUpperCase()) {
+                await archiveProject(projectData?.id);
+                navigate(APP_ROUTES.APP.PROJECTS.ARCHIVED)
+            } else {
+                await updateProject({ projectId: projectData?.id, formData: formDataToSend }).unwrap();
+
+            }
+            refetch();
+        } catch (error: any) {
+            console.log('err', error)
+            toast.error(error?.data?.error?.message || "Failed to update project. Please try again.");
+        }
+    };
+
     // Format Dates
     const formattedStartDate = projectData?.startDate
         ? format(new Date(projectData.startDate), "MMM dd, yyyy")
@@ -145,13 +183,29 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
             {/* Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm text-text mb-4 text-textDark">
                 {/* Status */}
+                {/* Status */}
                 <div className="flex items-center space-x-2">
-                    <FaRegClock className="text-primary" />
+                    {/* <FaRegClock className="text-primary" /> */}
                     <div>
                         <span className="block text-xs text-textLight">Status</span>
-                        {getStatusBadge(projectData?.status)}
+                        {
+                            projectData?.archived ? (
+                                <span className="px-2 py-1 text-xs font-medium text-text bg-backgroundShade1 rounded-full">
+                                    Archived
+                                </span>
+
+                            ) : (
+                                <ProjectStatusDropDown
+                                    value={projectData?.status || ""}
+                                    onChange={(newStatus) => setConfirmStatus({ open: true, newStatus })}
+                                    disabled={role === ROLES.WORKER} // workers cannot change status
+                                />
+                            )
+                        }
+
                     </div>
                 </div>
+
 
                 {/* Dates */}
                 <div className="flex items-center space-x-2">
@@ -236,6 +290,54 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectData, refetch }) => {
                     </div>
                 </ModalContainer>
             )}
+            {confirmStatus.open && (
+                <ModalContainer
+                    isOpen={confirmStatus.open}
+                    onClose={() => setConfirmStatus({ open: false, newStatus: null })}
+                    title="Confirm Status Change"
+                >
+                    <div className="space-y-6">
+                        {/* Icon + Text */}
+                        <div className="flex items-center gap-4">
+                            {/* Circular Icon */}
+                            <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+                                <FaRegClock className="w-6 h-6" />
+                            </div>
+
+                            {/* Text Block */}
+                            <div className="flex-1">
+                                <p className="text-sm sm:text-base text-text">
+                                    Are you sure you want to change the project status to{" "}
+                                    <span className="font-semibold text-primary">
+                                        {confirmStatus.newStatus}
+                                    </span>
+                                    ?
+                                </p>
+                                <p className="text-xs text-textLight mt-1">
+                                    This update will be applied immediately and visible to all users.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex justify-end gap-3 pt-4 border-t border-border">
+                            <Button
+                                text="Yes, Update"
+                                onClick={async () => {
+                                    if (confirmStatus.newStatus) {
+                                        await handleStatusUpdate(confirmStatus.newStatus);
+                                    }
+                                    setConfirmStatus({ open: false, newStatus: null });
+                                }}
+                                type="button"
+                                className="bg-primary hover:bg-primary-dark"
+                                fullWidth={false}
+                            />
+                        </div>
+                    </div>
+                </ModalContainer>
+            )}
+
 
         </div>
 

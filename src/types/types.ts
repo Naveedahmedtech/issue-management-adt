@@ -122,8 +122,13 @@ export interface DocumentDataRow {
   status?: string;
   location?: string;
   extension?: string;
+  signerName?: string;
+  annotationDownloadUrl?: string;
+  downloadUrl?: string;
+  signerEmail?: string;
   createdAt: Date;
   updatedAt: Date;
+  signedAt?: Date;
   issue?: {
     id: string;
     title: string;
@@ -224,6 +229,7 @@ export interface ProjectInfoProps {
     endDate: string | null;
     companyName: string | null;
     isOrder: boolean;
+    archived: boolean;
     user: {
       displayName: string;
     };

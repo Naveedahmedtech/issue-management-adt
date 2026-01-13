@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from "react";
-import {AiOutlineDown, AiOutlineReload} from "react-icons/ai";
+import React, { useEffect, useRef, useState } from "react";
+import { AiOutlineDown, AiOutlineReload } from "react-icons/ai";
 
 interface PaginatedDropdownProps<T> {
   fetchData: (page: number, query?: string) => Promise<{ data: T[]; hasMore: boolean }>;
@@ -121,9 +121,8 @@ export default function PaginatedDropdown<T>({
 
   return (
     <div
-      className="relative inline-block !z-[100]"
+      className="relative inline-block"
       ref={dropdownRef}
-      style={{ zIndex: "10" }}
     >
       <button
         className="w-full h-10 px-3.5 rounded-xl border border-border/80 bg-background text-textDark
@@ -156,10 +155,12 @@ export default function PaginatedDropdown<T>({
 
       {open && (
         <div
-          className="absolute mt-2 min-w-full w-[22rem] max-w-[80vw]
-                     rounded-xl border border-border/80 bg-white text-textDark shadow-xl !z-[100]
-                     ring-1 ring-black/5 animate-[fadeIn_120ms_ease-out]"
+          className="absolute mt-2 min-w-full max-w-[90vw] sm:w-[22rem]
+             rounded-xl border border-border/80 bg-white text-textDark shadow-xl
+             ring-1 ring-black/5 animate-[fadeIn_120ms_ease-out] z-[10000000]
+             left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0"
         >
+
           <div className="h-[2px] w-full bg-gradient-to-r from-primary/30 via-primary/10 to-transparent rounded-t-xl" />
 
           {/* Search bar */}

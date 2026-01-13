@@ -1,11 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ANGULAR_URL, BASE_URL, ENV } from '../../constant/BASE_URL.ts';
 import { IAnnotationProps, Metadata } from "../../types/types.ts";
+import { BsArrowLeftCircle } from 'react-icons/bs';
+import ModalContainer from '../modal/ModalContainer.tsx';
 
 const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, orderId, isSigned }: IAnnotationProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const navigate = useNavigate();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const isInvalidParams = !fileId || !filePath || !userId;
     const fullFileUrl = `${BASE_URL}/${filePath}`;
@@ -13,9 +17,12 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
     const sendFileToIframe = () => {
         if (typeof window !== 'undefined' && iframeRef.current?.contentWindow) {
             const fileObj = {
-                 filepath: ENV ? fullFileUrl : "https://backend.viewsoft.com/uploads/projects/Project_Report_38c1ff87-923b-4054-bad2-0aa145713abe%20(11).pdf",
-            //    filepath: "https://backend.viewsoft.com/uploads/projects/Project_Report_38c1ff87-923b-4054-bad2-0aa145713abe%20(11).pdf",
-                cacheid: fileId,
+                filepath: fullFileUrl ,
+                // filepath: "https://backend.viewsoft.com/uploads/projects/tepper2.pdf",
+                // "https://backend.viewsoft.com/uploads/projects/Index-75222.pdf",
+                //    filepath: "https://backend.viewsoft.com/uploads/projects/Project_Report_38c1ff87-923b-4054-bad2-0aa145713abe%20(11).pdf",
+                cacheid: 'yuitp-ssfgdf1',
+                // cacheid: fileId,
                 mime: 'application/pdf'
             };
 
@@ -26,6 +33,7 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
             if (projectId) {
                 metadata.projectId = projectId;
                 metadata.mode = 'annotation';
+                metadata.orderId = fileId;
             }
             if (orderId) {
                 metadata.orderId = fileId;
@@ -47,12 +55,15 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
             if (event.origin !== ANGULAR_URL) return;
 
             if (event.data?.type === 'ISSUE_SAVE') {
-                console.log("Issue saved! ✅")
+                console.log("Issue saved! ✅");
                 window.sessionStorage.setItem("ISSUE_SAVED", "true");
             }
             if (event.data?.type === 'SIGNATURE_SAVE') {
-                console.log("Signature saved! ✅")
+                console.log("Signature saved! ✅");
                 window.sessionStorage.setItem("SIGNATURE_SAVED", "true");
+            }
+            if (event.data?.type === 'ANNOTATION_SAVE') {
+                console.log('Annotation data received:', event.data.payload);
             }
         };
 
@@ -64,32 +75,33 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
         sendFileToIframe();
     };
 
-    useEffect(() => {
-        const handleMessage = (event: MessageEvent) => {
-            if (event.origin !== ANGULAR_URL) return;
-            if (event.data?.type === 'ANNOTATION_SAVE') {
-                console.log('Annotation data received:', event.data.payload);
-            }
-        };
-
-        window.addEventListener('message', handleMessage);
-        return () => window.removeEventListener('message', handleMessage);
-    }, []);
-
-    const handleBack = () => {
+    const doNavigate = () => {
         navigate(projectId ? `/projects/${projectId}` : `/projects/${orderId}`, {
             state: { onBackReset: true }
         });
-    }
+    };
+
+    const handleBack = () => {
+        if (!isSigned) {
+            setIsModalOpen(true);
+        } else {
+            doNavigate();
+        }
+    };
 
     return (
-        <div className="relative w-full h-[100vh]">
-            <button
-                onClick={handleBack}
-                className="sticky  top-0 left-0 m-4 px-4 py-2 bg-primary text-text font-semibold rounded hover:opacity-90 transition"
-            >
-                ← Back
-            </button>
+        <div className="relative w-full sm:min-h-[80vh] sm:h-[80vh] min-h-[80vh] h-[80vh] md:min-h-[80vh] md:h-[100vh]">
+            {/* Floating Back button */}
+            {/* Floating Back button (sticky) */}
+            <div className="sticky top-4 left-2 z-[1000] w-fit">
+                <button
+                    onClick={handleBack}
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white font-semibold rounded shadow-lg hover:opacity-90 transition"
+                >
+                    <BsArrowLeftCircle className="text-lg" />
+                    Back
+                </button>
+            </div>
 
             {isInvalidParams ? (
                 <div className="flex justify-center items-center min-h-[200px] text-red-500 font-semibold">
@@ -99,12 +111,41 @@ const AnnotationIframe = ({ userId, filePath, fileId, projectId, username, order
                 <iframe
                     ref={iframeRef}
                     src={ANGULAR_URL}
-                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    className="w-full h-full border-none relative z-0"
                     title="Rasterex Viewer"
                     onLoad={handleIframeLoad}
                     id="rxview"
                 />
             )}
+
+            {/* Confirmation Modal */}
+            <ModalContainer
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Unsaved Annotations"
+            >
+                <p className="leading-relaxed">
+                    Make sure you’ve saved your annotations in the viewer.
+                    If you go back without saving, your changes may be lost.
+                    Do you want to continue or stay and review your work?
+                </p>
+
+                <div className="flex justify-end gap-3 mt-6">
+                    <button
+                        className="px-4 py-2 bg-gray-400 text-white rounded hover:opacity-80 transition"
+                        onClick={() => setIsModalOpen(false)}
+                    >
+                        Stay & Continue Editing
+                    </button>
+                    <button
+                        className="px-4 py-2 bg-error text-white rounded hover:opacity-80 transition"
+                        onClick={doNavigate}
+                    >
+                        Go Back Anyway
+                    </button>
+                </div>
+            </ModalContainer>
+
         </div>
     );
 };

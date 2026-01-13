@@ -1,7 +1,8 @@
 export const PROJECT_STATUS = {
     ACTIVE: 'Active',
-    ON_GOING: 'On Going',
+    // ON_GOING: 'On Going',
     COMPLETED: 'Completed',
+    ARCHIVE: 'Archive',
 }
 export const ORDER_STATUS = {
     PENDING: 'PENDING',

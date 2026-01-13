@@ -58,7 +58,7 @@ const AllProjects = () => {
           options={[
             { label: "All Status", value: "" },
             { label: PROJECT_STATUS.COMPLETED, value: PROJECT_STATUS.COMPLETED.toUpperCase() },
-            { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
+            // { label: PROJECT_STATUS.ON_GOING, value: PROJECT_STATUS.ON_GOING.toUpperCase() },
             { label: PROJECT_STATUS.ACTIVE, value: PROJECT_STATUS.ACTIVE.toUpperCase() },
           ]}
           value={status ? { label: status, value: status } : { label: "All Status", value: "" }}
